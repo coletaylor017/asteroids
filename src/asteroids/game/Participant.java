@@ -15,6 +15,11 @@ import java.awt.geom.*;
  */
 public abstract class Participant
 {
+    public class Mine
+    {
+
+    }
+
     /** Speed in pixels per second in the horizontal (x) and vertical (y) directions */
     private double speedX, speedY;
 

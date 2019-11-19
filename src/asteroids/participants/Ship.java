@@ -1,4 +1,4 @@
-package asteroids.participants;
+    package asteroids.participants;
 
 import static asteroids.game.Constants.*;
 import java.awt.Shape;
