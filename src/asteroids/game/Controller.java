@@ -21,6 +21,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** When this timer goes off, it is time to refresh the animation */
     private Timer refreshTimer;
 
+    /** indicates how many lives are left */
+    private String remainingLives;
+
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
      * in the future to give the user time to see what has happened before doing something like going to a new level or
@@ -30,6 +33,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Number of lives left */
     private int lives;
+
+    /** Indicates the players current score */
+    private int score;
+
+    /** Indicates the current level */
+    private int level;
 
     /** The game display */
     private Display display;
@@ -135,14 +144,23 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
-        // Plac asteroids
+        // Place asteroids
         placeAsteroids();
 
         // Place the ship
         placeShip();
 
         // Reset statistics
-        lives = 1;
+
+        // Display Lives
+        lives = 3;
+        display.setLivesLabel("Remaining Lives: " + lives);
+
+        // Display Score
+        display.setScore("SCORE: " + score);
+
+        // Display Level
+        display.setLevel("LEVEL: " + level);
 
         // Start listening to events (but don't listen twice)
         display.removeKeyListener(this);
@@ -188,6 +206,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
+        score += 20;
     }
 
     /**
@@ -267,10 +286,51 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyPressed (KeyEvent e)
     {
+        // SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
             ship.turnRight();
         }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
+        {
+            ship.turnLeft();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
+        {
+            // ship shoots
+
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
+        {
+            ship.accelerate(SHIP_ACCELERATION);
+        }
+
+        // SHIP 2
+        if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
+        {
+            ship.turnRight();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
+        {
+            ship.turnLeft();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
+        {
+            // Use attackMethod
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
+        {
+            // Use attackMethod
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
+        {
+            ship.accelerate(1 / 2);
+        }
+
     }
 
     @Override
