@@ -67,4 +67,23 @@ public class Display extends JFrame
     {
         screen.setLegend(s);
     }
+
+    public void setLives (String s)
+    {
+        screen.setLives(s);
+
+    }
+
+    /** Sets the Score label */
+    public void setScore (String score)
+    {
+        screen.setScoreLabel(score);
+    }
+
+    /** Sets the Level Label */
+    public void setLevel (String s)
+    {
+        screen.setLevelLabel(s);
+    }
+
 }

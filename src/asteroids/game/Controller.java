@@ -94,7 +94,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("Asteroids");
 
         // Place four asteroids near the corners of the screen.
-        placeAsteroids();
+        for (int i = 0; i < 4; i++)
+        {
+            placeAsteroids();
+        }
     }
 
     /**
@@ -154,7 +157,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Display Lives
         lives = 3;
-        display.setLivesLabel("Remaining Lives: " + lives);
+        display.setLives("Remaining Lives: " + lives);
 
         // Display Score
         display.setScore("SCORE: " + score);

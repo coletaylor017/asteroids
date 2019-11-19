@@ -13,6 +13,15 @@ public class Screen extends JPanel
     /** Legend that is displayed across the screen */
     private String legend;
 
+    /** Displays the users remaining lives */
+    private String remainingLives;
+
+    /** shows and updates score as asteroids are destroyed */
+    private String score;
+
+    /** Level display next to the current level */
+    private String level;
+
     /** Game controller */
     private Controller controller;
 
@@ -54,7 +63,7 @@ public class Screen extends JPanel
         super.paintComponent(g);
 
         // Draw each participant in its proper place
-        for (Participant p: controller)
+        for (Participant p : controller)
         {
             p.draw(g);
         }
@@ -62,5 +71,33 @@ public class Screen extends JPanel
         // Draw the legend across the middle of the panel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
+        // DRAW LIVES LABEL
+        Font livesFont = new Font("Times New Roman", Font.BOLD, 20);
+        g.setFont(livesFont);
+        g.drawString(remainingLives, 500, 50);
+        // DRAW SCORE LABEL
+        Font scoreFont = new Font("Times New Roman", Font.BOLD, 20);
+        g.setFont(scoreFont);
+        g.drawString(score, 100, 50);
+        // DRAW LEVEL LABEL
+        Font levelFont = new Font("Times New Roman", Font.BOLD, 20);
+        g.setFont(levelFont);
+        g.drawString(level, 300, 50);
+    }
+
+    public void setLives (String livesLabel)
+    {
+        this.remainingLives = livesLabel;
+    }
+
+    public void setScoreLabel (String score)
+    {
+        this.score = score;
+
+    }
+
+    public void setLevelLabel (String level)
+    {
+        this.level = level;
     }
 }
