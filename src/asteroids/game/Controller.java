@@ -2,6 +2,7 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
+import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.Asteroid;
@@ -22,7 +23,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private Timer refreshTimer;
 
     /** indicates how many lives are left */
-    private String remainingLives;
+    // private String remainingLives = "Remaining Lives: ";
 
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
@@ -39,6 +40,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Indicates the current level */
     private int level;
+
+    private boolean turnLeft;
+
+    private boolean turnRight;
 
     /** The game display */
     private Display display;
@@ -94,10 +99,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("Asteroids");
 
         // Place four asteroids near the corners of the screen.
-        for (int i = 0; i < 4; i++)
-        {
-            placeAsteroids();
-        }
+        placeAsteroids();
+        placeAsteroids();
     }
 
     /**
@@ -127,6 +130,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private void placeAsteroids ()
     {
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+
     }
 
     /**
@@ -155,15 +160,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Reset statistics
 
-        // Display Lives
+        // set lives, level, score
         lives = 3;
-        display.setLives("Remaining Lives: " + lives);
+        level = 1;
+        score = 0;
 
-        // Display Score
-        display.setScore("SCORE: " + score);
-
+        // Display Lives
+        display.setLives(lives);
         // Display Level
-        display.setLevel("LEVEL: " + level);
+        display.setLevel(level);
+        // Display Score
+        display.setScore(score);
 
         // Start listening to events (but don't listen twice)
         display.removeKeyListener(this);
@@ -195,6 +202,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Decrement lives
         lives--;
 
+        // Display lives
+        display.setLives(lives);
+
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
     }
@@ -209,7 +219,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
+        // Increment score by 20
         score += 20;
+        // Display new score
+        display.setScore(score);
     }
 
     /**
@@ -236,6 +249,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+            if (turnLeft == true)
+            {
+                ship.turnLeft();
+            }
+            if (turnRight == true)
+            {
+                ship.turnRight();
+            }
             // It may be time to make a game transition
             performTransition();
 
@@ -245,6 +266,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // Refresh screen
             display.refresh();
         }
+
     }
 
     /**
@@ -289,15 +311,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyPressed (KeyEvent e)
     {
+
         // SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
-            ship.turnRight();
+            turnRight = true;
+            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
-            ship.turnLeft();
+            turnLeft = true;
+            //ship.turnLeft();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
@@ -307,18 +332,21 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            ship.accelerate(SHIP_ACCELERATION);
+            ship.accelerate();
+            ship.applyFriction(SHIP_FRICTION);
         }
 
         // SHIP 2
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
-            ship.turnRight();
+            turnRight = true;
+            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
-            ship.turnLeft();
+            turnLeft = true;
+            //ship.turnLeft();
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
@@ -331,7 +359,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-            ship.accelerate(1 / 2);
+            ship.accelerate();
+            ship.applyFriction(SHIP_FRICTION);
+
         }
 
     }
@@ -344,5 +374,31 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyReleased (KeyEvent e)
     {
+        if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
+        {
+            ship.turnFlameOff();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
+        {
+            turnLeft = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
+        {
+            turnRight = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
+        {
+            ship.turnFlameOff();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
+        {
+            turnLeft = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
+        {
+            turnRight = false;
+        }
     }
+
 }

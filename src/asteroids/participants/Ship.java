@@ -8,6 +8,7 @@ import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 
+
 /**
  * Represents ships
  */
@@ -15,6 +16,11 @@ public class Ship extends Participant implements AsteroidDestroyer
 {
     /** The outline of the ship */
     private Shape outline;
+    
+    private Shape wFlame;
+    
+    private boolean isFlame;
+    
 
     /** Game controller */
     private Controller controller;
@@ -28,6 +34,22 @@ public class Ship extends Participant implements AsteroidDestroyer
         setPosition(x, y);
         setRotation(direction);
 
+        Path2D.Double shipWFlame = new Path2D.Double();
+        shipWFlame.moveTo(21, 0);
+        shipWFlame.lineTo(-21, 12);
+        shipWFlame.lineTo(-14, 10);
+        shipWFlame.lineTo(-30, 0);
+        shipWFlame.lineTo(-14, -10);
+        shipWFlame.lineTo(-14, 10);
+        shipWFlame.lineTo(-14, -10);
+        shipWFlame.lineTo(-21, -12);
+        shipWFlame.closePath();
+        
+        wFlame =shipWFlame;
+        
+        
+        
+
         Path2D.Double poly = new Path2D.Double();
         poly.moveTo(21, 0);
         poly.lineTo(-21, 12);
@@ -35,10 +57,14 @@ public class Ship extends Participant implements AsteroidDestroyer
         poly.lineTo(-14, -10);
         poly.lineTo(-21, -12);
         poly.closePath();
+
         outline = poly;
+      
+      
+          
 
         // Schedule an acceleration in two seconds
-        new ParticipantCountdownTimer(this, "move", 2000);
+        // new ParticipantCountdownTimer(this, "move", 2000);
     }
 
     /**
@@ -64,6 +90,10 @@ public class Ship extends Participant implements AsteroidDestroyer
     @Override
     protected Shape getOutline ()
     {
+        if (isFlame==true)
+        {
+            return wFlame;
+        }
         return outline;
     }
 
@@ -99,6 +129,12 @@ public class Ship extends Participant implements AsteroidDestroyer
     public void accelerate ()
     {
         accelerate(SHIP_ACCELERATION);
+        isFlame=true;
+        
+    }
+    
+    public void turnFlameOff() {
+        isFlame=false;
     }
 
     /**
