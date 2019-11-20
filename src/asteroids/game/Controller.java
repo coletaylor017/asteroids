@@ -315,6 +315,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.accelerate(SHIP_ACCELERATION);
+            ship.applyFriction(SHIP_FRICTION);
         }
 
         // SHIP 2
@@ -339,6 +340,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
             ship.accelerate(SHIP_ACCELERATION);
+            ship.applyFriction(SHIP_FRICTION);
         }
 
     }
