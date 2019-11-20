@@ -41,6 +41,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** Indicates the current level */
     private int level;
 
+    private boolean turnLeft;
+
+    private boolean turnRight;
+
     /** The game display */
     private Display display;
 
@@ -245,7 +249,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
-            
+            if (turnLeft == true)
+            {
+                ship.turnLeft();
+            }
+            if (turnRight == true)
+            {
+                ship.turnRight();
+            }
             // It may be time to make a game transition
             performTransition();
 
@@ -300,17 +311,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyPressed (KeyEvent e)
     {
-        
+
         // SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
-            ship.turnRight();
-            ship.turnRight();
+            turnRight = true;
+            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
-            ship.turnLeft();
+            turnLeft = true;
+            //ship.turnLeft();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
@@ -327,12 +339,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // SHIP 2
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
-            ship.turnRight();
+            turnRight = true;
+            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
-            ship.turnLeft();
+            turnLeft = true;
+            //ship.turnLeft();
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
@@ -360,10 +374,31 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyReleased (KeyEvent e)
     {
-        if (e.getKeyCode()== KeyEvent.VK_UP && ship != null )
+        if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.turnFlameOff();
         }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
+        {
+            turnLeft = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
+        {
+            turnRight = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
+        {
+            ship.turnFlameOff();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
+        {
+            turnLeft = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
+        {
+            turnRight = false;
+        }
     }
-    
+
 }
