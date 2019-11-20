@@ -22,7 +22,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private Timer refreshTimer;
 
     /** indicates how many lives are left */
-    private String remainingLives;
+    // private String remainingLives = "Remaining Lives: ";
 
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
@@ -94,10 +94,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("Asteroids");
 
         // Place four asteroids near the corners of the screen.
-        for (int i = 0; i < 4; i++)
-        {
-            placeAsteroids();
-        }
+        placeAsteroids();
+        placeAsteroids();
     }
 
     /**
@@ -127,6 +125,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private void placeAsteroids ()
     {
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+
     }
 
     /**
@@ -155,15 +155,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Reset statistics
 
-        // Display Lives
+        // set lives, level, score
         lives = 3;
-        display.setLives("Remaining Lives: " + lives);
-
-        // Display Score
-        display.setScore("SCORE: " + score);
-
+        level = 1;
+        score = 0;
+        
+        // Display Lives
+        display.setLives(lives);
         // Display Level
-        display.setLevel("LEVEL: " + level);
+        display.setLevel(level);
+        // Display Score
+        display.setScore(score);
 
         // Start listening to events (but don't listen twice)
         display.removeKeyListener(this);
@@ -194,6 +196,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Decrement lives
         lives--;
+        
+        //Display lives
+        display.setLives(lives);
+        
+        
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
@@ -331,7 +338,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-            ship.accelerate(1 / 2);
+            ship.accelerate(SHIP_ACCELERATION);
         }
 
     }
