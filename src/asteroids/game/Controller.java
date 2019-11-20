@@ -2,6 +2,7 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
+import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.Asteroid;
@@ -159,7 +160,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         lives = 3;
         level = 1;
         score = 0;
-        
+
         // Display Lives
         display.setLives(lives);
         // Display Level
@@ -196,11 +197,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Decrement lives
         lives--;
-        
-        //Display lives
+
+        // Display lives
         display.setLives(lives);
-        
-        
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
@@ -216,7 +215,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
+        // Increment score by 20
         score += 20;
+        // Display new score
+        display.setScore(score);
     }
 
     /**
@@ -243,6 +245,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+            
             // It may be time to make a game transition
             performTransition();
 
@@ -252,6 +255,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // Refresh screen
             display.refresh();
         }
+
     }
 
     /**
@@ -296,9 +300,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyPressed (KeyEvent e)
     {
+        
         // SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
+            ship.turnRight();
             ship.turnRight();
         }
 
@@ -314,7 +320,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            ship.accelerate(SHIP_ACCELERATION);
+            ship.accelerate();
             ship.applyFriction(SHIP_FRICTION);
         }
 
@@ -339,8 +345,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-            ship.accelerate(SHIP_ACCELERATION);
+            ship.accelerate();
             ship.applyFriction(SHIP_FRICTION);
+
         }
 
     }
@@ -353,5 +360,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyReleased (KeyEvent e)
     {
+        if (e.getKeyCode()== KeyEvent.VK_UP && ship != null )
+        {
+            ship.turnFlameOff();
+        }
     }
+    
 }
