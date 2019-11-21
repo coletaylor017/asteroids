@@ -42,6 +42,16 @@ public class Bullet extends Participant implements AsteroidDestroyer
     {
         return outline;
     }
+    
+    /*
+     * When time has elapsed, delete bullet
+     */
+    @Override
+    public void countdownComplete (Object payload)
+    {
+        controller.bulletDestroyed();
+        Participant.expire(this);
+    }
 
     /*
      * When a bullet collides with a ShipDestroyer, it deletes itself

@@ -40,9 +40,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** Indicates the current level */
     private int level;
 
+    /* true when ship is turning left */
     private boolean turnLeft;
 
+    /* true when ship is turning right */
     private boolean turnRight;
+    
+    /* true when ship is firing */
+    private boolean shooting;
 
     /** The game display */
     private Display display;
@@ -50,11 +55,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* "true" if the game is in enhanced mode, otherwise "false" */
     private String gameMode;
     
-    /* Speed of all bullets */
-    private final double BULLET_SPEED;
-    
     /* Specifies if a two player game is taking place */
-    private final boolean TWO_PLAYER;
+    private final boolean twoPlayerGame;
     
     /* Counter to keep track of number of bullets */
     private int numBullets;
@@ -63,12 +65,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
-    {
-        // Initialize bullet speed
-        BULLET_SPEED = 8.0;
-        
+    {   
         // TODO: make input on startup screen to pick 1 or two players
-        TWO_PLAYER = false;
+        twoPlayerGame = false;
         
         // Number of bullets starts out at zero
         numBullets = 0;
@@ -310,6 +309,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
             // Refresh screen
             display.refresh();
+            
+            if (shooting)
+            {
+                attack(ship);
+            }
         }
 
     }
@@ -373,7 +377,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
             // Down key always fires ship 1
-            attack(ship);
+            shooting = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
@@ -396,20 +400,20 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
             // s key will not fire player 1's ship in two-player mode
-            if (!TWO_PLAYER)
+            if (!twoPlayerGame)
             {
-                attack(ship);
+                shooting = true;
             }
             else
             {
-//                attack(ship2); comment out when two player game is in place
+//                attack(ship2); comment out when two player game is in places
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
-            if (!TWO_PLAYER)
+            if (!twoPlayerGame)
             {
-                attack(ship);
+                shooting = true;
             }
         }
 
@@ -429,12 +433,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void attack (Ship shooter)
     {
-        // TODO: Something to detect if there are <= 8 bullets present
-        if (numBullets <= 8)
+        if (numBullets <= BULLET_LIMIT)
         {
             Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED, this);
             addParticipant(bullet);
             numBullets++;
+            new ParticipantCountdownTimer(bullet, BULLET_DURATION);
         }
     }
 
@@ -473,7 +477,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             turnRight = false;
         }
-        
+        if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
+        {
+            shooting = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
+        {
+            shooting = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
+        {
+            shooting = false;
+        }
     }
 
 }
