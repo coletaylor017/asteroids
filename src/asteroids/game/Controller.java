@@ -47,12 +47,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** The game display */
     private Display display;
+    
+    /* "true" if the game is in enhanced mode, otherwise "false" */
+    private String gameMode;
 
     /**
      * Constructs a controller to coordinate the game and screen
      */
-    public Controller ()
+    public Controller (String version)
     {
+        // if enhanced version requested, set enhanced to true
+        gameMode = version;
+        
         // Initialize the ParticipantState
         pstate = new ParticipantState();
 
@@ -69,6 +75,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+    }
+    
+    /*
+     * Returns a string representing the current game mode.
+     * Right now, can either be "classic" or "enhanced"
+     * but could expand to more game modes in the future.
+     */
+    public String getGameMode ()
+    {
+        return gameMode;
     }
 
     /**
