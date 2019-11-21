@@ -17,7 +17,7 @@ public class Screen extends JPanel
     private Controller controller;
     
     /** String for score label */
-    private String score = ""; //TODO:
+    private String score = "SCORE:"; //TODO:
     
     /** String for level label */
     private String level; //TODO:
@@ -72,16 +72,14 @@ public class Screen extends JPanel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
         
-        g.drawString(score, SIZE - size, SIZE/2 );
-        
         
     }
         
     
         /** Set lives */
-        public void setLives (int lives)
+        public void setLives (int s)
         {
-            this.remainingLives = "LIVES: " + lives;
+            this.remainingLives = "LIVES: " + s;
         }
 
         /** Set Score */

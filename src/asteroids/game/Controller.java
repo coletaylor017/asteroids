@@ -2,7 +2,6 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
-import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.*;
@@ -322,6 +321,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 ship.accelerate();
             }
+            
             // It may be time to make a game transition
             performTransition();
 
