@@ -17,9 +17,12 @@ public class Ship extends Participant implements AsteroidDestroyer
     /** The outline of the ship */
     private Shape outline;
     
+    /** Outline of the shape of rocket with flame */
     private Shape wFlame;
     
-    private boolean isFlame;
+    /** determines whether accelerate() is active,
+     * if so   */
+    private boolean hasFlame;
     
 
     /** Game controller */
@@ -90,7 +93,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     @Override
     protected Shape getOutline ()
     {
-        if (isFlame==true)
+        if (hasFlame==true)
         {
             return wFlame;
         }
@@ -125,16 +128,19 @@ public class Ship extends Participant implements AsteroidDestroyer
 
     /**
      * Accelerates by SHIP_ACCELERATION
+     * sets hasFlame to true
      */
     public void accelerate ()
     {
         accelerate(SHIP_ACCELERATION);
-        isFlame=true;
+        hasFlame=true;
         
     }
     
-    public void turnFlameOff() {
-        isFlame=false;
+    /** Removes flame */
+    public void turnFlameOff() 
+    {
+        hasFlame=false;
     }
 
     /**

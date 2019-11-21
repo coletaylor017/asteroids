@@ -366,13 +366,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            // TODO: Something to detect if there are <= 8 bullets present
-            if (numBullets <= 8)
-            {
-                Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
-                addParticipant(bullet);
-                numBullets++;
-            }
+            attack();
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
@@ -394,11 +388,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
-            // Use attackMethod
+            attack();
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
-            // Use attackMethod
+            attack();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
@@ -409,12 +403,25 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
     }
+    
+    public void attack ()
+    {
+        // TODO: Something to detect if there are <= 8 bullets present
+        if (numBullets <= 8)
+        {
+            Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
+            addParticipant(bullet);
+            numBullets++;
+        }
+    }
 
     @Override
     public void keyTyped (KeyEvent e)
     {
     }
 
+    /** If a key of interest is pressed stop 
+     * whatever action was initiated from keyPressed */
     @Override
     public void keyReleased (KeyEvent e)
     {
@@ -443,6 +450,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             turnRight = false;
         }
+        
     }
 
 }

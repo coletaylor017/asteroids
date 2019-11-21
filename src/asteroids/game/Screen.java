@@ -16,11 +16,14 @@ public class Screen extends JPanel
     /** Game controller */
     private Controller controller;
     
-    private String score;
+    /** String for score label */
+    private String score; //TODO:
     
-    private String level;
+    /** String for level label */
+    private String level; //TODO:
     
-    private int remainingLives;
+    
+    private int remainingLives; //TODO:
 
     /**
      * Creates an empty screen
@@ -70,17 +73,21 @@ public class Screen extends JPanel
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
     }
         
+    
+        /** Set lives */
         public void setLives (int lives)
         {
             this.remainingLives = lives;
         }
 
+        /** Set Score */
         public void setScoreLabel (int s)
         {
             this.score = s +"";
 
         }
 
+        /** Set Level */
         public void setLevelLabel (int s)
         {
             this.level = s+"";

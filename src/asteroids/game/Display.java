@@ -68,6 +68,8 @@ public class Display extends JFrame
         screen.setLegend(s);
     }
 
+    
+    /** Sets the lives label */
     public void setLives (int s)
     {
         screen.setLives(s);
