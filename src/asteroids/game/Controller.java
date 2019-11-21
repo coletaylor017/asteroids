@@ -131,8 +131,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("Asteroids");
 
         // Place four asteroids near the corners of the screen.
-        placeAsteroids();
-        placeAsteroids();
+        //TOP LEFT
+        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        //TOP RIGHT
+        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+        //BOTTOM LEFT
+        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
+        //BOTTOM RIGHT
+        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -161,9 +167,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
+        //TOP LEFT
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-
     }
 
     /**
@@ -186,6 +191,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
+        //TOP LEFT
+        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        //TOP RIGHT
+        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+        //BOTTOM LEFT
+        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
+        //BOTTOM RIGHT
+        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
 
         // Place the ship
         placeShip();
@@ -287,6 +300,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // The start button has been pressed. Stop whatever we're doing
         // and bring up the initial screen
+       
         if (e.getSource() instanceof JButton)
         {
             initialScreen();
@@ -295,6 +309,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+            
             if (turnLeft == true)
             {
                 ship.turnLeft();
