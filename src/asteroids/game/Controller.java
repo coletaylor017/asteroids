@@ -223,6 +223,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         score += 20;
         // Display new score
         display.setScore(score);
+        
+        // TODO: MAKE NEW DEBRIS OBJECT AT LOCATION OF DESTROYED ASTEROID
+        
+        // TODO: PUT ASTEROID DUPLICATION CODE HERE
+    }
+    
+    /*
+     * Called when a bullet is destroyed. In 
+     */
+    public void bulletDestroyed ()
+    {
+        
     }
 
     /**
