@@ -16,11 +16,14 @@ public class Screen extends JPanel
     /** Game controller */
     private Controller controller;
     
-    private String score;
+    /** String for score label */
+    private String score; //TODO:
     
-    private String level;
+    /** String for level label */
+    private String level; //TODO:
     
-    private int remainingLives;
+    
+    private int remainingLives; //TODO:
 
     /**
      * Creates an empty screen

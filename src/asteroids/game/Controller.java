@@ -327,7 +327,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            // ship shoots
+            // use attack method
 
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
@@ -371,6 +371,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
     }
 
+    /** If a key of interest is pressed stop 
+     * whatever action was initiated from keyPressed */
     @Override
     public void keyReleased (KeyEvent e)
     {
@@ -399,6 +401,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             turnRight = false;
         }
+        
     }
 
 }
