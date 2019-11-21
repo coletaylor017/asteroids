@@ -1,8 +1,11 @@
-package asteroids.game;
+package asteroids.participants;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
 import asteroids.destroyers.*;
+import asteroids.game.Controller;
+import asteroids.game.Participant;
 
 public class Bullet extends Participant implements AsteroidDestroyer
 {
@@ -16,14 +19,22 @@ public class Bullet extends Participant implements AsteroidDestroyer
      * Constructs a bullet at initial point (x, y), facing indicated direction,
      * with indicated initial speed. Specify game controller when constructing.
      */
-    public Bullet (int x, int y, double direction, double initSpeed, Controller controller)
+    public Bullet (double x, double y, double direction, double initSpeed, Controller controller)
     {
         this.controller = controller;
         setPosition(x, y);
-        setRotation(direction);
-        setSpeed(initSpeed);
+        setVelocity(initSpeed, direction);
         
-        outline = new Ellipse2D.Double(2, 2, -1, -1);
+//        Ellipse2D.Double el = new Ellipse2D.Double(10, 10, 0, 0);
+//        outline = el;
+        Path2D.Double poly = new Path2D.Double();
+        poly.moveTo(1, 1);
+        poly.lineTo(1, 0);
+        poly.lineTo(0, 0);
+        poly.lineTo(0, 1);
+        poly.closePath();
+
+        outline = poly;
     }
 
     @Override

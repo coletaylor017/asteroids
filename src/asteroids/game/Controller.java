@@ -5,8 +5,7 @@ import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
-import asteroids.participants.Asteroid;
-import asteroids.participants.Ship;
+import asteroids.participants.*;
 
 /**
  * Controls a game of Asteroids.
@@ -50,12 +49,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     
     /* "true" if the game is in enhanced mode, otherwise "false" */
     private String gameMode;
+    
+    /* Speed of all bullets */
+    private final double BULLET_SPEED;
 
     /**
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
     {
+        // Initialize bullet speed
+        BULLET_SPEED = 8.0;
+        
         // if enhanced version requested, set enhanced to true
         gameMode = version;
         
@@ -355,8 +360,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            // ship shoots
-
+            // TODO: Something to detect if there are <= 8 bullets present
+            System.out.println(ship.getRotation());
+            Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
+            addParticipant(bullet);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
