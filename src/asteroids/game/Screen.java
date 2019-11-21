@@ -17,13 +17,13 @@ public class Screen extends JPanel
     private Controller controller;
     
     /** String for score label */
-    private String score; //TODO:
+    private String score = ""; //TODO:
     
     /** String for level label */
     private String level; //TODO:
     
     
-    private int remainingLives; //TODO:
+    private String remainingLives; //TODO:
 
     /**
      * Creates an empty screen
@@ -71,26 +71,31 @@ public class Screen extends JPanel
         // Draw the legend across the middle of the panel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
+        
+        g.drawString(score, SIZE - size, SIZE/2 );
+        
+        
     }
         
     
         /** Set lives */
         public void setLives (int lives)
         {
-            this.remainingLives = lives;
+            this.remainingLives = "LIVES: " + lives;
         }
 
         /** Set Score */
         public void setScoreLabel (int s)
         {
-            this.score = s +"";
+            
+            this.score = "SCORE: " + s;
 
         }
 
         /** Set Level */
         public void setLevelLabel (int s)
         {
-            this.level = s+"";
+            this.level = "LEVEL: " + s;
         }
     }
 
