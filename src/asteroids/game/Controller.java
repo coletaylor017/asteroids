@@ -52,6 +52,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     
     /* Speed of all bullets */
     private final double BULLET_SPEED;
+    
+    /* Counter to keep track of number of bullets */
+    private int numBullets;
 
     /**
      * Constructs a controller to coordinate the game and screen
@@ -60,6 +63,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Initialize bullet speed
         BULLET_SPEED = 8.0;
+        
+        // Number of bullets starts out at zero
+        numBullets = 0;
         
         // if enhanced version requested, set enhanced to true
         gameMode = version;
@@ -361,9 +367,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
             // TODO: Something to detect if there are <= 8 bullets present
-            System.out.println(ship.getRotation());
-            Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
-            addParticipant(bullet);
+            if (numBullets <= 8)
+            {
+                Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
+                addParticipant(bullet);
+                numBullets++;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
