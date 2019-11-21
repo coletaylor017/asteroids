@@ -1,6 +1,7 @@
-package asteroids.game;
+package asteroids.participants;
 
 import java.awt.Shape;
+import asteroids.game.Participant;
 
 public class Debris extends Participant
 {

@@ -5,8 +5,7 @@ import java.awt.event.*;
 import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
-import asteroids.participants.Asteroid;
-import asteroids.participants.Ship;
+import asteroids.participants.*;
 
 /**
  * Controls a game of Asteroids.
@@ -52,12 +51,30 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** The game display */
     private Display display;
+    
+    /* "true" if the game is in enhanced mode, otherwise "false" */
+    private String gameMode;
+    
+    /* Speed of all bullets */
+    private final double BULLET_SPEED;
+    
+    /* Counter to keep track of number of bullets */
+    private int numBullets;
 
     /**
      * Constructs a controller to coordinate the game and screen
      */
-    public Controller ()
+    public Controller (String version)
     {
+        // Initialize bullet speed
+        BULLET_SPEED = 8.0;
+        
+        // Number of bullets starts out at zero
+        numBullets = 0;
+        
+        // if enhanced version requested, set enhanced to true
+        gameMode = version;
+        
         // Initialize the ParticipantState
         pstate = new ParticipantState();
 
@@ -74,6 +91,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+    }
+    
+    /*
+     * Returns a string representing the current game mode.
+     * Right now, can either be "classic" or "enhanced"
+     * but could expand to more game modes in the future.
+     */
+    public String getGameMode ()
+    {
+        return gameMode;
     }
 
     /**
@@ -228,6 +255,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         score += 20;
         // Display new score
         display.setScore(score);
+        
+        // TODO: MAKE NEW DEBRIS OBJECT AT LOCATION OF DESTROYED ASTEROID
+        
+        // TODO: PUT ASTEROID DUPLICATION CODE HERE
+    }
+    
+    /*
+     * Called when a bullet is destroyed. In 
+     */
+    public void bulletDestroyed ()
+    {
+        
     }
 
     /**
@@ -334,8 +373,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            // use attack method
-
+            attack();
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
@@ -354,11 +392,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
-            // Use attackMethod
+            attack();
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
-            // Use attackMethod
+            attack();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
@@ -366,6 +404,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
            moveForward = true;
         }
 
+    }
+    
+    public void attack ()
+    {
+        // TODO: Something to detect if there are <= 8 bullets present
+        if (numBullets <= 8)
+        {
+            Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
+            addParticipant(bullet);
+            numBullets++;
+        }
     }
 
     @Override
