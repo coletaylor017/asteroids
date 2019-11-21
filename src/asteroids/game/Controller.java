@@ -53,6 +53,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* Speed of all bullets */
     private final double BULLET_SPEED;
     
+    /* Specifies if a two player game is taking place */
+    private final boolean TWO_PLAYER;
+    
     /* Counter to keep track of number of bullets */
     private int numBullets;
 
@@ -63,6 +66,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Initialize bullet speed
         BULLET_SPEED = 8.0;
+        
+        // TODO: make input on startup screen to pick 1 or two players
+        TWO_PLAYER = false;
         
         // Number of bullets starts out at zero
         numBullets = 0;
@@ -257,11 +263,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
     
     /*
-     * Called when a bullet is destroyed. In 
+     * Called when a bullet is destroyed.
      */
     public void bulletDestroyed ()
     {
-        
+        numBullets--;
     }
 
     /**
@@ -366,7 +372,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            attack();
+            // Down key always fires ship 1
+            attack(ship);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
@@ -388,11 +395,22 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
-            attack();
+            // s key will not fire player 1's ship in two-player mode
+            if (!TWO_PLAYER)
+            {
+                attack(ship);
+            }
+            else
+            {
+//                attack(ship2); comment out when two player game is in place
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
-            attack();
+            if (!TWO_PLAYER)
+            {
+                attack(ship);
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
@@ -404,12 +422,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     }
     
-    public void attack ()
+    /*
+     * Sends a bullet from the specified ship. This way,
+     * one can specify which ship is firing when in two 
+     * player mode.
+     */
+    public void attack (Ship shooter)
     {
         // TODO: Something to detect if there are <= 8 bullets present
         if (numBullets <= 8)
         {
-            Bullet bullet = new Bullet(ship.getXNose(), ship.getYNose(), ship.getRotation(), BULLET_SPEED, this);
+            Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED, this);
             addParticipant(bullet);
             numBullets++;
         }
