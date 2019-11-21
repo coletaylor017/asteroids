@@ -132,15 +132,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         clear();
         display.setLegend("Asteroids");
 
-        // Place four asteroids near the corners of the screen.
-        //TOP LEFT
-        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        //TOP RIGHT
-        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-        //BOTTOM LEFT
-        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
-        //BOTTOM RIGHT
-        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        placeAsteroids();
     }
 
     /**
@@ -168,9 +160,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      * Places an asteroid near one corner of the screen. Gives it a random velocity and rotation.
      */
     private void placeAsteroids ()
-    {
+    {  
+        // Place four asteroids near the corners of the screen.
         //TOP LEFT
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        //TOP RIGHT
+        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+        //BOTTOM LEFT
+        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
+        //BOTTOM RIGHT
+        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -193,14 +192,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
-        //TOP LEFT
-        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        //TOP RIGHT
-        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-        //BOTTOM LEFT
-        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
-        //BOTTOM RIGHT
-        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
 
         // Place the ship
         placeShip();
