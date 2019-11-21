@@ -1,6 +1,7 @@
 package asteroids.game;
 
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import asteroids.destroyers.*;
 
 public class Bullet extends Participant implements AsteroidDestroyer
@@ -22,7 +23,7 @@ public class Bullet extends Participant implements AsteroidDestroyer
         setRotation(direction);
         setSpeed(initSpeed);
         
-        
+        outline = new Ellipse2D.Double(2, 2, -1, -1);
     }
 
     @Override
