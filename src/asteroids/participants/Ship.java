@@ -142,6 +142,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         hasFlame=false;
     }
+     
 
     /**
      * When a Ship collides with a ShipDestroyer, it expires

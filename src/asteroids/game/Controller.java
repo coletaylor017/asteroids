@@ -2,7 +2,6 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
-import java.awt.geom.Path2D;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.*;
@@ -39,15 +38,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Indicates the current level */
     private int level;
-
-    /* true when ship is turning left */
-    private boolean turnLeft;
-
-    /* true when ship is turning right */
-    private boolean turnRight;
     
     /* true when ship is firing */
     private boolean shooting;
+    
+    /** Indicates if '</ A' are being pressed */
+    private boolean turnLeft;
+
+    /** Indicates if '>/D' are being pressed */
+    private boolean turnRight;
+    
+    /** Indicates if UP/W are being pressed */
+    private boolean moveForward;
 
     /** The game display */
     private Display display;
@@ -131,8 +133,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("Asteroids");
 
         // Place four asteroids near the corners of the screen.
-        placeAsteroids();
-        placeAsteroids();
+        //TOP LEFT
+        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        //TOP RIGHT
+        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+        //BOTTOM LEFT
+        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
+        //BOTTOM RIGHT
+        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -161,9 +169,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
+        //TOP LEFT
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-
     }
 
     /**
@@ -186,6 +193,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
+        //TOP LEFT
+        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+        //TOP RIGHT
+        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+        //BOTTOM LEFT
+        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
+        //BOTTOM RIGHT
+        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
 
         // Place the ship
         placeShip();
@@ -256,6 +271,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Display new score
         display.setScore(score);
         
+        
+        
         // TODO: MAKE NEW DEBRIS OBJECT AT LOCATION OF DESTROYED ASTEROID
         
         // TODO: PUT ASTEROID DUPLICATION CODE HERE
@@ -285,6 +302,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // The start button has been pressed. Stop whatever we're doing
         // and bring up the initial screen
+       
         if (e.getSource() instanceof JButton)
         {
             initialScreen();
@@ -293,6 +311,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+            
             if (turnLeft == true)
             {
                 ship.turnLeft();
@@ -301,6 +320,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 ship.turnRight();
             }
+            if (moveForward == true)
+            {
+                ship.accelerate();
+            }
+            
             // It may be time to make a game transition
             performTransition();
 
@@ -361,17 +385,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public void keyPressed (KeyEvent e)
     {
 
-        // SHIP 1
+        //TODO: SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
             turnRight = true;
-            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
             turnLeft = true;
-            //ship.turnLeft();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
@@ -381,21 +403,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            ship.accelerate();
-            ship.applyFriction(SHIP_FRICTION);
+            moveForward = true;
         }
 
-        // SHIP 2
+        //TODO: SHIP 2
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
             turnRight = true;
-            //ship.turnRight();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
             turnLeft = true;
-            //ship.turnLeft();
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
@@ -419,9 +438,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-            ship.accelerate();
-            ship.applyFriction(SHIP_FRICTION);
-
+           moveForward = true;
         }
 
     }
@@ -447,32 +464,49 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
     }
 
-    /** If a key of interest is pressed stop 
-     * whatever action was initiated from keyPressed */
+    /**
+     * If a key of interest is pressed stop whatever action was initiated from keyPressed
+     */
     @Override
     public void keyReleased (KeyEvent e)
     {
+        //TODO: PLAYER1
+        //UP KEY
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
+            moveForward =false;
             ship.turnFlameOff();
+            ship.applyFriction(SHIP_FRICTION);
         }
-
+        
+        //LEFT KEY
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
             turnLeft = false;
-        }
+        }       
+        
+        //RIGHT KEY
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
             turnRight = false;
         }
+        
+        //TODO: PLAYER2
+        //W KEY
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
+            moveForward =false;
             ship.turnFlameOff();
+            ship.applyFriction(SHIP_FRICTION);
         }
+        
+        //A KEY
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
             turnLeft = false;
         }
+        
+        //D KEY
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
             turnRight = false;

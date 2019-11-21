@@ -21,6 +21,8 @@ public class Display extends JFrame
         // Title at the top
         setTitle(TITLE);
 
+        
+        
         // Default behavior on closing
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -15,15 +15,14 @@ public class Screen extends JPanel
 
     /** Game controller */
     private Controller controller;
-    
+
     /** String for score label */
-    private String score; //TODO:
-    
+    private String score = "SCORE:"; // TODO:
+
     /** String for level label */
-    private String level; //TODO:
-    
-    
-    private int remainingLives; //TODO:
+    private String level; // TODO:
+
+    private String remainingLives; // TODO:
 
     /**
      * Creates an empty screen
@@ -63,7 +62,7 @@ public class Screen extends JPanel
         super.paintComponent(g);
 
         // Draw each participant in its proper place
-        for (Participant p: controller)
+        for (Participant p : controller)
         {
             p.draw(g);
         }
@@ -71,26 +70,33 @@ public class Screen extends JPanel
         // Draw the legend across the middle of the panel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
-    }
-        
-    
-        /** Set lives */
-        public void setLives (int lives)
-        {
-            this.remainingLives = lives;
-        }
 
-        /** Set Score */
-        public void setScoreLabel (int s)
-        {
-            this.score = s +"";
+        Font font = new Font("Times New Roman", Font.BOLD, 10);
+        g.setFont(font);
+        g.drawString(score, EDGE_OFFSET, EDGE_OFFSET/2);
+        // TODO: g.drawString(score, x, y);
+        // TODO: g.drawString(level, x, y);
+        // TODO: g.drawString(lives, x, y);
 
-        }
-
-        /** Set Level */
-        public void setLevelLabel (int s)
-        {
-            this.level = s+"";
-        }
     }
 
+    /** Set lives */
+    public void setLives (int s)
+    {
+        this.remainingLives = "LIVES: " + s;
+    }
+
+    /** Set Score */
+    public void setScoreLabel (int s)
+    {
+
+        this.score = "SCORE: " + s;
+
+    }
+
+    /** Set Level */
+    public void setLevelLabel (int s)
+    {
+        this.level = "LEVEL: " + s;
+    }
+}
