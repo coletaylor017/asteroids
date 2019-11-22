@@ -42,13 +42,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* true when ship is firing */
     private boolean shooting;
     
-    /** Indicates if '</ A' are being pressed */
+    /** True if '</ A' are being pressed */
     private boolean turnLeft;
 
-    /** Indicates if '>/D' are being pressed */
+    /** True if '>/D' are being pressed */
     private boolean turnRight;
     
-    /** Indicates if UP/W are being pressed */
+    /** True if UP/W are being pressed */
     private boolean moveForward;
 
     /** The game display */
