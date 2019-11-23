@@ -17,11 +17,12 @@ public class Screen extends JPanel
     private Controller controller;
 
     /** String for score label */
-    private String score = "SCORE:"; // TODO:
+    private String score = "SCORE: "; // TODO:
 
     /** String for level label */
-    private String level; // TODO:
+    private String level = "LEVEL: "; // TODO:
 
+    /** String for lives label */
     private String remainingLives; // TODO:
 
     /**
@@ -71,9 +72,21 @@ public class Screen extends JPanel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
 
-        Font font = new Font("Times New Roman", Font.BOLD, 10);
-        g.setFont(font);
-        g.drawString(score, EDGE_OFFSET, EDGE_OFFSET/2);
+        // Create font size to display score label
+        Font scoreFont = new Font("Times New Roman", Font.BOLD, 10);
+        g.setFont(scoreFont);
+        g.drawString(score, EDGE_OFFSET, EDGE_OFFSET / 2);
+
+        // Create font size to display level label
+        Font levelFont = new Font("Times New Roman", Font.BOLD, 10);
+        g.setFont(levelFont);
+        g.drawString(level, SIZE / 2, EDGE_OFFSET / 2);
+
+        //Create font size to display lives label
+        Font livesFont = new Font("Times New Roman", Font.BOLD, 10);
+        g.setFont(livesFont);
+        g.drawString(remainingLives, SIZE-EDGE_OFFSET, EDGE_OFFSET / 2);
+        
         // TODO: g.drawString(score, x, y);
         // TODO: g.drawString(level, x, y);
         // TODO: g.drawString(lives, x, y);
