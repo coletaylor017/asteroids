@@ -23,7 +23,7 @@ public class Screen extends JPanel
     private String level = "LEVEL: "; // TODO:
 
     /** String for lives label */
-    private String remainingLives; // TODO:
+    private String remainingLives = "LIVES: "; // TODO:
 
     /**
      * Creates an empty screen
