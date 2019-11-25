@@ -416,7 +416,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             }
             else
             {
-//                attack(ship2); comment out when two player game is in places
+//                attack(ship2); comment out when two player game is in place
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)

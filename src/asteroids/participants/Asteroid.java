@@ -3,6 +3,7 @@ package asteroids.participants;
 import static asteroids.game.Constants.*;
 import java.awt.Shape;
 import java.awt.geom.*;
+import java.util.Random;
 import asteroids.destroyers.AsteroidDestroyer;
 import asteroids.destroyers.ShipDestroyer;
 import asteroids.game.Controller;
@@ -144,6 +145,14 @@ public class Asteroid extends Participant implements ShipDestroyer
     {
         if (p instanceof AsteroidDestroyer)
         {
+            // spawn two new asteroids only if this is not a small asteroids
+            if (this.size != 0)
+            {
+                Random r = new Random();
+                controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+                controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+            }
+
             // Expire the asteroid
             Participant.expire(this);
 
