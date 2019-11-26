@@ -449,7 +449,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED, this);
             addParticipant(bullet);
             numBullets++;
-            new ParticipantCountdownTimer(bullet, BULLET_DURATION);
         }
     }
 

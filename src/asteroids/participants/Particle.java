@@ -5,6 +5,7 @@ import java.awt.geom.Line2D;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
+import asteroids.game.ParticipantCountdownTimer;
 
 public class Particle extends Participant
 {
@@ -13,28 +14,45 @@ public class Particle extends Participant
     
     private Controller controller;
     
-    /* The type of debris: debris or dust, potentially more in the future */
-    private String type;
+    /* The length of the particle */
+    private double length;
     
     /*
      * Construct  new Particle object at (x, y). A Particle is a Participant that floats
      * with a set velocity, has a limited life span, and doesn't have collision behavior.
      * The length of a dust particle should be set to 1, while the length of a debris particle
      * will be longer.
+     * 
+     * The Particle object leaves speed, direction, and lifespan open to input. 
+     * This will allow it to be used later for things like ship thrust particles
+     * and not just debris and dust.
      */
-    public Particle (double x, double y, double length, double direction, double speed, Controller controller)
+    public Particle (double x, double y, double speed, double direction, double length, int lifespan, Controller controller)
     {
+        
         this.controller = controller;
         setPosition(x, y);
         setVelocity(speed, direction);
         
-        Path2D.Double poly = new Path2D.Double();
+        Line2D.Double line = new Line2D.Double(0, 0, 0, length);
+        outline = line;
+        
+        new ParticipantCountdownTimer(this, lifespan);
     }
     
     @Override
     protected Shape getOutline ()
     {
-        return null;
+        return outline;
+    }
+    
+    /*
+     * When time has elapsed, delete particle
+     */
+    @Override
+    public void countdownComplete (Object payload)
+    {
+        Participant.expire(this);
     }
 
     @Override
@@ -43,6 +61,4 @@ public class Particle extends Participant
         // nothing happens
     }
     
-    
-
 }

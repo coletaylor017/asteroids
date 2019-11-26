@@ -1,10 +1,12 @@
 package asteroids.participants;
 
+import static asteroids.game.Constants.BULLET_DURATION;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
+import asteroids.game.ParticipantCountdownTimer;
 
 public class Bullet extends Participant implements AsteroidDestroyer
 {
@@ -26,6 +28,9 @@ public class Bullet extends Participant implements AsteroidDestroyer
         
         Ellipse2D.Double el = new Ellipse2D.Double(0, 0, 1, 1);
         outline = el;
+        
+        // To make the bullet expire after the correct duration
+        new ParticipantCountdownTimer(this, BULLET_DURATION);
     }
 
     @Override

@@ -152,12 +152,23 @@ public class Asteroid extends Participant implements ShipDestroyer
                 controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
                 controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
             }
+            
+            //spawn dust
+            int dustCount = RANDOM.nextInt(4) + 4;
+            for (int i = 0; i < dustCount; i++)
+            {
+                double direction = RANDOM.nextDouble() * 2 * Math.PI;
+                int lifespan = RANDOM.nextInt(1000) + 1500; // dust will last between 1.5 and 2.5 seconds
+                double speed = RANDOM.nextDouble() * MAX_PARTICLE_SPEED;
+                controller.addParticipant(new Particle(this.getX(), this.getY(), speed, direction, 1, lifespan, controller));
+            }
 
             // Expire the asteroid
             Participant.expire(this);
 
             // Inform the controller
             controller.asteroidDestroyed(size);
+            
         }
     }
 }
