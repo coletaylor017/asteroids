@@ -2,7 +2,6 @@ package asteroids.participants;
 
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
