@@ -252,15 +252,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * An asteroid has been destroyed
      */
-    public void asteroidDestroyed ()
+    public void asteroidDestroyed (int size)
     {
         // If all the asteroids are gone, schedule a transition
         if (countAsteroids() == 0)
         {
             scheduleTransition(END_DELAY);
         }
-        // Increment score by 20
-        score += 20;
+        // If large asteroid, increment score by 20
+        score += ASTEROID_SCORE[size];
+        
         // Display new score
         display.setScore(score);
         
@@ -305,15 +306,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         else if (e.getSource() == refreshTimer)
         {
             
-            if (turnLeft == true)
+            if (turnLeft == true && ship!= null)
             {
                 ship.turnLeft();
             }
-            if (turnRight == true)
+            if (turnRight == true  && ship!= null)
             {
                 ship.turnRight();
             }
-            if (moveForward == true)
+            if (moveForward == true  && ship!= null)
             {
                 ship.accelerate();
             }
