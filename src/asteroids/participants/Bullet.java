@@ -25,16 +25,8 @@ public class Bullet extends Participant implements AsteroidDestroyer
         setPosition(x, y);
         setVelocity(initSpeed, direction);
         
-//        Ellipse2D.Double el = new Ellipse2D.Double(10, 10, 0, 0);
-//        outline = el;
-        Path2D.Double poly = new Path2D.Double();
-        poly.moveTo(1, 1);
-        poly.lineTo(1, 0);
-        poly.lineTo(0, 0);
-        poly.lineTo(0, 1);
-        poly.closePath();
-
-        outline = poly;
+        Ellipse2D.Double el = new Ellipse2D.Double(0, 0, 1, 1);
+        outline = el;
     }
 
     @Override
