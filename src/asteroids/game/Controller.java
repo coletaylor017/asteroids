@@ -245,6 +245,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
+        
+        initialScreen();
     }
 
     /**
