@@ -2,7 +2,6 @@ package asteroids.participants;
 
 import java.awt.Shape;
 import java.awt.geom.Line2D;
-import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
@@ -26,6 +25,8 @@ public class Particle extends Participant
      * The Particle object leaves speed, direction, and lifespan open to input. 
      * This will allow it to be used later for things like ship thrust particles
      * and not just debris and dust.
+     * 
+     * For dust or debris, use a DestructionParticle object.
      */
     public Particle (double x, double y, double speed, double direction, double length, int lifespan, Controller controller)
     {

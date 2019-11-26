@@ -152,6 +152,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (p instanceof ShipDestroyer)
         {
+            
             // Expire the ship from the game
             Participant.expire(this);
 

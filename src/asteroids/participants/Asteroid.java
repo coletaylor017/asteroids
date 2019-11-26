@@ -157,10 +157,7 @@ public class Asteroid extends Participant implements ShipDestroyer
             int dustCount = RANDOM.nextInt(4) + 4;
             for (int i = 0; i < dustCount; i++)
             {
-                double direction = RANDOM.nextDouble() * 2 * Math.PI;
-                int lifespan = RANDOM.nextInt(1000) + 1500; // dust will last between 1.5 and 2.5 seconds
-                double speed = RANDOM.nextDouble() * MAX_PARTICLE_SPEED;
-                controller.addParticipant(new Particle(this.getX(), this.getY(), speed, direction, 1, lifespan, controller));
+                controller.addParticipant(new DestructionParticle(this.getX(), this.getY(), 1, controller));
             }
 
             // Expire the asteroid
