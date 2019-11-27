@@ -41,7 +41,7 @@ public class Constants
     /**
      * Constant of acceleration of ship. Should be positive.s
      */
-    public final static double SHIP_ACCELERATION = .65;
+    public final static double SHIP_ACCELERATION = .85;
 
     /**
      * The number of milliseconds between the beginnings of frame refreshes

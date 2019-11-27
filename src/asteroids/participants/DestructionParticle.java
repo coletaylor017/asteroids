@@ -4,6 +4,7 @@ import static asteroids.game.Constants.MAX_PARTICLE_SPEED;
 import static asteroids.game.Constants.RANDOM;
 import asteroids.participants.Particle;
 import asteroids.game.Controller;
+import java.awt.geom.Line2D;
 
 public class DestructionParticle extends Particle
 {
@@ -13,7 +14,7 @@ public class DestructionParticle extends Particle
      */
     public DestructionParticle (double x, double y, double length, Controller controller)
     {
-        super(x, y, RANDOM.nextDouble() * MAX_PARTICLE_SPEED, RANDOM.nextDouble() * 2 * Math.PI, length, RANDOM.nextInt(1000) + 1500, controller);
+        super(x, y, RANDOM.nextDouble() * MAX_PARTICLE_SPEED, RANDOM.nextDouble() * 2 * Math.PI, 0, new Line2D.Double(0, 0, 0, length), RANDOM.nextInt(1000) + 1500, controller);
 
         setRotation(RANDOM.nextDouble() * 2 * Math.PI);
 // Was going to put theses before super constructor but it super needs to come first

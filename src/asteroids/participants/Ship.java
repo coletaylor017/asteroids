@@ -93,7 +93,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     @Override
     protected Shape getOutline ()
     {
-        if (hasFlame==true)
+        if (hasFlame==true && controller.getGameMode() == "classic") // in advanced, the flame will be particles instead
         {
             return wFlame;
         }
@@ -134,6 +134,18 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         accelerate(SHIP_ACCELERATION);
         hasFlame=true;
+        
+        // add some little exhaust particles
+        if (controller.getGameMode() == "enhanced")
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                double offset = -5 + RANDOM.nextInt(10);
+                Line2D.Double blastParticleShape = new Line2D.Double(-10, offset, -11, offset);
+                int duration = RANDOM.nextInt(250) + 500; // randomize each particle's lifespan
+                controller.addParticipant(new Particle(this.getX(), this.getY(), 1, this.getRotation() - Math.PI, this.getRotation(), blastParticleShape, duration, controller));
+            }
+        }
         
     }
     

@@ -31,15 +31,16 @@ public class Particle extends Participant
      * 
      * For dust or debris, use a DestructionParticle object.
      */
-    public Particle (double x, double y, double speed, double direction, double length, int lifespan, Controller controller)
+    public Particle (double x, double y, double speed, double direction, double rotation, Shape shape, int lifespan, Controller controller)
     {
         
         this.controller = controller;
         setPosition(x, y);
         setVelocity(speed, direction);
+        setRotation(rotation);
         
-        Line2D.Double line = new Line2D.Double(0, 0, 0, length);
-        outline = line;
+//        Line2D.Double line = new Line2D.Double(0, 0, 0, length);
+        outline = shape;
         
         new ParticipantCountdownTimer(this, lifespan);
     }

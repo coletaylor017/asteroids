@@ -1,10 +1,14 @@
 package asteroids.game;
 
 import static asteroids.game.Constants.*;
+import java.awt.Shape;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.*;
+import java.util.Random;
 
 /**
  * Controls a game of Asteroids.
@@ -54,7 +58,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** The game display */
     private Display display;
     
-    /* "true" if the game is in enhanced mode, otherwise "false" */
+    /* "classic" if the game is in enhanced mode, otherwise "enhanced" */
     private String gameMode;
     
     /* Specifies if a two player game is taking place */
@@ -223,8 +227,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
-        // otherwise ship can start off moving in the next scene
+        // otherwise ship can start off moving or shooting in the next scene
         moveForward = false;
+        turnLeft = false;
+        turnRight = false;
+        shooting = false;
         
         // Clear the screen
         clear();
@@ -356,6 +363,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (moveForward == true  && ship!= null)
             {
                 ship.accelerate();
+                
+
+            }
+            if (ship != null)
+            {
+                ship.applyFriction(SHIP_FRICTION);
             }
             
             // It may be time to make a game transition
@@ -491,7 +504,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void attack (Ship shooter)
     {
-        if (numBullets <= BULLET_LIMIT)
+        if (numBullets <= BULLET_LIMIT && ship != null)
         {
             Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED, this);
             addParticipant(bullet);
@@ -516,7 +529,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             moveForward =false;
             ship.turnFlameOff();
-            ship.applyFriction(SHIP_FRICTION);
         }
         
         //LEFT KEY
@@ -537,7 +549,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             moveForward =false;
             ship.turnFlameOff();
-            ship.applyFriction(SHIP_FRICTION);
         }
         
         //A KEY
