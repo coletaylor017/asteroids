@@ -217,6 +217,48 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Give focus to the game screen
         display.requestFocusInWindow();
     }
+    
+    /**
+     * Restarts the current level
+     */
+    private void restartLevel ()
+    {
+        // Clear the screen
+        clear();
+
+        // Place asteroids
+        placeAsteroids();
+        
+        // TODO: Make additional asteroid for each level
+
+        // Place the ship
+        placeShip();
+                
+//        display.setLives(lives);
+    }
+    
+    /**
+     * Goes to the next level yo
+     */
+    private void nextLevel ()
+    {
+        // Clear the screen
+        clear();
+
+        // Place asteroids
+        placeAsteroids();
+        
+        // TODO: Make additional asteroid for each level
+
+        // Place the ship
+        placeShip();
+
+        level++;
+
+        // Display new level
+        display.setLevel(level);
+
+    }
 
     /**
      * Adds a new Participant
@@ -246,7 +288,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
         
-        initialScreen();
     }
 
     /**
@@ -264,12 +305,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         
         // Display new score
         display.setScore(score);
-        
-        
-        
-        // TODO: MAKE NEW DEBRIS OBJECT AT LOCATION OF DESTROYED ASTEROID
-        
-        // TODO: PUT ASTEROID DUPLICATION CODE HERE
+
     }
     
     /*
@@ -346,6 +382,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             // Clear the transition time
             transitionTime = Long.MAX_VALUE;
+            
+            if (countAsteroids() == 0)
+            {
+                nextLevel();
+            } else 
+            {
+                restartLevel();
+            }
 
             // If there are no lives left, the game is over. Show the final
             // screen.

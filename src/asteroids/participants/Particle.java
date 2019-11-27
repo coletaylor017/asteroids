@@ -16,6 +16,9 @@ public class Particle extends Participant
     /* The length of the particle */
     private double length;
     
+    /* rotation of the particle */
+    private double rotation;
+    
     /*
      * Construct  new Particle object at (x, y). A Particle is a Participant that floats
      * with a set velocity, has a limited life span, and doesn't have collision behavior.

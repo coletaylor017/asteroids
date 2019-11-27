@@ -15,6 +15,7 @@ public class DestructionParticle extends Particle
     {
         super(x, y, RANDOM.nextDouble() * MAX_PARTICLE_SPEED, RANDOM.nextDouble() * 2 * Math.PI, length, RANDOM.nextInt(1000) + 1500, controller);
 
+        setRotation(RANDOM.nextDouble() * 2 * Math.PI);
 // Was going to put theses before super constructor but it super needs to come first
 // But, I'm leaving them here for clarification of the complex constructor call above
 //        double direction = RANDOM.nextDouble() * 2 * Math.PI;
