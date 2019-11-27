@@ -223,6 +223,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
+        // otherwise ship can start off moving in the next scene
+        moveForward = false;
+        
         // Clear the screen
         clear();
 
@@ -242,6 +245,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void nextLevel ()
     {
+        // otherwise ship can start off moving in the next scene
+        moveForward = false;
+        
         // Clear the screen
         clear();
 
@@ -275,9 +281,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Null out the ship
         ship = null;
-
-        // Display a legend
-        display.setLegend("Ouch!");
 
         // Decrement lives
         lives--;
