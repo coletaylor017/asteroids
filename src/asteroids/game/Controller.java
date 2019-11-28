@@ -17,7 +17,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** The ship (if one is active) or null (otherwise) */
     private Ship ship;
-    
+
     /* The second player's ship for a two player game */
     private Ship ship2;
 
@@ -45,16 +45,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** The game display */
     private Display display;
-    
+
     /* "classic" if the game is in enhanced mode, otherwise "enhanced" */
     private String gameMode;
-    
+
     /* Specifies if a two player game is taking place */
     private final boolean twoPlayerGame;
-    
+
     /* Counter to keep track of number of bullets */
     private int numBullets;
-    
+
     /* An iterator for updateing ships */
     private ArrayList<Ship> shipList;
 
@@ -62,24 +62,26 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
-    {   
+    {
         shipList = new ArrayList<>();
-        
+
         // if enhanced version requested, set enhanced to true
         gameMode = version;
-        
+
         // TODO: make input on startup screen to pick 1 or two players
         // For now, enhanced mode will always be two player
         if (gameMode == "enhanced")
         {
             twoPlayerGame = true;
-        } else {
+        }
+        else
+        {
             twoPlayerGame = false;
         }
-        
+
         // Number of bullets starts out at zero
         numBullets = 0;
-        
+
         // Initialize the ParticipantState
         pstate = new ParticipantState();
 
@@ -97,11 +99,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setVisible(true);
         refreshTimer.start();
     }
-    
+
     /*
-     * Returns a string representing the current game mode.
-     * Right now, can either be "classic" or "enhanced"
-     * but could expand to more game modes in the future.
+     * Returns a string representing the current game mode. Right now, can either be "classic" or "enhanced" but could
+     * expand to more game modes in the future.
      */
     public String getGameMode ()
     {
@@ -158,7 +159,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         addParticipant(ship);
         shipList.add(ship);
         display.setLegend("");
-        
+
         // if two player mode, place another ship
         if (twoPlayerGame)
         {
@@ -174,16 +175,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      * Places an asteroid near one corner of the screen. Gives it a random velocity and rotation.
      */
     private void placeAsteroids ()
-    {  
+    {
         // Place four asteroids near the corners of the screen.
-        //TOP LEFT
+        // TOP LEFT
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        //TOP RIGHT
+        // TOP RIGHT
         addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-        //BOTTOM LEFT
-        addParticipant(new Asteroid(1,2, EDGE_OFFSET, SIZE-EDGE_OFFSET, 3, this));
-        //BOTTOM RIGHT
-        addParticipant(new Asteroid(1,2, SIZE-EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        // BOTTOM LEFT
+        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        // BOTTOM RIGHT
+        addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -214,8 +215,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (!twoPlayerGame)
         {
             placeShip();
-        } else {
-            
+        }
+        else
+        {
+
         }
 
         // Reset statistics
@@ -239,7 +242,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Give focus to the game screen
         display.requestFocusInWindow();
     }
-    
+
     /**
      * Restarts the current level
      */
@@ -253,21 +256,21 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             s.setTurningRight(true);
             s.setShooting(false);
         }
-        
+
         // Clear the screen
         clear();
 
         // Place asteroids
         placeAsteroids();
-        
+
         // TODO: Make additional asteroid for each level
 
         // Place the ship
         placeShip();
-                
-//        display.setLives(lives);
+
+        // display.setLives(lives);
     }
-    
+
     /**
      * Goes to the next level yo
      */
@@ -281,13 +284,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             s.setTurningRight(true);
             s.setShooting(false);
         }
-        
+
         // Clear the screen
         clear();
 
         // Place asteroids
         placeAsteroids();
-        
+
         // TODO: Make additional asteroid for each level
 
         // Place the ship
@@ -324,7 +327,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
-        
+
     }
 
     /**
@@ -339,12 +342,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         // If large asteroid, increment score by 20
         score += ASTEROID_SCORE[size];
-        
+
         // Display new score
         display.setScore(score);
 
     }
-    
+
     /*
      * Called when a bullet is destroyed.
      */
@@ -369,7 +372,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // The start button has been pressed. Stop whatever we're doing
         // and bring up the initial screen
-       
+
         if (e.getSource() instanceof JButton)
         {
             initialScreen();
@@ -378,33 +381,30 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
-            if (shipList.size() != 0)
+            for (Ship s : shipList)
             {
-                for (Ship s : shipList)
+                if (s.turningLeft() && s != null)
                 {
-                    if (s.turningLeft() && s!= null)
-                    {
-                        s.turnLeft();
-                    }
-                    if (s.turningRight() && s!= null)
-                    {
-                        s.turnRight();
-                    }
-                    if (s.accelerating()  && s!= null)
-                    {
-                        s.accelerate();
-                    }
-                    if (s.shooting() && s != null)
-                    {
-                        attack(ship);
-                    }
-                    if (ship != null)
-                    {
-                        s.applyFriction(SHIP_FRICTION);
-                    }
+                    s.turnLeft();
+                }
+                if (s.turningRight() && s != null)
+                {
+                    s.turnRight();
+                }
+                if (s.accelerating() && s != null)
+                {
+                    s.accelerate();
+                }
+                if (s.shooting() && s != null)
+                {
+                    attack(ship);
+                }
+                if (ship != null)
+                {
+                    s.applyFriction(SHIP_FRICTION);
                 }
             }
-            
+
             // It may be time to make a game transition
             performTransition();
 
@@ -427,11 +427,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             // Clear the transition time
             transitionTime = Long.MAX_VALUE;
-            
+
             if (countAsteroids() == 0)
             {
                 nextLevel();
-            } else 
+            }
+            else
             {
                 restartLevel();
             }
@@ -468,7 +469,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public void keyPressed (KeyEvent e)
     {
 
-        //TODO: SHIP 1
+        // TODO: SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
             ship.setTurningRight(true);
@@ -488,13 +489,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             ship.setAccelerating(true);
         }
 
-        //TODO: SHIP 2
+        // TODO: SHIP 2
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
             if (!twoPlayerGame)
             {
                 ship.setTurningRight(true);
-            } else {
+            }
+            else
+            {
                 ship2.setTurningRight(true);
             }
         }
@@ -504,7 +507,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (!twoPlayerGame)
             {
                 ship.setTurningLeft(true);
-            } else {
+            }
+            else
+            {
                 ship2.setTurningLeft(true);
             }
         }
@@ -514,7 +519,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (!twoPlayerGame)
             {
                 ship.setShooting(true);
-            } else {
+            }
+            else
+            {
                 ship2.setShooting(true);
             }
         }
@@ -531,23 +538,24 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (!twoPlayerGame)
             {
                 ship.setAccelerating(true);
-            } else {
+            }
+            else
+            {
                 ship2.setAccelerating(true);
             }
         }
 
     }
-    
+
     /*
-     * Sends a bullet from the specified ship. This way,
-     * one can specify which ship is firing when in two 
-     * player mode.
+     * Sends a bullet from the specified ship. This way, one can specify which ship is firing when in two player mode.
      */
     public void attack (Ship shooter)
     {
         if (numBullets <= BULLET_LIMIT && ship != null)
         {
-            Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED, this);
+            Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED,
+                    this);
             addParticipant(bullet);
             numBullets++;
         }
@@ -564,55 +572,61 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyReleased (KeyEvent e)
     {
-        //TODO: PLAYER1
-        //UP KEY
+        // TODO: PLAYER1
+        // UP KEY
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.setAccelerating(false);
         }
-        
-        //LEFT KEY
+
+        // LEFT KEY
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
             ship.setTurningLeft(false);
-        }       
-        
-        //RIGHT KEY
+        }
+
+        // RIGHT KEY
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
             ship.setTurningRight(false);
         }
-        
-        //TODO: PLAYER2
-        //W KEY
+
+        // TODO: PLAYER2
+        // W KEY
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
             if (!twoPlayerGame)
             {
                 ship.setAccelerating(false);
-            } else {
+            }
+            else
+            {
                 ship2.setAccelerating(false);
             }
         }
-        
-        //A KEY
+
+        // A KEY
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
             if (!twoPlayerGame)
             {
                 ship.setTurningLeft(false);
-            } else {
+            }
+            else
+            {
                 ship2.setTurningLeft(false);
             }
         }
-        
-        //D KEY
+
+        // D KEY
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
             if (!twoPlayerGame)
             {
                 ship.setTurningRight(false);
-            } else {
+            }
+            else
+            {
                 ship2.setTurningRight(false);
             }
         }
@@ -621,7 +635,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (!twoPlayerGame)
             {
                 ship.setShooting(false);
-            } else {
+            }
+            else
+            {
                 ship2.setShooting(false);
             }
         }
@@ -634,7 +650,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-                ship.setShooting(false);
+            ship.setShooting(false);
         }
     }
 
