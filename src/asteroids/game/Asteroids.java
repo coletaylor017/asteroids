@@ -2,6 +2,8 @@ package asteroids.game;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import asteroids.game.AsteroidsServer;
+import asteroids.game.AsteroidsClient;
 
 /**
  * The main class for the application.
@@ -21,8 +23,8 @@ public class Asteroids
      */
     private static void chooseVersion ()
     {
-        String[] options = { "Classic", "Enhanced" };
-        int choice = JOptionPane.showOptionDialog(null, "Which version would you like to run?", "Choose a Version",
+        String[] options = { "Classic", "One keyboard, two-player game", "Start LAN server", "Join LAN server" };
+        int choice = JOptionPane.showOptionDialog(null, "What version would you liek to run?", "Choose a Version",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (choice == 0)
         {
@@ -30,9 +32,16 @@ public class Asteroids
         }
         else if (choice == 1)
         {
-//            JOptionPane.showMessageDialog(null, "Sorry, there is no enhanced version");
             new Controller("enhanced");
         }
-        
+        else if (choice == 2)
+        {
+            new AsteroidsServer();
+        }
+        else if (choice == 3)
+        {
+            new AsteroidsClient();
+        }
+
     }
 }

@@ -13,7 +13,7 @@ public class AsteroidsServer
      * properties to every connected client.
      */
     public AsteroidsServer()
-    {
+    {   
         try
         {
             // new ServerSocket waits for connection requests
