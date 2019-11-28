@@ -145,9 +145,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
 
     /**
-     * Place a new ship in the center of the screen. Remove any existing ship first.
+     * Place all ships in the center of the screen. Remove any existing ships first.
      */
-    private void placeShip ()
+    private void placeShips ()
     {
         // Place a new ship
         Participant.expire(ship);
@@ -208,7 +208,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         placeAsteroids();
 
         // Place the ship, or ships if it's a two player game
-        placeShip();
+        placeShips();
 
         // Reset statistics
 
@@ -255,7 +255,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // TODO: Make additional asteroid for each level
 
         // Place the ship(s)
-        placeShip();
+        placeShips();
 
         // display.setLives(lives);
     }
@@ -283,7 +283,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // TODO: Make additional asteroid for each level
 
         // Place the ship(s)
-        placeShip();
+        placeShips();
 
         level++;
 
