@@ -305,11 +305,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
-        // Null out the ship
-        s = null;
         
         // remove the ship from shipList
         shipList.remove(s);
+        
+        // Null out the ship
+        s = null;
 
         // Decrement lives
         lives--;
