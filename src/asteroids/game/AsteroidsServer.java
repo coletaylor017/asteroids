@@ -4,14 +4,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
 
-/*
- * Creates a server to handle input from a client.
- * Liberal amounts of code taken from the helpful tutorial at:
- * 'https://www.javatpoint.com/socket-programming'
- */
-public class Server
+public class AsteroidsServer
 {
-    public static void main (String[] args)
+    /*
+     * Creates a server that connects to game clients, then receives
+     * important game events from those clients pertaining to the Asteroids game.
+     * The server then performs game logic and propagates any newly changed game
+     * properties to every connected client.
+     */
+    public AsteroidsServer()
     {
         try
         {

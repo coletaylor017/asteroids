@@ -3,9 +3,15 @@ package asteroids.game;
 import java.net.Socket;
 import java.io.*;
 
-public class Client
+public class AsteroidsClient
 {
-    public static void main (String[] args)
+    /*
+     * Creates a new client for the Asteroids game. This client connects to
+     * an AsteroidsServer and sends important game updates to said server.
+     * The client also updates its local representation of the current game
+     * whenever it receives information from the server.
+     */
+    public AsteroidsClient()
     {
         try
         {
