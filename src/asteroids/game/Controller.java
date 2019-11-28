@@ -1,14 +1,11 @@
 package asteroids.game;
 
 import static asteroids.game.Constants.*;
-import java.awt.Shape;
 import java.awt.event.*;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.*;
-import java.util.Random;
 
 /**
  * Controls a game of Asteroids.
@@ -20,6 +17,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** The ship (if one is active) or null (otherwise) */
     private Ship ship;
+    
+    /* The second player's ship for a two player game */
+    private Ship ship2;
 
     /** When this timer goes off, it is time to refresh the animation */
     private Timer refreshTimer;
@@ -42,18 +42,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Indicates the current level */
     private int level;
-    
-    /* true when ship is firing */
-    private boolean shooting;
-    
-    /** True if '</ A' are being pressed */
-    private boolean turnLeft;
-
-    /** True if '>/D' are being pressed */
-    private boolean turnRight;
-    
-    /** True if UP/W are being pressed */
-    private boolean moveForward;
 
     /** The game display */
     private Display display;
@@ -66,20 +54,31 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     
     /* Counter to keep track of number of bullets */
     private int numBullets;
+    
+    /* An iterator for updateing ships */
+    private ArrayList<Ship> shipList;
 
     /**
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
     {   
-        // TODO: make input on startup screen to pick 1 or two players
-        twoPlayerGame = false;
-        
-        // Number of bullets starts out at zero
-        numBullets = 0;
+        shipList = new ArrayList<>();
         
         // if enhanced version requested, set enhanced to true
         gameMode = version;
+        
+        // TODO: make input on startup screen to pick 1 or two players
+        // For now, enhanced mode will always be two player
+        if (gameMode == "enhanced")
+        {
+            twoPlayerGame = true;
+        } else {
+            twoPlayerGame = false;
+        }
+        
+        // Number of bullets starts out at zero
+        numBullets = 0;
         
         // Initialize the ParticipantState
         pstate = new ParticipantState();
@@ -157,7 +156,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         Participant.expire(ship);
         ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
         addParticipant(ship);
+        shipList.add(ship);
         display.setLegend("");
+        
+        // if two player mode, place another ship
+        if (twoPlayerGame)
+        {
+            Participant.expire(ship2);
+            ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+            addParticipant(ship2);
+            shipList.add(ship2);
+            display.setLegend("");
+        }
     }
 
     /**
@@ -183,7 +193,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         pstate.clear();
         display.setLegend("");
-        ship = null;
+        for (Ship s : shipList)
+        {
+            s = null;
+        }
     }
 
     /**
@@ -198,7 +211,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         placeAsteroids();
 
         // Place the ship
-        placeShip();
+        if (!twoPlayerGame)
+        {
+            placeShip();
+        } else {
+            
+        }
 
         // Reset statistics
 
@@ -228,10 +246,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private void restartLevel ()
     {
         // otherwise ship can start off moving or shooting in the next scene
-        moveForward = false;
-        turnLeft = false;
-        turnRight = false;
-        shooting = false;
+        for (Ship s : shipList)
+        {
+            s.setAccelerating(false);
+            s.setTurningLeft(false);
+            s.setTurningRight(true);
+            s.setShooting(false);
+        }
         
         // Clear the screen
         clear();
@@ -253,7 +274,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private void nextLevel ()
     {
         // otherwise ship can start off moving in the next scene
-        moveForward = false;
+        for (Ship s : shipList)
+        {
+            s.setAccelerating(false);
+            s.setTurningLeft(false);
+            s.setTurningRight(true);
+            s.setShooting(false);
+        }
         
         // Clear the screen
         clear();
@@ -284,10 +311,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * The ship has been destroyed
      */
-    public void shipDestroyed ()
+    public void shipDestroyed (Ship s)
     {
         // Null out the ship
-        ship = null;
+        s = null;
 
         // Decrement lives
         lives--;
@@ -351,24 +378,31 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
-            
-            if (turnLeft == true && ship!= null)
+            if (shipList.size() != 0)
             {
-                ship.turnLeft();
-            }
-            if (turnRight == true  && ship!= null)
-            {
-                ship.turnRight();
-            }
-            if (moveForward == true  && ship!= null)
-            {
-                ship.accelerate();
-                
-
-            }
-            if (ship != null)
-            {
-                ship.applyFriction(SHIP_FRICTION);
+                for (Ship s : shipList)
+                {
+                    if (s.turningLeft() && s!= null)
+                    {
+                        s.turnLeft();
+                    }
+                    if (s.turningRight() && s!= null)
+                    {
+                        s.turnRight();
+                    }
+                    if (s.accelerating()  && s!= null)
+                    {
+                        s.accelerate();
+                    }
+                    if (s.shooting() && s != null)
+                    {
+                        attack(ship);
+                    }
+                    if (ship != null)
+                    {
+                        s.applyFriction(SHIP_FRICTION);
+                    }
+                }
             }
             
             // It may be time to make a game transition
@@ -379,11 +413,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
             // Refresh screen
             display.refresh();
-            
-            if (shooting)
-            {
-                attack(ship);
-            }
         }
 
     }
@@ -442,57 +471,69 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         //TODO: SHIP 1
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
-            turnRight = true;
+            ship.setTurningRight(true);
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
-            turnLeft = true;
+            ship.setTurningLeft(true);
         }
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            // Down key always fires ship 1
-            shooting = true;
+            ship.setShooting(true);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            moveForward = true;
+            ship.setAccelerating(true);
         }
 
         //TODO: SHIP 2
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
-            turnRight = true;
+            if (!twoPlayerGame)
+            {
+                ship.setTurningRight(true);
+            } else {
+                ship2.setTurningRight(true);
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
-            turnLeft = true;
+            if (!twoPlayerGame)
+            {
+                ship.setTurningLeft(true);
+            } else {
+                ship2.setTurningLeft(true);
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
             // s key will not fire player 1's ship in two-player mode
             if (!twoPlayerGame)
             {
-                shooting = true;
-            }
-            else
-            {
-//                attack(ship2); comment out when two player game is in place
+                ship.setShooting(true);
+            } else {
+                ship2.setShooting(true);
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
             if (!twoPlayerGame)
             {
-                shooting = true;
+                ship.setShooting(true);
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-           moveForward = true;
+            if (!twoPlayerGame)
+            {
+                ship.setAccelerating(true);
+            } else {
+                ship2.setAccelerating(true);
+            }
         }
 
     }
@@ -527,52 +568,73 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         //UP KEY
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            moveForward =false;
-            ship.turnFlameOff();
+            ship.setAccelerating(false);
         }
         
         //LEFT KEY
         if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
         {
-            turnLeft = false;
+            ship.setTurningLeft(false);
         }       
         
         //RIGHT KEY
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
         {
-            turnRight = false;
+            ship.setTurningRight(false);
         }
         
         //TODO: PLAYER2
         //W KEY
         if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
         {
-            moveForward =false;
-            ship.turnFlameOff();
+            if (!twoPlayerGame)
+            {
+                ship.setAccelerating(false);
+            } else {
+                ship2.setAccelerating(false);
+            }
         }
         
         //A KEY
         if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
         {
-            turnLeft = false;
+            if (!twoPlayerGame)
+            {
+                ship.setTurningLeft(false);
+            } else {
+                ship2.setTurningLeft(false);
+            }
         }
         
         //D KEY
         if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
         {
-            turnRight = false;
+            if (!twoPlayerGame)
+            {
+                ship.setTurningRight(false);
+            } else {
+                ship2.setTurningRight(false);
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
         {
-            shooting = false;
+            if (!twoPlayerGame)
+            {
+                ship.setShooting(false);
+            } else {
+                ship2.setShooting(false);
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
         {
-            shooting = false;
+            if (!twoPlayerGame)
+            {
+                ship.setShooting(false);
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
-            shooting = false;
+                ship.setShooting(false);
         }
     }
 

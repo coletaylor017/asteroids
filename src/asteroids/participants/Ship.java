@@ -22,7 +22,19 @@ public class Ship extends Participant implements AsteroidDestroyer
     
     /** determines whether accelerate() is active,
      * if so   */
-    private boolean hasFlame;
+//    private boolean hasFlame;
+    
+    /* Keeps track of if this ship is currently accelerating */
+    private boolean accelerating;
+    
+    /* Keeps track of if this ship is currently shooting */
+    private boolean shooting;
+    
+    /* Keeps track of if this ship is currently turning left */
+    private boolean turningLeft;
+    
+    /* Keeps trak of if this ship is currently turning right */
+    private boolean turningRight;
     
 
     /** Game controller */
@@ -46,12 +58,10 @@ public class Ship extends Participant implements AsteroidDestroyer
         shipWFlame.lineTo(-14, 10);
         shipWFlame.lineTo(-14, -10);
         shipWFlame.lineTo(-21, -12);
-        shipWFlame.closePath();
-        
+        shipWFlame.closePath();    
         wFlame =shipWFlame;
         
-        
-        
+            
 
         Path2D.Double poly = new Path2D.Double();
         poly.moveTo(21, 0);
@@ -93,7 +103,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     @Override
     protected Shape getOutline ()
     {
-        if (hasFlame==true && controller.getGameMode() == "classic") // in advanced, the flame will be particles instead
+        if (accelerating && controller.getGameMode() == "classic") // in advanced, the flame will be particles instead
         {
             return wFlame;
         }
@@ -125,6 +135,49 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         rotate(-Math.PI / 16);
     }
+    
+    // SHIP STATE SETTERS 
+    public void setTurningLeft (boolean state)
+    {
+        turningLeft = state;
+    }
+    
+    public void setTurningRight (boolean state)
+    {
+        turningRight = state;
+    }
+    
+    public void setAccelerating (boolean state)
+    {
+        accelerating = state;
+    }
+    
+    public void setShooting (boolean shootingOn)
+    {
+        shooting = shootingOn;
+    }
+    
+    // SHIP STATE GETTERS
+    
+    public boolean turningLeft ()
+    {
+        return turningLeft;
+    }
+    
+    public boolean turningRight ()
+    {
+        return turningRight;
+    }
+    
+    public boolean accelerating ()
+    {
+        return accelerating;
+    }
+    
+    public boolean shooting ()
+    {
+        return shooting;
+    }
 
     /**
      * Accelerates by SHIP_ACCELERATION
@@ -133,7 +186,6 @@ public class Ship extends Participant implements AsteroidDestroyer
     public void accelerate ()
     {
         accelerate(SHIP_ACCELERATION);
-        hasFlame=true;
         
         // add some little exhaust particles
         if (controller.getGameMode() == "enhanced")
@@ -148,12 +200,12 @@ public class Ship extends Participant implements AsteroidDestroyer
         }
         
     }
-    
-    /** Removes flame */
-    public void turnFlameOff() 
-    {
-        hasFlame=false;
-    }
+//    
+//    /** Removes flame */
+//    public void turnFlameOff() 
+//    {
+//        hasFlame=false;
+//    }
      
 
     /**
@@ -173,8 +225,8 @@ public class Ship extends Participant implements AsteroidDestroyer
             // Expire the ship from the game
             Participant.expire(this);
 
-            // Tell the controller the ship was destroyed
-            controller.shipDestroyed();
+            // Tell the controller that this ship was destroyed
+            controller.shipDestroyed(this);
         }
     }
 
