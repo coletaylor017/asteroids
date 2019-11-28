@@ -143,7 +143,8 @@ public class Asteroid extends Participant implements ShipDestroyer
     @Override
     public void collidedWith (Participant p)
     {
-        if (p instanceof Bullet)
+        // code below doesn't bother running if in one player mode
+        if (controller.getGameMode() == "enhanced" && p instanceof Bullet)
         {
             Bullet b = (Bullet) p;
             int previousScore = b.getOwner().getScore();

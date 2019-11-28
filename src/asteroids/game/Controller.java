@@ -337,11 +337,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
-        // moved score code to Asteroid class to that in 2 player mode,
-        // the owner of the lucky bullet can be detected
+        // for 2 player mode, score is handled in the Asteroid class
+        if (!twoPlayerGame)
+        {
+            score += ASTEROID_SCORE[size];
+        }
 
         // Display new score
         display.setScore(score);
+
     }
 
     /**
