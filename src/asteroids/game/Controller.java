@@ -282,7 +282,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // TODO: Make additional asteroid for each level
 
-        // Place the ship
+        // Place the ship(s)
         placeShip();
 
         level++;

@@ -15,7 +15,7 @@ public class Constants
     /**
      * The height and width of the game area.
      */
-    public final static int SIZE = 750;
+    public static int SIZE = 750;
 
     /**
      * Game title
