@@ -337,12 +337,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
-        // If large asteroid, increment score by 20
-        score += ASTEROID_SCORE[size];
+        // moved score code to Asteroid class to that in 2 player mode,
+        // the owner of the lucky bullet can be detected
 
         // Display new score
         display.setScore(score);
-
     }
 
     /**

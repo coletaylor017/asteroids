@@ -143,9 +143,15 @@ public class Asteroid extends Participant implements ShipDestroyer
     @Override
     public void collidedWith (Participant p)
     {
+        if (p instanceof Bullet)
+        {
+            Bullet b = (Bullet) p;
+            int previousScore = b.getOwner().getScore();
+            b.getOwner().setScore(previousScore + ASTEROID_SCORE[size]);
+        }
         if (p instanceof AsteroidDestroyer)
         {
-            // spawn two new asteroids only if this is not a small asteroids
+            // spawn two new asteroids only if this is not a small asteroid
             if (this.size != 0)
             {
                 Random r = new Random();

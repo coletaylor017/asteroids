@@ -31,6 +31,12 @@ public class Bullet extends Participant implements AsteroidDestroyer
         // To make the bullet expire after the correct duration
         new ParticipantCountdownTimer(this, BULLET_DURATION);
     }
+    
+    /* Returns the ship that this bullet eminated from */
+    public Ship getOwner()
+    {
+        return owner;
+    }
 
     @Override
     protected Shape getOutline ()

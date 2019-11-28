@@ -102,19 +102,22 @@ public class Screen extends JPanel
         }
         else // for two or more players, display stats in a list format
         {
-            Font scoreFont = new Font("Times New Roman", Font.BOLD, 15);
-            g.setFont(scoreFont);
+            Font font = new Font("Times New Roman", Font.BOLD, 20);
+            g.setFont(font);
+            
+            g.drawString(level, SIZE - g.getFontMetrics().stringWidth(level) - 5, 25);
             
             // vert offset makes sure the stats display one below another, not on top of each other
             int vertOffset = 25;
+            
+            // repeat for each player
             for (Ship s : controller.getShipList()) {
+                // color of stat will correspond to color of ship
                 g.setColor(s.getColor());
-                g.drawString("SCORE: " + s.getScore(), 15, vertOffset);
-                g.drawString("LIVES: " + s.getLives(), 85, vertOffset);
+                g.drawString("LIVES: " + s.getLives(), 15, vertOffset);
+                g.drawString("SCORE: " + s.getScore(), 115, vertOffset);
                 vertOffset += 25;
             }
-            
-            g.drawString(level, SIZE - g.getFontMetrics().stringWidth(level) - 5, EDGE_OFFSET / 2);
         }
     }
 
