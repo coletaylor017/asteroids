@@ -3,6 +3,7 @@ package asteroids.game;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
+import asteroids.game.GameUpdate;
 
 public class AsteroidsServer
 {
@@ -22,18 +23,25 @@ public class AsteroidsServer
             // establish a connection represented by Socket s
             Socket s = ss.accept();
             
-            //Make an input stream to read incoming data
-            DataInputStream serverIn = new DataInputStream(s.getInputStream());
+            //Make an input stream to read incoming GameUpdate objects
+            ObjectInputStream serverIn = new ObjectInputStream(s.getInputStream());
             
-            // Make an output stream so that server can send messages to client
-            DataOutputStream serverOut = new DataOutputStream(s.getOutputStream());
+            // Make an output stream so that server can send GameUpdate objects to client
+            ObjectOutputStream serverOut = new ObjectOutputStream(s.getOutputStream());
             
-            String inputString = serverIn.readUTF();
-            System.out.println("Printing from server file: " + inputString);
-            serverOut.writeUTF("From the server: you sent me '" + inputString 
-                    + "'. Thanks! ^_^");
+            // Read incoming object, cast to type GameUpdate, and assign
+            GameUpdate update = (GameUpdate) serverIn.readObject();
             
-            serverOut.flush();
+            
+            
+            System.out.println("New game update: " + update.toString());
+            System.out.println("Operation code: " + update.getOperationCode());
+            System.out.println("X coord: " + update.getX());
+            System.out.println("Y coord: " + update.getY());
+//            serverOut.writeUTF("From the server: you sent me '" + update.toString() 
+//                    + "'. Thanks! ^_^");
+//            
+//            serverOut.flush();
             
             // close everything down    
             s.close();
@@ -43,7 +51,7 @@ public class AsteroidsServer
         }
         catch (Exception e)
         {
-            System.out.println("NEW EXCEPTION FROM SERVER: " + e);
+            System.out.println("NEW EXCEPTION ON SERVER SIDE: " + e);
         }
     }
 }

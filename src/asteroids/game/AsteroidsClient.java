@@ -2,6 +2,7 @@ package asteroids.game;
 
 import java.net.Socket;
 import java.io.*;
+import asteroids.game.GameUpdate;
 
 public class AsteroidsClient
 {
@@ -18,20 +19,24 @@ public class AsteroidsClient
             // try to create connection to server at correct port
             Socket s = new Socket("localhost", 2020);
             
-            // create an output stream to send data to the server
-            DataOutputStream clientOut = new DataOutputStream(s.getOutputStream());
+            // create an output stream to send GameUpdate objects to the server
+            ObjectOutputStream clientOut = new ObjectOutputStream(s.getOutputStream());
             
-            // create an input stream to read from server
-            DataInputStream clientIn =  new DataInputStream(s.getInputStream());
+            // create an input stream to read GameUpdate objects from server
+            ObjectInputStream clientIn =  new ObjectInputStream(s.getInputStream());
             
-            clientOut.writeUTF("Hello, server!");
+            // craete a new update to the game state
+            GameUpdate update = new GameUpdate("SHIPMOVE", 200, 300);
+            
+            // Send the update to the server
+            clientOut.writeObject(update);
             
             // 'flush' just makes sure any un-sent output bytes actually get sent
             clientOut.flush();
             
-            String response = clientIn.readUTF();
+//            String response = clientIn.readUTF();
             
-            System.out.println("I'm the client, and the server responded with this: '" + response + "'");
+//            System.out.println("I'm the client, and the server responded with this: '" + response + "'");
             
             // close everything down
             clientOut.close();
@@ -41,7 +46,7 @@ public class AsteroidsClient
         }
         catch (Exception e)
         {
-            System.out.println("NEW EXCEPTION FROM CLIENT: " + e);
+            System.out.println("NEW EXCEPTION ON CLIENT SIDE: " + e);
         }
     }
 }

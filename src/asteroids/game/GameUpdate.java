@@ -1,5 +1,7 @@
 package asteroids.game;
 
+import java.io.Serializable;
+
 /*
  * A GameUpdate is an object sent between client and server and vice versa.
  * It represents changes in game state. It consists of an operation code,
@@ -19,8 +21,13 @@ package asteroids.game;
  * -ASTEROIDDIE
  * 
  */
-public class GameUpdate
+public class GameUpdate implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1735716747784848307L;
+
     /* The operation code for the update, explained below */
     private String operationCode;
     
@@ -72,5 +79,25 @@ public class GameUpdate
         this.x = x;
         this.y = y;
         this.rotation = rotation;
+    }
+    
+    public String getOperationCode ()
+    {
+        return operationCode;
+    }
+    
+    public double getX ()
+    {
+        return x;
+    }
+    
+    public double getY ()
+    {
+        return y;
+    }
+    
+    public double getRotation ()
+    {
+        return rotation;
     }
 }
