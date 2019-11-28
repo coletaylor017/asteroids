@@ -52,10 +52,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* Specifies if a two player game is taking place */
     private final boolean twoPlayerGame;
 
-    /* Counter to keep track of number of bullets */
-    private int numBullets;
-
-    /* An iterator for updateing ships */
+    /* An way to iterate through all ships */
     private ArrayList<Ship> shipList;
 
     /**
@@ -78,9 +75,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             twoPlayerGame = false;
         }
-
-        // Number of bullets starts out at zero
-        numBullets = 0;
 
         // Initialize the ParticipantState
         pstate = new ParticipantState();
@@ -108,7 +102,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         return gameMode;
     }
-    
+
     /**
      * This makes it possible to use an enhanced for loop to iterate through the Participants being managed by a
      * Controller.
