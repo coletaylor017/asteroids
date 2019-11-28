@@ -108,7 +108,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         return gameMode;
     }
-
+    
     /**
      * This makes it possible to use an enhanced for loop to iterate through the Participants being managed by a
      * Controller.
@@ -211,15 +211,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place asteroids
         placeAsteroids();
 
-        // Place the ship
-        if (!twoPlayerGame)
-        {
-            placeShip();
-        }
-        else
-        {
-
-        }
+        // Place the ship, or ships if it's a two player game
+        placeShip();
 
         // Reset statistics
 
@@ -281,7 +274,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             s.setAccelerating(false);
             s.setTurningLeft(false);
-            s.setTurningRight(true);
+            s.setTurningRight(false);
             s.setShooting(false);
         }
 
@@ -348,14 +341,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     }
 
-    /*
-     * Called when a bullet is destroyed.
-     */
-    public void bulletDestroyed ()
-    {
-        numBullets--;
-    }
-
     /**
      * Schedules a transition m msecs in the future
      */
@@ -397,7 +382,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
                 if (s.shooting() && s != null)
                 {
-                    attack(ship);
+                    s.attack();
                 }
                 if (ship != null)
                 {
@@ -545,20 +530,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             }
         }
 
-    }
-
-    /*
-     * Sends a bullet from the specified ship. This way, one can specify which ship is firing when in two player mode.
-     */
-    public void attack (Ship shooter)
-    {
-        if (numBullets <= BULLET_LIMIT && ship != null)
-        {
-            Bullet bullet = new Bullet(shooter.getXNose(), shooter.getYNose(), shooter.getRotation(), BULLET_SPEED,
-                    this);
-            addParticipant(bullet);
-            numBullets++;
-        }
     }
 
     @Override

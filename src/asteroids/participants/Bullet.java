@@ -13,16 +13,16 @@ public class Bullet extends Participant implements AsteroidDestroyer
     /** Shape of bullet to detect collisions **/
     private Shape outline;
 
-    /** Game controller **/
-    private Controller controller;
+    /** The Ship that fired this bullet **/
+    private Ship owner;
     
     /*
      * Constructs a bullet at initial point (x, y), facing indicated direction,
      * with indicated initial speed. Specify game controller when constructing.
      */
-    public Bullet (double x, double y, double direction, double initSpeed, Controller controller)
+    public Bullet (double x, double y, double direction, double initSpeed, Ship owner)
     {
-        this.controller = controller;
+        this.owner = owner;
         setPosition(x, y);
         setVelocity(initSpeed, direction);
         
@@ -45,7 +45,7 @@ public class Bullet extends Participant implements AsteroidDestroyer
     @Override
     public void countdownComplete (Object payload)
     {
-        controller.bulletDestroyed();
+        owner.bulletDestroyed();
         Participant.expire(this);
     }
 
@@ -61,7 +61,7 @@ public class Bullet extends Participant implements AsteroidDestroyer
             Participant.expire(this);
             
             // inform controller
-            controller.bulletDestroyed();
+            owner.bulletDestroyed();
         }
     }
 

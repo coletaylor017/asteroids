@@ -36,6 +36,8 @@ public class Ship extends Participant implements AsteroidDestroyer
     /* Keeps trak of if this ship is currently turning right */
     private boolean turningRight;
     
+    /* Number of bullets onscreen that were fired by this particular ship */
+    private int numBullets;
 
     /** Game controller */
     private Controller controller;
@@ -48,6 +50,8 @@ public class Ship extends Participant implements AsteroidDestroyer
         this.controller = controller;
         setPosition(x, y);
         setRotation(direction);
+        
+        numBullets = 0;
 
         Path2D.Double shipWFlame = new Path2D.Double();
         shipWFlame.moveTo(21, 0);
@@ -200,14 +204,28 @@ public class Ship extends Participant implements AsteroidDestroyer
         }
         
     }
-//    
-//    /** Removes flame */
-//    public void turnFlameOff() 
-//    {
-//        hasFlame=false;
-//    }
+    
+    /*
+     * Sends a bullet from the this ship if there are fewer than eight bullets onscreen that belong to this ship.
+     */
+    public void attack ()
+    {
+        if (numBullets <= BULLET_LIMIT)
+        {
+            Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this);
+            controller.addParticipant(bullet);
+            numBullets++;
+        }
+    }
+    
+    /*
+     * Called when a bullet is destroyed.
+     */
+    public void bulletDestroyed ()
+    {
+        numBullets--;
+    }
      
-
     /**
      * When a Ship collides with a ShipDestroyer, it expires
      */
