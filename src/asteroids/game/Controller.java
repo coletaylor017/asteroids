@@ -35,9 +35,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private long transitionTime;
 
     /** Number of lives left */
+    // TODO: Implement in Ship instead of Controller so each player can have their own number of lives
     private int lives;
 
     /** Indicates the players current score */
+    // TODO: Implement in Ship instead of Controller so each player can have their own score
     private int score;
 
     /** Indicates the current level */
@@ -114,11 +116,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
 
     /**
-     * Returns the ship, or null if there isn't one
+     * Returns the list of ships
      */
-    public Ship getShip ()
+    public ArrayList<Ship> getShipList ()
     {
-        return ship;
+        return shipList;
     }
 
     /**
@@ -188,7 +190,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         pstate.clear();
         display.setLegend("");
-        for (Ship s : shipList)
+        for (@SuppressWarnings("unused") Ship s : shipList) // not 100% sure why this error pops up
         {
             s = null;
         }
@@ -252,7 +254,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // TODO: Make additional asteroid for each level
 
-        // Place the ship
+        // Place the ship(s)
         placeShip();
 
         // display.setLives(lives);
@@ -305,6 +307,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Null out the ship
         s = null;
+        
+        // remove the ship from shipList
+        shipList.remove(s);
 
         // Decrement lives
         lives--;
@@ -411,7 +416,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 nextLevel();
             }
-            else
+            else if (shipList.size() == 0) // if both players have died
             {
                 restartLevel();
             }

@@ -4,7 +4,6 @@ import static asteroids.game.Constants.BULLET_DURATION;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import asteroids.destroyers.*;
-import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 
