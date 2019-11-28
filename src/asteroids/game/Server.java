@@ -24,15 +24,25 @@ public class Server
             //Make an input stream to read incoming data
             DataInputStream serverIn = new DataInputStream(s.getInputStream());
             
-            String inputString = serverIn.readUTF();
-            System.out.println(inputString);
+            // Make an output stream so that server can send messages to client
+            DataOutputStream serverOut = new DataOutputStream(s.getOutputStream());
             
-            // close the server 
+            String inputString = serverIn.readUTF();
+            System.out.println("Printing from server file: " + inputString);
+            serverOut.writeUTF("From the server: you sent me '" + inputString 
+                    + "'. Thanks! ^_^");
+            
+            serverOut.flush();
+            
+            // close everything down    
+            s.close();
             ss.close();
+            serverOut.close();
+            serverIn.close();
         }
         catch (Exception e)
         {
-            System.out.println("NEW EXCEPTION: " + e);
+            System.out.println("NEW EXCEPTION FROM SERVER: " + e);
         }
     }
 }

@@ -33,5 +33,6 @@ public class Asteroids
 //            JOptionPane.showMessageDialog(null, "Sorry, there is no enhanced version");
             new Controller("enhanced");
         }
+        
     }
 }
