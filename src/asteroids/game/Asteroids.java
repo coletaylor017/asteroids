@@ -24,7 +24,7 @@ public class Asteroids
     private static void chooseVersion ()
     {
         String[] options = { "Classic", "One keyboard, two-player game", "Start LAN server", "Join LAN server" };
-        int choice = JOptionPane.showOptionDialog(null, "What version would you liek to run?", "Choose a Version",
+        int choice = JOptionPane.showOptionDialog(null, "What version would you like to run?", "Choose a Version",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (choice == 0)
         {
@@ -36,11 +36,14 @@ public class Asteroids
         }
         else if (choice == 2)
         {
-            new AsteroidsServer();
+//            new Controller("local-multiplayer");
+            // new asteroid server on port 2020
+            new AsteroidsServer(2020);
         }
         else if (choice == 3)
         {
-            new AsteroidsClient();
+//            new Controller("local-multiplayer");
+            new AsteroidsClient(2020);
         }
 
     }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
 import asteroids.participants.*;
+import asteroids.game.AsteroidsClient;
 
 /**
  * Controls a game of Asteroids.
@@ -52,23 +53,36 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* "classic" if the game is in enhanced mode, otherwise "enhanced" */
     private String gameMode;
 
-    /* Specifies if a two player game is taking place */
+    /* Specifies if a two player game is taking place on one machine. False for LAN games */
     private final boolean twoPlayerGame;
 
     /* An way to iterate through all ships */
     private ArrayList<Ship> shipList;
+    
+    /* The client that handle communication to and from the server */
+    private AsteroidsClient client;
 
-    /**
+    /*
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
     {
+        this (version, null);
+    }
+    
+    /**
+     * Constructs a controller made to work with an AsteroidClient instance
+     */
+    public Controller (String version, AsteroidsClient aClient)
+    {
+        // initialize client object
+        client = aClient;
+        
         shipList = new ArrayList<>();
 
-        // if enhanced version requested, set enhanced to true
+        // set game mode to "classic", "enhanced", or "local-multiplayer"
         gameMode = version;
 
-        // TODO: make input on startup screen to pick 1 or two players
         // For now, enhanced mode will always be two player
         if (gameMode == "enhanced")
         {
@@ -241,6 +255,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
+        // Kill the server
+        // TODO: remove this code
+        client.send(new GameUpdate("STOPSERVER"));
+        // close down the client
+        client.close();
+        
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
         {
@@ -479,6 +499,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.setAccelerating(true);
+            client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
         }
 
         // TODO: SHIP 2

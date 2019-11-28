@@ -19,6 +19,7 @@ import java.io.Serializable;
  * -ASTEROIDSPAWN (x, y)
  * -ASTEROIDMOVE (x, y)
  * -ASTEROIDDIE
+ * -And a few more you can see down below
  * 
  */
 public class GameUpdate implements Serializable
@@ -46,6 +47,9 @@ public class GameUpdate implements Serializable
      * -SHIPDIE
      * -BULLETDIE
      * -ASTEROIDDIE
+     * -STOPSERVER
+     * -NEXTLEVEL
+     * -RESTARTLEVEL
      */
     public GameUpdate (String operationCode)
     {
