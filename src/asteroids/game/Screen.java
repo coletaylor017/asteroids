@@ -3,6 +3,7 @@ package asteroids.game;
 import static asteroids.game.Constants.*;
 import java.awt.*;
 import javax.swing.*;
+import asteroids.participants.Ship;
 
 /**
  * The area of the display in which the game takes place.
@@ -71,13 +72,15 @@ public class Screen extends JPanel
         {
             p.draw(g);
         }
+        
+        g.setColor(Color.WHITE);
 
+        // Draw the legend across the middle of the panel
+        int size = g.getFontMetrics().stringWidth(legend);
+        g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
+        
         if (controller.getGameMode() == "classic")
         {
-            // Draw the legend across the middle of the panel
-            int size = g.getFontMetrics().stringWidth(legend);
-            g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
-
             // Create font size to display score label
             Font scoreFont = new Font("Times New Roman", Font.BOLD, 10);
             g.setFont(scoreFont);
@@ -99,7 +102,19 @@ public class Screen extends JPanel
         }
         else // for two or more players, display stats in a list format
         {
+            Font scoreFont = new Font("Times New Roman", Font.BOLD, 15);
+            g.setFont(scoreFont);
             
+            // vert offset makes sure the stats display one below another, not on top of each other
+            int vertOffset = 25;
+            for (Ship s : controller.getShipList()) {
+                g.setColor(s.getColor());
+                g.drawString("SCORE: " + s.getScore(), 15, vertOffset);
+                g.drawString("LIVES: " + s.getLives(), 85, vertOffset);
+                vertOffset += 25;
+            }
+            
+            g.drawString(level, SIZE - g.getFontMetrics().stringWidth(level) - 5, EDGE_OFFSET / 2);
         }
     }
 

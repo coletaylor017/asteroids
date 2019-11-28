@@ -2,6 +2,7 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
@@ -159,8 +160,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // if two player mode, place another ship
         if (twoPlayerGame)
         {
+            ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
+            
             Participant.expire(ship2);
             ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+            ship2.setColor(Color.CYAN);
             addParticipant(ship2);
             shipList.add(ship2);
             display.setLegend("");

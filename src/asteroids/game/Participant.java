@@ -40,6 +40,9 @@ public abstract class Participant
 
     // True if the Participant is inert (does not interact with any other Participants)
     private boolean isInert;
+    
+    /* Participants can have a color, the default is white */
+    private Color color;
 
     /**
      * Constructs an active Participant with no velocity, rotation, or border.
@@ -53,6 +56,19 @@ public abstract class Participant
         y = 0;
         border = null;
         expired = false;
+        color = Color.WHITE;
+    }
+
+    /* Returns the color of this Participant */
+    public Color getColor()
+    {
+        return color;
+    }
+    
+    /* Sets the color of this Participant */
+    public void setColor(Color newColor)
+    {
+        color = newColor;
     }
 
     /**
@@ -339,6 +355,7 @@ public abstract class Participant
         {
             border = getOutline();
         }
+        g.setColor(color);
         g.draw(border);
     }
 }
