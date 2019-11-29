@@ -38,8 +38,11 @@ public class AsteroidsServer
             // new ServerSocket waits for connection requests
             ServerSocket ss = new ServerSocket(port);
             
+            System.out.println("Server up, waiting for connections...");
+            
             // establish a connection represented by Socket s
             Socket s = ss.accept();
+            System.out.println("Connection accepted.");
             
             //Make an input stream to read incoming GameUpdate objects
             ObjectInputStream serverIn = new ObjectInputStream(s.getInputStream());
@@ -59,14 +62,7 @@ public class AsteroidsServer
                 System.out.println("Y coord: " + update.getY());
                 System.out.println("Rotation: " + update.getRotation());
                 update = (GameUpdate) serverIn.readObject();
-
             }
-            
-
-//            serverOut.writeUTF("From the server: you sent me '" + update.toString() 
-//                    + "'. Thanks! ^_^");
-//            
-//            serverOut.flush();
             
             // close everything down    
             s.close();

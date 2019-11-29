@@ -1,11 +1,11 @@
 package asteroids.participants;
 
 import static asteroids.game.Constants.*;
-import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.*;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
+import asteroids.game.GameUpdate;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 
@@ -143,10 +143,15 @@ public class Ship extends Participant implements AsteroidDestroyer
 
     /**
      * Customizes the base move method by imposing friction
+     * and sending move data to the server
      */
     @Override
     public void move ()
     {
+        if (controller.getGameMode().equals("online-multiplayer") && this.getSpeed() > 0.000000000001) // getSpeed returns a double so we have to use this inequality
+        {
+            controller.getClient().send(new GameUpdate("SHIPMOVE", this.getX(), this.getY(), this.getRotation()));
+        }
         applyFriction(SHIP_FRICTION);
         super.move();
     }
@@ -239,7 +244,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (numBullets <= BULLET_LIMIT)
         {
-            Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this);
+            Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this, controller);
             bullet.setColor(this.getColor()); // so that players can identify their own bullets
             controller.addParticipant(bullet);
             numBullets++;
@@ -262,6 +267,10 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (p instanceof ShipDestroyer)
         {
+            if (controller.getGameMode().equals("online-multiplayer"))
+            {
+                controller.getClient().send(new GameUpdate("SHIPDIE"));
+            }
             //spawn debris particles
             int[] debrisLengths = {7, 15, 30, 30};
             int i = 0;

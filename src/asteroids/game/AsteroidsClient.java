@@ -26,7 +26,7 @@ public class AsteroidsClient
      */
     public AsteroidsClient(int serverPort)
     {
-        controller = new Controller("enhanced", this);
+        controller = new Controller("online-multiplayer", this);
         
         port = serverPort;
         try
@@ -48,14 +48,6 @@ public class AsteroidsClient
             
             // 'flush' just makes sure any un-sent output bytes actually get sent
             clientOut.flush();
-
-            
-//            // Let the sever know it's tIME TO STOP
-//            update = new GameUpdate("STOPSERVER");
-//            clientOut.writeObject(update);
-//            clientOut.flush();
-
-            
         }
         catch (Exception e)
         {
@@ -74,7 +66,6 @@ public class AsteroidsClient
         {
             System.out.println("NEW EXCEPTION ON CLIENT SIDE (send method): " + e);
         }
-
     }
     
     public void close ()

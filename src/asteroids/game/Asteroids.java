@@ -23,7 +23,7 @@ public class Asteroids
      */
     private static void chooseVersion ()
     {
-        String[] options = { "Classic", "One keyboard, two-player game", "Start LAN server", "Join LAN server" };
+        String[] options = { "Classic", "One keyboard, two-player game", "Start LAN server", "Join LAN server", "Stop current server" };
         int choice = JOptionPane.showOptionDialog(null, "What version would you like to run?", "Choose a Version",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (choice == 0)
@@ -44,6 +44,11 @@ public class Asteroids
         {
 //            new Controller("local-multiplayer");
             new AsteroidsClient(2020);
+        } else if (choice == 4)
+        {
+            AsteroidsClient c = new AsteroidsClient(2020);
+            c.send(new GameUpdate("STOPSERVER"));
+            c.close();
         }
 
     }

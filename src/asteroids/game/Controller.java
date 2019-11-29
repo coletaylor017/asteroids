@@ -75,6 +75,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public Controller (String version, AsteroidsClient aClient)
     {
+        // initialize pstate
+        pstate = new ParticipantState();
+        
         // initialize client object
         client = aClient;
         
@@ -84,7 +87,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         gameMode = version;
 
         // For now, enhanced mode will always be two player
-        if (gameMode == "enhanced")
+        if (gameMode.equals("enhanced"))
         {
             twoPlayerGame = true;
         }
@@ -92,9 +95,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             twoPlayerGame = false;
         }
-
-        // Initialize the ParticipantState
-        pstate = new ParticipantState();
 
         // Set up the refresh timer.
         refreshTimer = new Timer(FRAME_INTERVAL, this);
@@ -118,6 +118,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public String getGameMode ()
     {
         return gameMode;
+    }
+    
+    /* Get the Client instance associated with this controller */
+    public AsteroidsClient getClient ()
+    {
+        return client;
     }
 
     /**
@@ -172,7 +178,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("");
 
         // if two player mode, place another ship
-        if (twoPlayerGame)
+        if (gameMode.equals("enhanced"))
         {
             ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
             
@@ -182,6 +188,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             addParticipant(ship2);
             shipList.add(ship2);
             display.setLegend("");
+        }
+        
+        // if in online multiplayer mode, let the server know a ship has been placed
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate("SHIPSPAWN"));
         }
     }
 
@@ -499,7 +511,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.setAccelerating(true);
-            client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
+//            client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
         }
 
         // TODO: SHIP 2
