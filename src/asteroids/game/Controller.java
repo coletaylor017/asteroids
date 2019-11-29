@@ -178,16 +178,19 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setLegend("");
 
         // if two player mode, place another ship
-        if (gameMode.equals("enhanced"))
+        if (!gameMode.equals("classic"))
         {
-            ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
-            
-            Participant.expire(ship2);
-            ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
-            ship2.setColor(Color.CYAN);
-            addParticipant(ship2);
-            shipList.add(ship2);
-            display.setLegend("");
+            ship.setColor(Color.GREEN); // in any multi-player game, ships need separate colors to be told apart
+        
+            if (gameMode.equals("enhanced")) // for 2 player local mode, make another ship
+            {
+                Participant.expire(ship2);
+                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+                ship2.setColor(Color.CYAN);
+                addParticipant(ship2);
+                shipList.add(ship2);
+                display.setLegend("");
+            }
         }
         
         // if in online multiplayer mode, let the server know a ship has been placed
@@ -269,7 +272,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Kill the server
         // TODO: remove this code
-        client.send(new GameUpdate("STOPSERVER"));
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate("STOPSERVER"));
+        }
+
         // close down the client
         client.close();
         
@@ -341,6 +348,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate("SHIPDIE"));
+        }
         
         // remove the ship from shipList
         shipList.remove(s);
@@ -425,6 +436,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
                 if (ship != null)
                 {
+                    // if ship is moving, send its latest location to the server
+                    if (gameMode.equals("online-multiplayer") && s.getSpeed() > 0.000000000001) // getSpeed returns a double so we have to use this inequality
+                    {
+                        client.send(new GameUpdate("SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
+                    }
                     s.applyFriction(SHIP_FRICTION);
                 }
             }

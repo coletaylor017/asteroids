@@ -5,7 +5,6 @@ import java.awt.Shape;
 import java.awt.geom.*;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
-import asteroids.game.GameUpdate;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 
@@ -141,20 +140,16 @@ public class Ship extends Participant implements AsteroidDestroyer
         return outline;
     }
 
-    /**
-     * Customizes the base move method by imposing friction
-     * and sending move data to the server
-     */
-    @Override
-    public void move ()
-    {
-        if (controller.getGameMode().equals("online-multiplayer") && this.getSpeed() > 0.000000000001) // getSpeed returns a double so we have to use this inequality
-        {
-            controller.getClient().send(new GameUpdate("SHIPMOVE", this.getX(), this.getY(), this.getRotation()));
-        }
-        applyFriction(SHIP_FRICTION);
-        super.move();
-    }
+//    /**
+//     * Customizes the base move method by imposing friction
+//     * and sending move data to the server NEVERMIND
+//     */
+//    @Override
+//    public void move ()
+//    {
+//// Applying friction here has no effect because ParticipantState uses the Participant move(), not the Ship move()
+//        super.move();
+//    }
 
     /**
      * Turns right by Pi/16 radians
@@ -267,10 +262,6 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (p instanceof ShipDestroyer)
         {
-            if (controller.getGameMode().equals("online-multiplayer"))
-            {
-                controller.getClient().send(new GameUpdate("SHIPDIE"));
-            }
             //spawn debris particles
             int[] debrisLengths = {7, 15, 30, 30};
             int i = 0;

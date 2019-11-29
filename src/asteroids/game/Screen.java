@@ -33,7 +33,7 @@ public class Screen extends JPanel
     {
         this.controller = controller;
         legend = "";
-        if (controller.getGameMode() == "enhanced")
+        if (!controller.getGameMode().equals("classic"))
         {
             Constants.SIZE = 1000;
         }
@@ -79,7 +79,7 @@ public class Screen extends JPanel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
         
-        if (controller.getGameMode() == "classic")
+        if (controller.getGameMode().equals("classic"))
         {
             // Create font size to display score label
             Font scoreFont = new Font("Times New Roman", Font.BOLD, 10);
