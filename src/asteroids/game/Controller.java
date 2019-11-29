@@ -6,8 +6,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
+import asteroids.network.AsteroidsClient;
+import asteroids.network.GameUpdate;
 import asteroids.participants.*;
-import asteroids.game.AsteroidsClient;
 
 /**
  * Controls a game of Asteroids.

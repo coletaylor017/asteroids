@@ -5,9 +5,9 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
-import asteroids.game.GameUpdate;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
+import asteroids.network.GameUpdate;
 
 public class Bullet extends Participant implements AsteroidDestroyer
 {

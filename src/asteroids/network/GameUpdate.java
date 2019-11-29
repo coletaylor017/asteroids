@@ -1,4 +1,4 @@
-package asteroids.game;
+package asteroids.network;
 
 import java.io.Serializable;
 

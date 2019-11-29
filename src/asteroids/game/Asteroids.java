@@ -2,8 +2,9 @@ package asteroids.game;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import asteroids.game.AsteroidsServer;
-import asteroids.game.AsteroidsClient;
+import asteroids.network.AsteroidsClient;
+import asteroids.network.AsteroidsServer;
+import asteroids.network.GameUpdate;
 
 /**
  * The main class for the application.

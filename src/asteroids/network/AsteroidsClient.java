@@ -1,4 +1,4 @@
-package asteroids.game;
+package asteroids.network;
 
 import java.net.Socket;
 import java.io.*;

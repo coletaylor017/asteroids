@@ -1,10 +1,10 @@
-package asteroids.game;
+package asteroids.network;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import asteroids.network.GameUpdate;
 import java.io.*;
-import asteroids.game.GameUpdate;
 
 public class AsteroidsServer
 {
