@@ -159,7 +159,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
 
     /**
-     * Place all ships in the center of the screen. Remove any existing ships first.
+     * Place all ships on the shipList in the center of the screen.
      */
     private void placeShips ()
     {
@@ -182,7 +182,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 ship2.setColor(Color.CYAN);
                 addParticipant(ship2);
                 shipList.add(ship2);
-                display.setLegend("");
             }
         }
 
@@ -191,6 +190,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             client.send(new GameUpdate("SHIPSPAWN"));
         }
+    }
+
+    /*
+     * A method through which one can spawn ships from outside the controller class, i.e. from an AsteroidsClient
+     */
+    public void addPlayer ()
+    {
+        Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+        s.setColor(Color.CYAN);
+        addParticipant(s);
+        shipList.add(s);
     }
 
     /**
@@ -266,13 +276,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Kill the server
         // TODO: remove this code
-//        if (gameMode.equals("online-multiplayer"))
-//        {
-//            client.send(new GameUpdate("STOPSERVER"));
-//        }
-//
-//        // close down the client
-//        client.close();
+        // if (gameMode.equals("online-multiplayer"))
+        // {
+        // client.send(new GameUpdate("STOPSERVER"));
+        // }
+        //
+        // // close down the client
+        // client.close();
 
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)

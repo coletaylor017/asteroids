@@ -26,7 +26,7 @@ public class AsteroidsServer
     public AsteroidsServer (int serverPort)
     {
         port = serverPort;
-        
+
         // new ServerSocket waits for connection requests
         try
         {
@@ -58,20 +58,14 @@ public class AsteroidsServer
             // ss.accept() throw a SocketException.
             while (true)
             {
-                try
-                {
-                    System.out.println("Waiting for connections...");
-                    // establish a connection represented by Socket s
-                    Socket socket = ss.accept();
-                    System.out.println("Connection accepted.");
+                System.out.println("Waiting for connections...");
+                // establish a connection represented by Socket s
+                Socket socket = ss.accept();
+                System.out.println("Connection accepted.");
 
-                    // new thread for the new client connection
-                    new GameNetworkLoop("" + i, socket).start();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                // new thread for the new client connection
+                new GameNetworkLoop("" + i, socket).start();
+
                 i++;
             }
         }

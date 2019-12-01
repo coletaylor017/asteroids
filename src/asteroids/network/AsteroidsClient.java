@@ -1,8 +1,10 @@
 package asteroids.network;
 
 import java.net.Socket;
+import static asteroids.game.Constants.SIZE;
 import java.io.*;
 import asteroids.game.*;
+import asteroids.participants.Ship;
 
 public class AsteroidsClient
 {
@@ -10,13 +12,13 @@ public class AsteroidsClient
     int port;
     
     /* The local representation of the game */
-    Controller controller;
+    static Controller controller;
     
     /* Outbound messages to the server go through here */
     ObjectOutputStream clientOut;
     
     /* Incoming messages from the server can be read here */
-    ObjectInputStream clientIn;
+    static ObjectInputStream clientIn;
     
     /* The socket this client connects through */
     Socket socket;
@@ -44,6 +46,9 @@ public class AsteroidsClient
             
             /* create a new controller to build the user's local game */
             controller = new Controller("online-multiplayer", this);
+
+            // handle messages from the server
+
         }
         catch (Exception e)
         {
@@ -76,6 +81,37 @@ public class AsteroidsClient
         catch (Exception e)
         {
             System.out.println("NEW EXCEPTION ON CLIENT SIDE (close method): " + e);
+        }
+    }
+    
+    static private class MessageGetter implements Runnable
+    {
+        /* The socket that this MessageGetter will connect through */
+        ObjectInputStream ois;
+        
+        public MessageGetter (ObjectInputStream s)
+        {
+            ois = s;
+        }
+        
+        @Override
+        public void run ()
+        {
+            try
+            {
+                while (true)
+                {
+                    GameUpdate update = (GameUpdate) clientIn.readObject();
+                    if (update.getOperationCode().contentEquals("SHIPSPAWN"))
+                    {
+                        // let the controller know
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -52,7 +52,7 @@ public class ServerDisplay extends JFrame
                 if (e.getActionCommand().equals("kill-server"))
                 {
                     // Close the serverSocker, throwing an exception and ending server execution
-                    System.out.println("Attempting to kill server...");
+                    System.out.println("Attempting to kill server... ");
                     try
                     {
                         server.getServerSocket().close();

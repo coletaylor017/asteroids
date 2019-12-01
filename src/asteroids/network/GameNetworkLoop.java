@@ -38,6 +38,7 @@ public class GameNetworkLoop extends Thread
             // repeat until client tells this thread to stop via a GameUpdate with code="ENDCONNECTION"
             while (!update.getOperationCode().equals("ENDCONNECTION"))
             {
+                serverOut.writeObject(update);
                 System.out.println("New game update: " + update.toString());
                 System.out.println("Operation code: " + update.getOperationCode());
                 System.out.println("X coord: " + update.getX());
@@ -58,6 +59,6 @@ public class GameNetworkLoop extends Thread
             n.printStackTrace();
         }
 
-        System.out.println("GameNetworkLoop thread '" + name + "' has finished its run() method.");
+        System.out.println("GameNetworkLoop thread '" + name + "' has finished its run() method. You should see an exception.");
     }
 }
