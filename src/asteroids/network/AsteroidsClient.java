@@ -110,8 +110,16 @@ public class AsteroidsClient
                     }
                     else if (update.getOperationCode().equals("SHIPMOVE"))
                     {
-                        update.getPlayer().getShip().setPosition(update.getX(), update.getY());
-                        update.getPlayer().getShip().setRotation(update.getRotation());
+                        Ship s = update.getPlayer().getShip();
+                        
+                        // Orient the ship
+                        s.setPosition(update.getX(), update.getY());
+                        s.setRotation(update.getRotation());
+                    }
+                    else if (update.getOperationCode().equals("SHIPFIRE"))
+                    {
+                        // Ask that the ship fire a bullet!
+                        update.getPlayer().getShip().attack();
                     }
                 }
             }

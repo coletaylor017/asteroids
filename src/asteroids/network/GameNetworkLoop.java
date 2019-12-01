@@ -38,7 +38,6 @@ public class GameNetworkLoop extends Thread
             // repeat until client tells this thread to stop via a GameUpdate with code="ENDCONNECTION"
             while (!update.getOperationCode().equals("ENDCONNECTION"))
             {
-                sleep(100);
                 serverOut.writeObject(update);
                 serverOut.flush();
                 System.out.println("New game update: " + update.toString());

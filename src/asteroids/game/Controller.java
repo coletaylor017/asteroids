@@ -486,11 +486,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 if (s != null)
                 {
                     // if ship is moving, send its latest location to the server
-                    if (gameMode.equals("online-multiplayer") && s.getSpeed() > 0.000000000001) // getSpeed returns a
-                                                                                                // double so we have to
-                                                                                                // use this inequality
+                    if (gameMode.equals("online-multiplayer"))
                     {
-                        client.send(new GameUpdate(user, "SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
+                        if (s.getSpeed() > 0.000000000001)
+                        {
+                            client.send(new GameUpdate(user, "SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
+                        }
+                        if (s.shooting()) {
+                            client.send(new GameUpdate(user, "SHIPFIRE"));
+                        }
                     }
                     s.applyFriction(SHIP_FRICTION);
                 }
