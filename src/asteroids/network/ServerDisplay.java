@@ -14,7 +14,7 @@ public class ServerDisplay extends JFrame
 {
     
     /* The currently running server. */
-    AsteroidsServer server;
+    private AsteroidsServer server;
 
     /**
      * Lays out the game and creates the controller
@@ -61,7 +61,7 @@ public class ServerDisplay extends JFrame
                     {
                         e1.printStackTrace();
                     }
-                    System.out.println("Server killed successfully");
+                    System.out.println("Server killed successfully. You should see an exception or two.");
                 }
             }
         });

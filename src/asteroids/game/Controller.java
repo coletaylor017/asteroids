@@ -8,6 +8,7 @@ import java.util.Iterator;
 import javax.swing.*;
 import asteroids.network.AsteroidsClient;
 import asteroids.network.GameUpdate;
+import asteroids.network.Player;
 import asteroids.participants.*;
 
 /**
@@ -38,11 +39,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private long transitionTime;
 
     /** Number of lives left */
-    // TODO: Implement in Ship instead of Controller so each player can have their own number of lives
     private int lives;
 
     /** Indicates the players current score */
-    // TODO: Implement in Ship instead of Controller so each player can have their own score
     private int score;
 
     /** Indicates the current level */
@@ -57,11 +56,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* Specifies if a two player game is taking place on one machine. False for LAN games */
     private final boolean twoPlayerGame;
 
-    /* An way to iterate through all ships */
+    /* An way to iterate through all ships, INCLUDING this controller's user's ship */
     private ArrayList<Ship> shipList;
 
     /* The client that handle communication to and from the server */
     private AsteroidsClient client;
+
+    /* A list to keep track of all remote players currently participating in an online game. */
+    private ArrayList<Player> playerList;
+    
+    /* The player who uses this controller as their local representation of an online game */
+    Player user;
 
     /*
      * Constructs a controller to coordinate the game and screen
@@ -76,6 +81,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public Controller (String version, AsteroidsClient aClient)
     {
+        // initialize user
+        user = new Player();
+        
         // initialize pstate
         pstate = new ParticipantState();
 
@@ -83,7 +91,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         client = aClient;
 
         shipList = new ArrayList<>();
-        // set game mode to "classic", "enhanced", or "local-multiplayer"
+        playerList = new ArrayList<>();
+        
+        // set game mode to "classic", "enhanced", or "online-multiplayer"
         gameMode = version;
 
         // For now, enhanced mode will equal two player
@@ -102,6 +112,29 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+    }
+
+    /*
+     * Adds a new player to the game and give them a ship.
+     * This method is called from the AsteroidsClient when the server informs it that a
+     * new player has joined the game.
+     */
+    public void addPlayer (Player plr)
+    {
+        playerList.add(plr);
+        Ship newShip = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, plr, this);
+        shipList.add(newShip);
+        addParticipant(newShip);
+        plr.setShip(newShip);
+    }
+    
+    /*
+     * Removes the specified player and their ship from the game.
+     */
+    public void removePlayer (Player plr)
+    {
+        playerList.remove(plr);
+        shipList.remove(plr.getShip());
     }
 
     /*
@@ -159,48 +192,53 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
 
     /**
-     * Place all ships on the shipList in the center of the screen.
+     * Place all ships in the center of the screen.
      */
     private void placeShips ()
     {
-        // Place a new ship
-        Participant.expire(ship);
-        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
-        addParticipant(ship);
-        shipList.add(ship);
         display.setLegend("");
 
-        // if two player mode, place another ship
-        if (!gameMode.equals("classic"))
+        if (!gameMode.equals("online-multiplayer"))
         {
-            ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
-
-            if (gameMode.equals("enhanced")) // for 2 player local mode, make another ship
+            // Place a new ship.
+            Participant.expire(ship);
+            ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+            addParticipant(ship);
+            shipList.add(ship);
+            
+            // if two player mode, place another ship
+            if (gameMode.equals("enhanced"))
             {
+                ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
                 Participant.expire(ship2);
-                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
                 ship2.setColor(Color.CYAN);
                 addParticipant(ship2);
                 shipList.add(ship2);
             }
         }
-
-        // if in online multiplayer mode, let the server know a ship has been placed
-        if (gameMode.equals("online-multiplayer"))
+        else if (gameMode.equals("online-multiplayer"))
         {
-            client.send(new GameUpdate("SHIPSPAWN"));
+            // if in an online multiplayer game, expire all ships
+            for (Ship s : shipList)
+            {
+                Participant.expire(s);
+            }
+            
+            // Place the user's ship
+            ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+            addParticipant(ship);
+            shipList.add(ship);
+            ship.setColor(Color.RED);
+            
+            // Place new ships for all other players
+            for (Player p : playerList)
+            {
+                Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, p, this);
+                addParticipant(s);
+                shipList.add(s);
+            }
         }
-    }
-
-    /*
-     * A method through which one can spawn ships from outside the controller class, i.e. from an AsteroidsClient
-     */
-    public void addPlayer ()
-    {
-        Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
-        s.setColor(Color.CYAN);
-        addParticipant(s);
-        shipList.add(s);
     }
 
     /**
@@ -226,8 +264,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         pstate.clear();
         display.setLegend("");
-        for (@SuppressWarnings("unused")
-        Ship s : shipList) // not 100% sure why this error pops up
+        for (@SuppressWarnings("unused") // not 100% sure why this is necessary
+        Ship s : shipList)
         {
             s = null;
         }
@@ -238,6 +276,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void initialScreen ()
     {
+        // if in online multiplayer mode, let the server know a user has been added
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate(user, "NEWPLAYER"));
+        }
+        
         // Clear the screen
         clear();
 
@@ -274,16 +318,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
-        // Kill the server
-        // TODO: remove this code
-        // if (gameMode.equals("online-multiplayer"))
-        // {
-        // client.send(new GameUpdate("STOPSERVER"));
-        // }
-        //
-        // // close down the client
-        // client.close();
-
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
         {
@@ -354,7 +388,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         if (gameMode.equals("online-multiplayer"))
         {
-            client.send(new GameUpdate("SHIPDIE"));
+            client.send(new GameUpdate(user, "SHIPDIE"));
         }
 
         // remove the ship from shipList
@@ -456,7 +490,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                                                                                                 // double so we have to
                                                                                                 // use this inequality
                     {
-                        client.send(new GameUpdate("SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
+                        client.send(new GameUpdate(user, "SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
                     }
                     s.applyFriction(SHIP_FRICTION);
                 }

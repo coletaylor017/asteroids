@@ -5,7 +5,8 @@ import java.io.Serializable;
 /*
  * A GameUpdate is an object sent between client and server and vice versa.
  * It represents changes in game state. It consists of an operation code,
- * which represents what has just happened in the latest state of the game.
+ * which represents what has just happened in the latest state of the game,
+ * and an ID that indicates which player performed the action.
  * Each code has a number of associated properties. For example, for the 
  * 'SHIPMOVE' code, an x and a y are sent along with it. For the BULLETSPAWN
  * code, an x and y are also sent. For SHIPDIE, there are no properties needed.
@@ -25,12 +26,16 @@ import java.io.Serializable;
 public class GameUpdate implements Serializable
 {
     /**
-     * 
+     * This was inserted by Eclipse, I'm not 100% sure what it is but
+     * it's necessary to make a serializable object apparently.
      */
     private static final long serialVersionUID = 1735716747784848307L;
 
     /* The operation code for the update, explained below */
     private String operationCode;
+    
+    /* The player that performed the action */
+    private Player originPlayer;
     
     /* Some operations have an associated x coordinate */
     private double x;
@@ -51,9 +56,9 @@ public class GameUpdate implements Serializable
      * -NEXTLEVEL
      * -RESTARTLEVEL
      */
-    public GameUpdate (String operationCode)
+    public GameUpdate (Player p, String operationCode)
     {
-        this.operationCode = operationCode;
+        this(p, operationCode, 0, 0);
     }
     
     /*
@@ -64,11 +69,9 @@ public class GameUpdate implements Serializable
      * -ASTEROIDSPAWN
      * -ASTEROIDMOVE
      */
-    public GameUpdate(String operationCode, double x, double y)
+    public GameUpdate(Player p, String operationCode, double x, double y)
     {
-        this.operationCode = operationCode;
-        this.x = x;
-        this.y = y;
+        this(p, operationCode, x, y, 0);
     }
     
     /*
@@ -77,8 +80,9 @@ public class GameUpdate implements Serializable
      * -SHIPMOVE
      * -BULLETMOVE
      */
-    public GameUpdate(String operationCode, double x, double y, double rotation)
+    public GameUpdate(Player p, String operationCode, double x, double y, double rotation)
     {
+        originPlayer = p; // TODO: change to an ID for faster messages?
         this.operationCode = operationCode;
         this.x = x;
         this.y = y;
@@ -88,6 +92,11 @@ public class GameUpdate implements Serializable
     public String getOperationCode ()
     {
         return operationCode;
+    }
+    
+    public Player getPlayer ()
+    {
+        return originPlayer;
     }
     
     public double getX ()

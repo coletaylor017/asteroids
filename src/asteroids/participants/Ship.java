@@ -7,6 +7,7 @@ import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
+import asteroids.network.Player;
 
 
 /**
@@ -47,11 +48,14 @@ public class Ship extends Participant implements AsteroidDestroyer
 
     /** Game controller */
     private Controller controller;
+    
+    /* The player who owns this ship */
+    private Player owner;
 
     /**
      * Constructs a ship at the specified coordinates that is pointed in the given direction.
      */
-    public Ship (int x, int y, double direction, Controller controller)
+    public Ship (int x, int y, double direction, Player player, Controller controller)
     {
         this.controller = controller;
         setPosition(x, y);
@@ -60,6 +64,7 @@ public class Ship extends Participant implements AsteroidDestroyer
         numBullets = 0;
         score = 0;
         lives = 0;
+        owner = player;
 
         Path2D.Double shipWFlame = new Path2D.Double();
         shipWFlame.moveTo(21, 0);
@@ -84,6 +89,14 @@ public class Ship extends Participant implements AsteroidDestroyer
         poly.closePath();
 
         outline = poly;
+    }
+    
+    /*
+     * Returns the owner of this ship.
+     */
+    public Player getOwner ()
+    {
+        return owner;
     }
     
     /* Get score of this ship */

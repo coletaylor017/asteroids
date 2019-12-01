@@ -9,10 +9,10 @@ public class AsteroidsServer
 {
 
     /* Port that this server listens on */
-    int port;
+    private int port;
 
     /* the server socket that will accept client connections */
-    ServerSocket ss;
+    private ServerSocket ss;
 
     /*
      * Creates a server that connects to game clients, then receives important game events from those clients pertaining
