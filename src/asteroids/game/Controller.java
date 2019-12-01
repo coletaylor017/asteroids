@@ -59,7 +59,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /* An way to iterate through all ships */
     private ArrayList<Ship> shipList;
-    
+
     /* The client that handle communication to and from the server */
     private AsteroidsClient client;
 
@@ -68,9 +68,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public Controller (String version)
     {
-        this (version, null);
+        this(version, null);
     }
-    
+
     /**
      * Constructs a controller made to work with an AsteroidClient instance
      */
@@ -78,24 +78,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // initialize pstate
         pstate = new ParticipantState();
-        
+
         // initialize client object
         client = aClient;
-        
-        shipList = new ArrayList<>();
 
+        shipList = new ArrayList<>();
         // set game mode to "classic", "enhanced", or "local-multiplayer"
         gameMode = version;
 
-        // For now, enhanced mode will always be two player
-        if (gameMode.equals("enhanced"))
-        {
-            twoPlayerGame = true;
-        }
-        else
-        {
-            twoPlayerGame = false;
-        }
+        // For now, enhanced mode will equal two player
+        twoPlayerGame = gameMode.equals("enhanced");
 
         // Set up the refresh timer.
         refreshTimer = new Timer(FRAME_INTERVAL, this);
@@ -120,7 +112,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         return gameMode;
     }
-    
+
     /* Get the Client instance associated with this controller */
     public AsteroidsClient getClient ()
     {
@@ -181,8 +173,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // if two player mode, place another ship
         if (!gameMode.equals("classic"))
         {
-            ship.setColor(Color.GREEN); // in any multi-player game, ships need separate colors to be told apart
-        
+            ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
+
             if (gameMode.equals("enhanced")) // for 2 player local mode, make another ship
             {
                 Participant.expire(ship2);
@@ -193,7 +185,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 display.setLegend("");
             }
         }
-        
+
         // if in online multiplayer mode, let the server know a ship has been placed
         if (gameMode.equals("online-multiplayer"))
         {
@@ -224,7 +216,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         pstate.clear();
         display.setLegend("");
-        for (@SuppressWarnings("unused") Ship s : shipList) // not 100% sure why this error pops up
+        for (@SuppressWarnings("unused")
+        Ship s : shipList) // not 100% sure why this error pops up
         {
             s = null;
         }
@@ -273,14 +266,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Kill the server
         // TODO: remove this code
-        if (gameMode.equals("online-multiplayer"))
-        {
-            client.send(new GameUpdate("STOPSERVER"));
-        }
+//        if (gameMode.equals("online-multiplayer"))
+//        {
+//            client.send(new GameUpdate("STOPSERVER"));
+//        }
+//
+//        // close down the client
+//        client.close();
 
-        // close down the client
-        client.close();
-        
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
         {
@@ -353,10 +346,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             client.send(new GameUpdate("SHIPDIE"));
         }
-        
+
         // remove the ship from shipList
         shipList.remove(s);
-        
+
         // Null out the ship
         s = null;
 
@@ -411,7 +404,19 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getSource() instanceof JButton)
         {
-            initialScreen();
+            JButton b = (JButton) e.getSource(); // so that the JButton method getName can be invoked on the source
+            if (e.getActionCommand().contentEquals(START_LABEL))
+            {
+                initialScreen();
+            }
+            else if (e.getActionCommand().contentEquals("Kill client"))
+            {
+                /*
+                 * terminate the client program. I think this should also throw an exception, thus ending the
+                 * GameNetworkLoop thread handling this socket's connection.
+                 */
+                client.close();
+            }
         }
 
         // Time to refresh the screen and deal with keyboard input
@@ -435,10 +440,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 {
                     s.attack();
                 }
-                if (ship != null)
+                if (s != null)
                 {
                     // if ship is moving, send its latest location to the server
-                    if (gameMode.equals("online-multiplayer") && s.getSpeed() > 0.000000000001) // getSpeed returns a double so we have to use this inequality
+                    if (gameMode.equals("online-multiplayer") && s.getSpeed() > 0.000000000001) // getSpeed returns a
+                                                                                                // double so we have to
+                                                                                                // use this inequality
                     {
                         client.send(new GameUpdate("SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
                     }
@@ -528,7 +535,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.setAccelerating(true);
-//            client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
+            // client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
         }
 
         // TODO: SHIP 2

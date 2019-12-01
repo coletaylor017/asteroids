@@ -27,7 +27,6 @@ public class AsteroidsClient
      */
     public AsteroidsClient(int serverPort)
     {
-        controller = new Controller("online-multiplayer", this);
         
         port = serverPort;
         try
@@ -49,10 +48,12 @@ public class AsteroidsClient
             
             // 'flush' just makes sure any un-sent output bytes actually get sent
             clientOut.flush();
+            
+            controller = new Controller("online-multiplayer", this);
         }
         catch (SocketException s) // usually happens when connection ended by server, i.e. in the event of an inactivity timeout
         {
-            System.out.println("New socket exception on client side. Letting controller know about timeout.");
+            System.out.println("New socket exception on client side. ");
             s.printStackTrace();
             // TODO: Inform controller of broken connection so it can tell the user
         }

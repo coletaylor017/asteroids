@@ -3,14 +3,16 @@ package asteroids.network;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import asteroids.network.GameUpdate;
 import java.io.*;
 import asteroids.network.GameNetworkLoop;
 
 public class AsteroidsServer
 {
-    /* List of all connections currently active */
-    ArrayList<Socket> socketList;
+    /* List of all client threads currently active */
+    ArrayList<Thread> threadList;
 
     /* Port that this server listens on */
     int port;
@@ -20,6 +22,9 @@ public class AsteroidsServer
 
     /* How long the server can run without clients connecting before it times out */
     private int timeoutTime;
+    
+    // the server socket that will accept client connetions
+    ServerSocket ss;
 
     /*
      * Creates a server that connects to game clients, then receives important game events from those clients pertaining
@@ -35,7 +40,7 @@ public class AsteroidsServer
     public AsteroidsServer (int serverPort)
     {
         // server will shut down after 30,000 ms of no connections
-        timeoutTime = 30 * 1000;
+        timeoutTime = 20 * 1000;
 
         // time at which the server will timeout
         long shutdownTime = System.currentTimeMillis() + timeoutTime;
@@ -43,16 +48,23 @@ public class AsteroidsServer
         port = serverPort;
         socket = null;
 
+        /*
+         * The task that the server will continue to do as long as it is active
+         */
         try
         {
             // new ServerSocket waits for connection requests
-            ServerSocket ss = new ServerSocket(port);
+            ss = new ServerSocket(port);
 
             System.out.println("Server up, waiting for connections...");
 
             // simple counter for naming threads
             int i = 1;
 
+            // This loop will end in either of the following situations:
+            // 1. A new connection is accepted after the timeout time
+            // ss.close() is called from somewhere else, which will make
+            // accept() throw a SocketException.
             while (shutdownTime > System.currentTimeMillis())
             {
                 try
@@ -60,14 +72,45 @@ public class AsteroidsServer
                     // establish a connection represented by Socket s
                     socket = ss.accept();
                     System.out.println("Connection accepted.");
+                    if (shutdownTime > System.currentTimeMillis())
+                    {
+                        // new thread for a client
+                        GameNetworkLoop g = new GameNetworkLoop("thread-" + i, socket);
+                        
+                        Thread t = new Thread(g);
+                        
+                        threadList.add(t);
+
+                        // start thread, invoking g's run() method
+                        t.start();
+                    }
                 }
                 catch (IOException e)
                 {
                     System.out.println("I/O error: " + e);
                 }
-                // new thread for a client
-                new GameNetworkLoop("thread-" + i, socket).start();
+                i++;
             }
+
+             // Before shutting down the server, shut down each thread
+//             for (GameNetworkLoop gnl : threadList)
+//             {
+//                 // tell the game loop to stop
+//                 // Still subject to the problem that readObject() is blocking so the
+//                 // thread won't terminate until it gets another GameUpdate....
+//                 // Need to find a solution
+//                 System.out.println("Asking '" + gnl.getName() + "' to terminate.");
+//                 gnl.terminate();
+//                
+//                 // Wait till the thread stops
+//                 gnl.join();
+//                 System.out.println("'" + gnl.getName() + "' succesfully terminated.");
+//                
+//                 // remove from list
+//                 threadList.remove(gnl);
+//                 System.out.println("Removed '" + gnl.getName() + "' from thread list.");
+//             }
+
             System.out.println("Server timeout reached, shutting game server down.");
             ss.close();
         }
@@ -76,5 +119,19 @@ public class AsteroidsServer
             System.out.println("NEW EXCEPTION ON ASTEROIDSSERVER FILE: ");
             e.printStackTrace();
         }
+    }
+    
+    /* returns the ServerSocket for this server. */
+    public ServerSocket getServerSocket ()
+    {
+        return ss;
+    }
+    
+    /*
+     * Removes the specified instance of GameNetworkLoop from the list of active threads.
+     */
+    public void removeFromList (GameNetworkLoop g)
+    {
+        threadList.remove(g);
     }
 }

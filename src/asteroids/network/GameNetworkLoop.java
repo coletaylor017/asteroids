@@ -1,15 +1,14 @@
 package asteroids.network;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class GameNetworkLoop implements Runnable
 {
-    /* Thread object to be created */
-    private Thread thread;
-
     /* Name of the thread */
     private String name;
     
@@ -18,14 +17,18 @@ public class GameNetworkLoop implements Runnable
     
     /* Socket that this thread will interact with */
     Socket socket;
+    
+    /* Flag to make the thread stop when we want */
+    boolean running;
 
     public GameNetworkLoop (String name, Socket socket)
     {
+//        running = true;
         this.name = name;
         this.socket = socket;
         
-        // should time out after 30,000 ms of inactivity
-        timeoutTime = 25*1000;
+        // should time out after 60s of inactivity
+        timeoutTime = 60*1000;
     }
 
     @SuppressWarnings("unused")
@@ -33,12 +36,17 @@ public class GameNetworkLoop implements Runnable
     public void run ()
     {
         long shutdownTime = System.currentTimeMillis() + timeoutTime;
-        System.out.println("Beginning of run loop reached.");
+        System.out.println("GameNetowrkLoop thread '" + name + "' starting.");
 
         try
         {
             //Make an input stream to read incoming GameUpdate objects
-            ObjectInputStream serverIn = new ObjectInputStream(socket.getInputStream());
+            // This is a only way to get a buffered object input stream, since such an object doesn't exist 
+            ObjectInputStream serverIn = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            
+            // askfj
+            BufferedInputStream serverIn2 = new BufferedInputStream(new ObjectInputStream(socket.getInputStream()));
+
             
             // Make an output stream so that server can send GameUpdate objects to client
             ObjectOutputStream serverOut = new ObjectOutputStream(socket.getOutputStream());
@@ -49,10 +57,6 @@ public class GameNetworkLoop implements Runnable
             // repeat until idle for timeoutTime milliseconds OR client tells this thread to self-destruct
             while (shutdownTime > System.currentTimeMillis() && !update.getOperationCode().equals("ENDCONNECTION"))
             {
-                // pause execution for two seconds, as a test
-//                Thread.sleep(2000);
-//                System.out.println("Continuing to run thread");
-                
                 System.out.println("New game update: " + update.toString());
                 System.out.println("Operation code: " + update.getOperationCode());
                 System.out.println("X coord: " + update.getX());
@@ -67,16 +71,13 @@ public class GameNetworkLoop implements Runnable
                 }
             }
             
+            System.out.println("Thread " + name + " shutting down.");
+            
             // close everything down    
-            socket.close();
             serverOut.close();
             serverIn.close();
+            socket.close();
         }
-//        catch (InterruptedException e)
-//        {
-//            System.out.println("Thread '" + name + "' interrupted. See stack trace below:");
-//            e.printStackTrace();
-//        }
         catch (IOException i)
         {
             System.out.println("IO exception in server thread '" + name + "'. See stack trace below:");
@@ -91,18 +92,17 @@ public class GameNetworkLoop implements Runnable
         System.out.println("End of run() method reached. Shutting socket down.");
     }
     
-    public void start ()
+    public void terminate ()
     {
-        // don't start the thread is it's already running
-        if (thread == null)
+        running = false;
+        try
         {
-            // create a new thread that can run this's run() method
-            thread = new Thread(this, name);
-            
-            // make the thread start running the run() method
-            System.out.println("Starting thread");
-            thread.start();
+            socket.close();
+        }
+        catch (IOException i)
+        {
+            System.out.println("Error closing socket");
+            i.printStackTrace();
         }
     }
-
 }

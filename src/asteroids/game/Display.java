@@ -1,8 +1,12 @@
 package asteroids.game;
 
 import javax.swing.*;
+import asteroids.network.AsteroidsClient;
 import static asteroids.game.Constants.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 
 /**
  * Defines the top-level appearance of an Asteroids game.
@@ -10,6 +14,7 @@ import java.awt.*;
 @SuppressWarnings("serial")
 public class Display extends JFrame
 {
+    
     /** The area where the action takes place */
     private Screen screen;
 
@@ -21,9 +26,8 @@ public class Display extends JFrame
         // Title at the top
         setTitle(TITLE);
 
-        
-        
-        // Default behavior on closing
+        // Just close the JFrame on close, because before the app is shut down, we need to
+        // run a function to shut down the client and server
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // The main playing area and the controller
@@ -41,6 +45,13 @@ public class Display extends JFrame
         // The button that starts the game
         JButton startGame = new JButton(START_LABEL);
         controls.add(startGame);
+        
+        if (controller.getGameMode().equals("online-multiplayer"))
+        {
+            JButton killClient = new JButton("Kill client");
+            controls.add(killClient);
+            killClient.addActionListener(controller);
+        }
 
         // Organize everything
         JPanel mainPanel = new JPanel();
@@ -52,6 +63,7 @@ public class Display extends JFrame
 
         // Connect the controller to the start button
         startGame.addActionListener(controller);
+        
     }
 
     /**
@@ -70,7 +82,6 @@ public class Display extends JFrame
         screen.setLegend(s);
     }
 
-    
     /** Sets the lives label */
     public void setLives (int s)
     {
