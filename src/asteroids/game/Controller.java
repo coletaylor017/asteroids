@@ -404,7 +404,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getSource() instanceof JButton)
         {
-            JButton b = (JButton) e.getSource(); // so that the JButton method getName can be invoked on the source
             if (e.getActionCommand().contentEquals(START_LABEL))
             {
                 initialScreen();

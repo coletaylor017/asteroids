@@ -1,11 +1,8 @@
 package asteroids.game;
 
 import javax.swing.*;
-import asteroids.network.AsteroidsClient;
 import static asteroids.game.Constants.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 
 /**
@@ -26,8 +23,6 @@ public class Display extends JFrame
         // Title at the top
         setTitle(TITLE);
 
-        // Just close the JFrame on close, because before the app is shut down, we need to
-        // run a function to shut down the client and server
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // The main playing area and the controller

@@ -26,14 +26,31 @@ public class AsteroidsServer
     public AsteroidsServer (int serverPort)
     {
         port = serverPort;
-
+        
+        // new ServerSocket waits for connection requests
         try
         {
-            // new ServerSocket waits for connection requests
             ss = new ServerSocket(port);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
-            System.out.println("Server up, waiting for connections...");
+        System.out.println("Server created.");
+    }
 
+    /* returns the ServerSocket for this server. */
+    public ServerSocket getServerSocket ()
+    {
+        return ss;
+    }
+
+    /* Starts the server's main process */
+    public void start ()
+    {
+        try
+        {
             // initialize a simple counter for naming threads
             int i = 0;
 
@@ -43,6 +60,7 @@ public class AsteroidsServer
             {
                 try
                 {
+                    System.out.println("Waiting for connections...");
                     // establish a connection represented by Socket s
                     Socket socket = ss.accept();
                     System.out.println("Connection accepted.");
@@ -61,11 +79,5 @@ public class AsteroidsServer
         {
             e.printStackTrace();
         }
-    }
-
-    /* returns the ServerSocket for this server. */
-    public ServerSocket getServerSocket ()
-    {
-        return ss;
     }
 }
