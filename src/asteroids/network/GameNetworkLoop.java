@@ -1,8 +1,5 @@
 package asteroids.network;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -12,33 +9,18 @@ public class GameNetworkLoop extends Thread
     /* Name of the thread */
     private String name;
     
-    /* How long the thread can run without anything happening before it times out */
-    private int timeoutTime;
-    
     /* Socket that this thread will interact with */
     Socket socket;
-    
-    /* Flag to make the thread stop when we want */
-    boolean running;
-    
-    /* a thread to execute the code in the run() function */
-    Thread thread;
 
     public GameNetworkLoop (String name, Socket socket)
     {
-//        running = true;
         this.name = name;
         this.socket = socket;
-        
-        // should time out after 60s of inactivity
-        timeoutTime = 60*1000;
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void run ()
     {
-        long shutdownTime = System.currentTimeMillis() + timeoutTime;
         System.out.println("GameNetowrkLoop thread '" + name + "' starting.");
 
         try
@@ -53,8 +35,8 @@ public class GameNetworkLoop extends Thread
             // Read incoming object, cast to type GameUpdate, and assign
             GameUpdate update = (GameUpdate) serverIn.readObject();
             
-            // repeat until idle for timeoutTime milliseconds OR client tells this thread to self-destruct
-            while (shutdownTime > System.currentTimeMillis() && !update.getOperationCode().equals("ENDCONNECTION"))
+            // repeat until client tells this thread to stop via a GameUpdate with code="ENDCONNECTION"
+            while (!update.getOperationCode().equals("ENDCONNECTION"))
             {
                 System.out.println("New game update: " + update.toString());
                 System.out.println("Operation code: " + update.getOperationCode());
@@ -62,60 +44,20 @@ public class GameNetworkLoop extends Thread
                 System.out.println("Y coord: " + update.getY());
                 System.out.println("Rotation: " + update.getRotation());
                 update = (GameUpdate) serverIn.readObject();
-                
-                // If there's something happening, reset shutdownTime
-                if (false /* replace with indicator of input) */)
-                {
-                    shutdownTime = System.currentTimeMillis() + timeoutTime;
-                }
             }
             
-            System.out.println("Thread " + name + " shutting down.");
+            System.out.println("Thread " + name + " attempting to shut down.");
             
             // close everything down    
             serverOut.close();
             serverIn.close();
             socket.close();
         }
-        catch (IOException i)
-        {
-            System.out.println("IO exception in server thread '" + name + "'. See stack trace below:");
-            i.printStackTrace();
-        }
         catch (Exception n)
         {
-            System.out.println("Some non-io, non-interrupted exception in server thread '" + name + "'. See stack trace below:");
             n.printStackTrace();
         }
 
-        System.out.println("End of run() method reached. Shutting socket down.");
+        System.out.println("GameNetworkLoop thread '" + name + "' has finished its run() method.");
     }
-    
-    public void terminate ()
-    {
-        running = false;
-        try
-        {
-            socket.close();
-        }
-        catch (IOException i)
-        {
-            System.out.println("Error closing socket");
-            i.printStackTrace();
-        }
-    }
-    
-//    public void start ()
-//    {
-//        // don't start the thread is it's already running
-//        if (thread == null)
-//        {
-//            // create a new thread that can run this's run() method
-//            thread = new Thread(this, name);
-//            
-//            // make the thread start running the run() method
-//            System.out.println("Starting thread");
-//            thread.start();
-//        }
-//    }
 }

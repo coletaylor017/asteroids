@@ -1,7 +1,6 @@
 package asteroids.network;
 
 import java.net.Socket;
-import java.net.SocketException;
 import java.io.*;
 import asteroids.game.*;
 
@@ -13,17 +12,20 @@ public class AsteroidsClient
     /* The local representation of the game */
     Controller controller;
     
+    /* Outbound messages to the server go through here */
     ObjectOutputStream clientOut;
     
+    /* Incoming messages from the server can be read here */
     ObjectInputStream clientIn;
     
+    /* The socket this client connects through */
     Socket socket;
     
     /*
      * Creates a new client for the Asteroids game. This client connects to
-     * an AsteroidsServer and sends important game updates to said server.
-     * The client also updates its local representation of the current game
-     * whenever it receives information from the server.
+     * an AsteroidsServer and is used to send important game updates from controller to said server.
+     * The client also interprets info from the server and invokes methods on controller to 
+     * update the game state according to those updates. 
      */
     public AsteroidsClient(int serverPort)
     {
@@ -31,31 +33,17 @@ public class AsteroidsClient
         port = serverPort;
         try
         {
-            // try to create connection to server at correct port
+            // try to create connection to server at correct port. If unsuccessful, an exception is thrown.
             socket = new Socket("localhost", port);
             
-            // create an output stream to send GameUpdate objects to the server
+            // initialize the output stream
             clientOut = new ObjectOutputStream(socket.getOutputStream());
             
-            // create an input stream to read GameUpdate objects from server
+            // initialize the input stream
             clientIn =  new ObjectInputStream(socket.getInputStream());
             
-            // create a new update to the game state
-            GameUpdate update = new GameUpdate("CONNECTION ESTABLISHED");
-            
-            // Send the update to the server
-            clientOut.writeObject(update);
-            
-            // 'flush' just makes sure any un-sent output bytes actually get sent
-            clientOut.flush();
-            
+            /* create a new controller to build the user's local game */
             controller = new Controller("online-multiplayer", this);
-        }
-        catch (SocketException s) // usually happens when connection ended by server, i.e. in the event of an inactivity timeout
-        {
-            System.out.println("New socket exception on client side. ");
-            s.printStackTrace();
-            // TODO: Inform controller of broken connection so it can tell the user
         }
         catch (Exception e)
         {
