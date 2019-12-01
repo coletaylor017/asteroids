@@ -12,7 +12,7 @@ import asteroids.network.GameNetworkLoop;
 public class AsteroidsServer
 {
     /* List of all client threads currently active */
-    ArrayList<Thread> threadList;
+    ArrayList<GameNetworkLoop> threadList;
 
     /* Port that this server listens on */
     int port;
@@ -77,12 +77,10 @@ public class AsteroidsServer
                         // new thread for a client
                         GameNetworkLoop g = new GameNetworkLoop("thread-" + i, socket);
                         
-                        Thread t = new Thread(g);
-                        
-                        threadList.add(t);
+                        threadList.add(g);
 
-                        // start thread, invoking g's run() method
-                        t.start();
+                        // start thread
+                        g.start();
                     }
                 }
                 catch (IOException e)
@@ -93,23 +91,23 @@ public class AsteroidsServer
             }
 
              // Before shutting down the server, shut down each thread
-//             for (GameNetworkLoop gnl : threadList)
-//             {
-//                 // tell the game loop to stop
-//                 // Still subject to the problem that readObject() is blocking so the
-//                 // thread won't terminate until it gets another GameUpdate....
-//                 // Need to find a solution
-//                 System.out.println("Asking '" + gnl.getName() + "' to terminate.");
-//                 gnl.terminate();
-//                
-//                 // Wait till the thread stops
+             for (GameNetworkLoop gnl : threadList)
+             {
+                 // tell the game loop to stop
+                 // Still subject to the problem that readObject() is blocking so the
+                 // thread won't terminate until it gets another GameUpdate....
+                 // Need to find a solution
+                 System.out.println("Asking '" + gnl.getName() + "' to terminate.");
+                 gnl.terminate();
+                
+                 // Wait till the thread stops
 //                 gnl.join();
-//                 System.out.println("'" + gnl.getName() + "' succesfully terminated.");
-//                
-//                 // remove from list
-//                 threadList.remove(gnl);
-//                 System.out.println("Removed '" + gnl.getName() + "' from thread list.");
-//             }
+                 System.out.println("'" + gnl.getName() + "' succesfully terminated.");
+                
+                 // remove from list
+                 threadList.remove(gnl);
+                 System.out.println("Removed '" + gnl.getName() + "' from thread list.");
+             }
 
             System.out.println("Server timeout reached, shutting game server down.");
             ss.close();

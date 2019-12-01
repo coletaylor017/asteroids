@@ -20,6 +20,9 @@ public class GameNetworkLoop implements Runnable
     
     /* Flag to make the thread stop when we want */
     boolean running;
+    
+    /* a thread to execute the code in the run() function */
+    Thread thread;
 
     public GameNetworkLoop (String name, Socket socket)
     {
@@ -104,5 +107,29 @@ public class GameNetworkLoop implements Runnable
             System.out.println("Error closing socket");
             i.printStackTrace();
         }
+    }
+    
+    public void start ()
+    {
+        // don't start the thread is it's already running
+        if (thread == null)
+        {
+            // create a new thread that can run this's run() method
+            thread = new Thread(this, name);
+            
+            // make the thread start running the run() method
+            System.out.println("Starting thread");
+            thread.start();
+        }
+    }
+    
+    public String getName ()
+    {
+        return name;
+    }
+    
+    public Thread getThread ()
+    {
+        return thread;
     }
 }
