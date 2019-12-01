@@ -75,12 +75,13 @@ public class AsteroidsServer
                     if (shutdownTime > System.currentTimeMillis())
                     {
                         // new thread for a client
-                        GameNetworkLoop g = new GameNetworkLoop("thread-" + i, socket);
+//                        GameNetworkLoop g = new GameNetworkLoop("thread-" + i, socket);
                         
-                        threadList.add(g);
+//                        threadList.add(g);
 
                         // start thread
-                        g.start();
+//                        g.start();
+                        new GameNetworkLoop("" + i, socket).start();
                     }
                 }
                 catch (IOException e)
