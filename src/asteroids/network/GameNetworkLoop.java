@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class GameNetworkLoop implements Runnable
+public class GameNetworkLoop extends Thread
 {
     /* Name of the thread */
     private String name;
@@ -45,12 +45,8 @@ public class GameNetworkLoop implements Runnable
         {
             //Make an input stream to read incoming GameUpdate objects
             // This is a only way to get a buffered object input stream, since such an object doesn't exist 
-            ObjectInputStream serverIn = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-            
-            // askfj
-            BufferedInputStream serverIn2 = new BufferedInputStream(new ObjectInputStream(socket.getInputStream()));
+            ObjectInputStream serverIn = new ObjectInputStream(socket.getInputStream());
 
-            
             // Make an output stream so that server can send GameUpdate objects to client
             ObjectOutputStream serverOut = new ObjectOutputStream(socket.getOutputStream());
             
@@ -109,27 +105,17 @@ public class GameNetworkLoop implements Runnable
         }
     }
     
-    public void start ()
-    {
-        // don't start the thread is it's already running
-        if (thread == null)
-        {
-            // create a new thread that can run this's run() method
-            thread = new Thread(this, name);
-            
-            // make the thread start running the run() method
-            System.out.println("Starting thread");
-            thread.start();
-        }
-    }
-    
-    public String getName ()
-    {
-        return name;
-    }
-    
-    public Thread getThread ()
-    {
-        return thread;
-    }
+//    public void start ()
+//    {
+//        // don't start the thread is it's already running
+//        if (thread == null)
+//        {
+//            // create a new thread that can run this's run() method
+//            thread = new Thread(this, name);
+//            
+//            // make the thread start running the run() method
+//            System.out.println("Starting thread");
+//            thread.start();
+//        }
+//    }
 }

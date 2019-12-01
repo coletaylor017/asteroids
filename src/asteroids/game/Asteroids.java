@@ -47,9 +47,7 @@ public class Asteroids
             new AsteroidsClient(2020);
         } else if (choice == 4)
         {
-            AsteroidsClient c = new AsteroidsClient(2020);
-            c.send(new GameUpdate("STOPSERVER"));
-            c.close();
+            
         }
 
     }

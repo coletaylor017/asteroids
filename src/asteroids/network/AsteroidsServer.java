@@ -3,23 +3,22 @@ package asteroids.network;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import asteroids.network.GameUpdate;
 import java.io.*;
 import asteroids.network.GameNetworkLoop;
 
 public class AsteroidsServer
 {
-    /* List of all connections currently active */
-    ArrayList<Socket> socketList;
+    /* List of all client threads currently active */
+    ArrayList<GameNetworkLoop> threadList;
 
     /* Port that this server listens on */
     int port;
 
-    /* A socket object that will be re-assigned each time the server connects to a new client */
-    Socket socket;
-
-    /* How long the server can run without clients connecting before it times out */
-    private int timeoutTime;
+    // the server socket that will accept client connetions
+    ServerSocket ss;
 
     /*
      * Creates a server that connects to game clients, then receives important game events from those clients pertaining
@@ -34,47 +33,62 @@ public class AsteroidsServer
      */
     public AsteroidsServer (int serverPort)
     {
-        // server will shut down after 30,000 ms of no connections
-        timeoutTime = 30 * 1000;
-
-        // time at which the server will timeout
-        long shutdownTime = System.currentTimeMillis() + timeoutTime;
-
         port = serverPort;
-        socket = null;
+        Socket socket = null;
 
+        /*
+         * The task that the server will continue to do as long as it is active
+         */
         try
         {
             // new ServerSocket waits for connection requests
-            ServerSocket ss = new ServerSocket(port);
+            ss = new ServerSocket(port);
 
             System.out.println("Server up, waiting for connections...");
 
             // simple counter for naming threads
             int i = 1;
 
-            while (shutdownTime > System.currentTimeMillis())
+            // This loop will end only  when ss.close() is called from somewhere else, which will make
+            // accept() throw a SocketException.
+            while (true)
             {
                 try
                 {
                     // establish a connection represented by Socket s
                     socket = ss.accept();
                     System.out.println("Connection accepted.");
+
+                    // new thread for a client
+                    new GameNetworkLoop("" + i, socket).start();
                 }
                 catch (IOException e)
                 {
                     System.out.println("I/O error: " + e);
+                    ss.close();
+                    System.out.println("Closed server socket successfully.");
                 }
-                // new thread for a client
-                new GameNetworkLoop("thread-" + i, socket).start();
+                i++;
             }
-            System.out.println("Server timeout reached, shutting game server down.");
-            ss.close();
         }
         catch (Exception e)
         {
             System.out.println("NEW EXCEPTION ON ASTEROIDSSERVER FILE: ");
             e.printStackTrace();
         }
+    }
+
+    /* returns the ServerSocket for this server. */
+    public ServerSocket getServerSocket ()
+    {
+        return ss;
+    }
+
+    /*
+     * Removes the specified instance of GameNetworkLoop from the list of active threads.
+     */
+    public void removeFromList (GameNetworkLoop g)
+    {
+        threadList.remove(g);
     }
 }
