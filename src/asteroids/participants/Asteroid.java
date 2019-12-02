@@ -48,6 +48,7 @@ public class Asteroid extends Participant implements ShipDestroyer
         setPosition(x, y);
         setVelocity(speed, RANDOM.nextDouble() * 2 * Math.PI);
         setRotation(2 * Math.PI * RANDOM.nextDouble());
+        //TODO: if (speed == SPEED_LIMIT)
         createAsteroidOutline(variety, size);
     }
 

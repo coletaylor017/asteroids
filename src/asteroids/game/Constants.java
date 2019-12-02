@@ -104,6 +104,7 @@ public class Constants
      * Score earned for asteroids of size 0, 1, and 2.
      */
     public final static int[] ASTEROID_SCORE = { 100, 50, 20 };
+    
 
     /**
      * Scaling factors used for alien ships of size 0 and 1.

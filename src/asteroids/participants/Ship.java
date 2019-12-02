@@ -61,6 +61,7 @@ public class Ship extends Participant implements AsteroidDestroyer
         numBullets = 0;
         score = 0;
         lives = 0;
+        
 
         Path2D.Double shipWFlame = new Path2D.Double();
         shipWFlame.moveTo(21, 0);

@@ -79,6 +79,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** Sound for small asteroid being destroyed */
     private Clip bangSmall;
 
+    /** Sound for ship being destroyed */
+    private Clip bangShip;
+
+    /** Sound for alien-ship being destroyed */
+    private Clip bangAlienShip;
+
     /**
      * Constructs a controller to coordinate the game and screen
      */
@@ -90,6 +96,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         bangLarge = createClip("/sounds/bangLarge.wav");
         bangMedium = createClip("/sounds/bangMedium.wav");
         bangSmall = createClip("/sounds/bangSmall.wav");
+        bangShip = createClip("/sounds/bangShip.wav");
+        bangAlienShip = createClip("/sounds/bangAlienShip.wav");
 
         shipList = new ArrayList<>();
 
@@ -366,6 +374,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
+        if (bangShip.isRunning())
+        {
+            bangShip.stop();
+        }
+        bangShip.setFramePosition(1);
+        bangShip.start();
 
         // remove the ship from shipList
         shipList.remove(s);
@@ -394,13 +408,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
-        if (size == 2) {
-        if (bangLarge.isRunning())
+        if (size == 2)
         {
-            bangLarge.stop();
-        }
-        bangLarge.setFramePosition(2);
-        bangLarge.start();
+            if (bangLarge.isRunning())
+            {
+                bangLarge.stop();
+            }
+            bangLarge.setFramePosition(0);
+            bangLarge.start();
         }
         if (size == 1)
         {
@@ -411,16 +426,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             bangMedium.setFramePosition(0);
             bangMedium.start();
         }
-        else 
+        else
         {
-           if (bangSmall.isRunning())
-           {
-               bangSmall.stop();
-           }
-           bangSmall.setFramePosition(0);
-           bangSmall.start();
+            if (bangSmall.isRunning())
+            {
+                bangSmall.stop();
+            }
+            bangSmall.setFramePosition(0);
+            bangSmall.start();
         }
-       
+
         // for 2 player mode, score is handled in the Asteroid class
         if (!twoPlayerGame)
         {
@@ -430,6 +445,24 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Display new score
         display.setScore(score);
 
+    }
+
+    //TODO: implemented for score and sound 
+    public void alienShipDestroyed (int size)
+    {
+        if (bangAlienShip.isRunning())
+        {
+            bangAlienShip.stop();
+        }
+        bangAlienShip.setFramePosition(0);
+        bangAlienShip.start();
+
+        if (!twoPlayerGame)
+        {
+            score += ALIENSHIP_SCORE[size];
+        }
+        //Display new score
+        display.setScore(score);
     }
 
     /**
@@ -470,24 +503,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 if (s.accelerating() && s != null)
                 {
                     s.accelerate();
-                    if (thrust.isRunning())
-                    {
-                        thrust.stop();
-                    }
-                    thrust.setFramePosition(0);
-                    thrust.start();
+                    // TODO: change so that thrust is played until button is released
 
+                    thrust.setFramePosition(0);
+                    thrust.loop(3);
                 }
                 if (s.shooting() && s != null)
                 {
                     s.attack();
-                    if (fire.isRunning())
-                    {
-                        fire.stop();
-                    }
+                    // TODO: change so that thrust is played until button is released
 
-                    fire.setFramePosition(0);
-                    fire.start();
+                    // fire.setFramePosition(0);
+                    // fire.start();
                 }
                 if (ship != null)
                 {
@@ -572,10 +599,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
+            fire.setFramePosition(0);
+            fire.loop(3);
             ship.setShooting(true);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
+            thrust.start();
+
             ship.setAccelerating(true);
         }
 
@@ -608,10 +639,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // s key will not fire player 1's ship in two-player mode
             if (!twoPlayerGame)
             {
+                fire.loop(5);
+
                 ship.setShooting(true);
             }
             else
             {
+                fire.start();
                 ship2.setShooting(true);
             }
         }
@@ -627,10 +661,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
+                thrust.start();
                 ship.setAccelerating(true);
             }
             else
             {
+                thrust.start();
                 ship2.setAccelerating(true);
             }
         }
@@ -652,6 +688,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // UP KEY
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
+            thrust.stop();
             ship.setAccelerating(false);
         }
 
@@ -673,10 +710,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
+                thrust.stop();
                 ship.setAccelerating(false);
             }
             else
             {
+                thrust.stop();
                 ship2.setAccelerating(false);
             }
         }
@@ -710,10 +749,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
+                fire.stop();
                 ship.setShooting(false);
             }
             else
             {
+                fire.stop();
                 ship2.setShooting(false);
             }
         }
@@ -721,11 +762,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
+                fire.stop();
                 ship.setShooting(false);
             }
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
+            fire.stop();
             ship.setShooting(false);
         }
     }
