@@ -9,7 +9,6 @@ import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 
-
 /**
  * Represents ships
  */
@@ -17,32 +16,28 @@ public class Ship extends Participant implements AsteroidDestroyer
 {
     /** The outline of the ship */
     private Shape outline;
-    
+
     /** Outline of the shape of rocket with flame */
     private Shape wFlame;
-    
-    /** determines whether accelerate() is active,
-     * if so   */
-//    private boolean hasFlame;
-    
+
     /* Keeps track of if this ship is currently accelerating */
     private boolean accelerating;
-    
+
     /* Keeps track of if this ship is currently shooting */
     private boolean shooting;
-    
+
     /* Keeps track of if this ship is currently turning left */
     private boolean turningLeft;
-    
+
     /* Keeps track of if this ship is currently turning right */
     private boolean turningRight;
-    
+
     /* Number of bullets on-screen that were fired by this particular ship */
     private int numBullets;
-    
+
     /* The score of the player who controls this ship */
     private int score;
-    
+
     /* Lives left of the player who controls this ship */
     private int lives;
 
@@ -57,11 +52,10 @@ public class Ship extends Participant implements AsteroidDestroyer
         this.controller = controller;
         setPosition(x, y);
         setRotation(direction);
-        
+
         numBullets = 0;
         score = 0;
         lives = 0;
-        
 
         Path2D.Double shipWFlame = new Path2D.Double();
         shipWFlame.moveTo(21, 0);
@@ -72,10 +66,8 @@ public class Ship extends Participant implements AsteroidDestroyer
         shipWFlame.lineTo(-14, 10);
         shipWFlame.lineTo(-14, -10);
         shipWFlame.lineTo(-21, -12);
-        shipWFlame.closePath();    
-        wFlame =shipWFlame;
-        
-            
+        shipWFlame.closePath();
+        wFlame = shipWFlame;
 
         Path2D.Double poly = new Path2D.Double();
         poly.moveTo(21, 0);
@@ -87,27 +79,27 @@ public class Ship extends Participant implements AsteroidDestroyer
 
         outline = poly;
     }
-    
+
     /* Get score of this ship */
-    public int getScore()
+    public int getScore ()
     {
         return score;
     }
-    
+
     /* Get lives of this ship */
-    public int getLives()
+    public int getLives ()
     {
         return lives;
     }
-    
+
     /* set this player's score */
-    public void setScore(int newScore)
+    public void setScore (int newScore)
     {
         score = newScore;
     }
-    
+
     /* set this player's lives */
-    public void setLives(int newLives)
+    public void setLives (int newLives)
     {
         score = newLives;
     }
@@ -167,58 +159,57 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         rotate(-Math.PI / 16);
     }
-    
-    // SHIP STATE SETTERS 
+
+    // SHIP STATE SETTERS
     public void setTurningLeft (boolean state)
     {
         turningLeft = state;
     }
-    
+
     public void setTurningRight (boolean state)
     {
         turningRight = state;
     }
-    
+
     public void setAccelerating (boolean state)
     {
         accelerating = state;
     }
-    
+
     public void setShooting (boolean shootingOn)
     {
         shooting = shootingOn;
     }
-    
+
     // SHIP STATE GETTERS
-    
+
     public boolean turningLeft ()
     {
         return turningLeft;
     }
-    
+
     public boolean turningRight ()
     {
         return turningRight;
     }
-    
+
     public boolean accelerating ()
     {
         return accelerating;
     }
-    
+
     public boolean shooting ()
     {
         return shooting;
     }
 
     /**
-     * Accelerates by SHIP_ACCELERATION
-     * sets hasFlame to true
+     * Accelerates by SHIP_ACCELERATION sets hasFlame to true
      */
     public void accelerate ()
     {
         accelerate(SHIP_ACCELERATION);
-        
+
         // add some little exhaust particles
         if (controller.getGameMode() == "enhanced")
         {
@@ -227,12 +218,13 @@ public class Ship extends Participant implements AsteroidDestroyer
                 double offset = -5 + RANDOM.nextInt(10);
                 Line2D.Double blastParticleShape = new Line2D.Double(-10, offset, -11, offset);
                 int duration = RANDOM.nextInt(250) + 500; // randomize each particle's lifespan
-                controller.addParticipant(new Particle(this.getX(), this.getY(), 1, this.getRotation() - Math.PI, this.getRotation(), blastParticleShape, duration, controller));
+                controller.addParticipant(new Particle(this.getX(), this.getY(), 1, this.getRotation() - Math.PI,
+                        this.getRotation(), blastParticleShape, duration, controller));
             }
         }
-        
+
     }
-    
+
     /*
      * Sends a bullet from the this ship if there are fewer than eight bullets onscreen that belong to this ship.
      */
@@ -246,7 +238,7 @@ public class Ship extends Participant implements AsteroidDestroyer
             numBullets++;
         }
     }
-    
+
     /*
      * Called when a bullet is destroyed.
      */
@@ -254,7 +246,7 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         numBullets--;
     }
-     
+
     /**
      * When a Ship collides with a ShipDestroyer, it expires
      */
@@ -263,20 +255,19 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (p instanceof ShipDestroyer)
         {
-            //spawn debris particles
-            int[] debrisLengths = {7, 15, 30, 30};
+            // spawn debris particles
+            int[] debrisLengths = { 7, 15, 30, 30 };
             int i = 0;
             while (i < debrisLengths.length)
             {
                 DestructionParticle d = new DestructionParticle(this.getX(), this.getY(), debrisLengths[i], controller);
-                d.setColor(this.getColor()); // set debris color to that of this ship 
+                d.setColor(this.getColor()); // set debris color to that of this ship
                 controller.addParticipant(d);
                 i++;
             }
 
             // Expire the ship from the game
             Participant.expire(this);
-           
 
             // Tell the controller that this ship was destroyed
             controller.shipDestroyed(this);

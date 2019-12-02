@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
@@ -84,12 +85,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Sound for alien-ship being destroyed */
     private Clip bangAlienShip;
-    
+
     /** Sound for big saucer */
     private Clip bigSaucer;
-    
+
     /** Sound for small saucer */
     private Clip smallSaucer;
+    
+    /** Sound 1 */
+    private Clip beat1;
+    
+    /** Sound 2 */
+    private Clip beat2;
 
     /**
      * Constructs a controller to coordinate the game and screen
@@ -106,7 +113,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         bangAlienShip = createClip("/sounds/bangAlienShip.wav");
         bigSaucer = createClip("/sounds/saucerBig.wav");
         smallSaucer = createClip("/sounds/saucerSmall.wav");
-        
+        beat1 = createClip("/sounds/beat1.wav");
+        beat2 = createClip("/sounds.beat2.wav");
 
         shipList = new ArrayList<>();
 
@@ -251,6 +259,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Place four asteroids near the corners of the screen.
         // TOP LEFT
+
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
         // TOP RIGHT
         addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
@@ -284,6 +293,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
+        //TODO: alternate beats for intro, they slowly alternate faster and faster
+        int longestBeat = INITIAL_BEAT;
+        while(longestBeat > FASTEST_BEAT)
+        {
+            longestBeat= longestBeat - BEAT_DELTA;
+            beat1.loop(4);
+            beat2.loop(4);
+        }
+            
 
         // Place the ship, or ships if it's a two player game
         placeShips();
@@ -343,6 +361,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void nextLevel ()
     {
+        
         // otherwise ship can start off moving in the next scene
         for (Ship s : shipList)
         {
@@ -358,12 +377,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place asteroids
         placeAsteroids();
 
-        
-        // TODO: Make additional asteroid for each level
+        // TODO: Make additional asteroid for each level randomizing position
         for (int i = level; i > 1; i--)
         {
-            addParticipant(new Asteroid(0, 2, RANDOM.nextDouble(), EDGE_OFFSET, 3, this));
+
+            switch (new Random().nextInt(4))
+            {
+                case 0:
+                    addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+                    break;
+                case 1:
+                    addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+                    break;
+                case 2:
+                    addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+                case 3:
+                    addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+
+            }
         }
+        
+        //TODO: Place alienShip
         
 
         // Place the ship(s)
