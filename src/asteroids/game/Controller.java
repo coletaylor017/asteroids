@@ -2,9 +2,15 @@ package asteroids.game;
 
 import static asteroids.game.Constants.*;
 import java.awt.event.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import asteroids.participants.*;
 
@@ -58,11 +64,33 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* An way to iterate through all ships */
     private ArrayList<Ship> shipList;
 
+    /** Shooting sound */
+    private Clip fire;
+
+    /** Acceleration sound */
+    private Clip thrust;
+
+    /** Sound for large asteroid being destroyed */
+    private Clip bangLarge;
+
+    /** Sound for medium asteroid being destroyed */
+    private Clip bangMedium;
+
+    /** Sound for small asteroid being destroyed */
+    private Clip bangSmall;
+
     /**
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
     {
+        // create instance variables of sounds
+        fire = createClip("/sounds/fire.wav");
+        thrust = createClip("/sounds/thrust.wav");
+        bangLarge = createClip("/sounds/bangLarge.wav");
+        bangMedium = createClip("/sounds/bangMedium.wav");
+        bangSmall = createClip("/sounds/bangSmall.wav");
+
         shipList = new ArrayList<>();
 
         // if enhanced version requested, set enhanced to true
@@ -95,6 +123,34 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+    }
+
+    private Clip createClip (String string)
+    {
+        // Opening the sound file this way will work no matter how the
+        // project is exported. The only restriction is that the
+        // sound files must be stored in a package.
+        try (BufferedInputStream sound = new BufferedInputStream(getClass().getResourceAsStream(string)))
+        {
+            // Create and return a Clip that will play a sound file. There are
+            // various reasons that the creation attempt could fail. If it
+            // fails, return null.
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(sound));
+            return clip;
+        }
+        catch (LineUnavailableException e)
+        {
+            return null;
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
+        catch (UnsupportedAudioFileException e)
+        {
+            return null;
+        }
     }
 
     /*
@@ -161,7 +217,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (twoPlayerGame)
         {
             ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
-            
+
             Participant.expire(ship2);
             ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
             ship2.setColor(Color.CYAN);
@@ -194,7 +250,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         pstate.clear();
         display.setLegend("");
-        for (@SuppressWarnings("unused") Ship s : shipList) // not 100% sure why this error pops up
+        for (@SuppressWarnings("unused")
+        Ship s : shipList) // not 100% sure why this error pops up
         {
             s = null;
         }
@@ -309,10 +366,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
-        
+
         // remove the ship from shipList
         shipList.remove(s);
-        
+
         // Null out the ship
         s = null;
 
@@ -337,6 +394,33 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             scheduleTransition(END_DELAY);
         }
+        if (size == 2) {
+        if (bangLarge.isRunning())
+        {
+            bangLarge.stop();
+        }
+        bangLarge.setFramePosition(2);
+        bangLarge.start();
+        }
+        if (size == 1)
+        {
+            if (bangMedium.isRunning())
+            {
+                bangMedium.stop();
+            }
+            bangMedium.setFramePosition(0);
+            bangMedium.start();
+        }
+        else 
+        {
+           if (bangSmall.isRunning())
+           {
+               bangSmall.stop();
+           }
+           bangSmall.setFramePosition(0);
+           bangSmall.start();
+        }
+       
         // for 2 player mode, score is handled in the Asteroid class
         if (!twoPlayerGame)
         {
@@ -386,10 +470,24 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 if (s.accelerating() && s != null)
                 {
                     s.accelerate();
+                    if (thrust.isRunning())
+                    {
+                        thrust.stop();
+                    }
+                    thrust.setFramePosition(0);
+                    thrust.start();
+
                 }
                 if (s.shooting() && s != null)
                 {
                     s.attack();
+                    if (fire.isRunning())
+                    {
+                        fire.stop();
+                    }
+
+                    fire.setFramePosition(0);
+                    fire.start();
                 }
                 if (ship != null)
                 {

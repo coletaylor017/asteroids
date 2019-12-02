@@ -275,6 +275,7 @@ public class Ship extends Participant implements AsteroidDestroyer
 
             // Expire the ship from the game
             Participant.expire(this);
+           
 
             // Tell the controller that this ship was destroyed
             controller.shipDestroyed(this);

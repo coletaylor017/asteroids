@@ -358,4 +358,5 @@ public abstract class Participant
         g.setColor(color);
         g.draw(border);
     }
-}
+    
+ }
