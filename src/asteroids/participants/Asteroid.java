@@ -42,13 +42,24 @@ public class Asteroid extends Participant implements ShipDestroyer
             throw new IllegalArgumentException();
         }
 
-        // Create the asteroid
+        // Create the asteroid set speed for different varieties
+//        if (variety == 2)
+//        {
+//            speed = MAXIMUM_LARGE_ASTEROID_SPEED;
+//        }
+//        if (variety == 1)
+//        {
+//            speed = MAXIMUM_MEDIUM_ASTEROID_SPEED;
+//        }
+//        else 
+//        {
+//            speed = MAXIMUM_SMALL_ASTEROID_SPEED;
+//        }
         this.controller = controller;
         this.size = size;
         setPosition(x, y);
         setVelocity(speed, RANDOM.nextDouble() * 2 * Math.PI);
         setRotation(2 * Math.PI * RANDOM.nextDouble());
-        //TODO: if (speed == SPEED_LIMIT)
         createAsteroidOutline(variety, size);
     }
 

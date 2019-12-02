@@ -34,10 +34,10 @@ public class Ship extends Participant implements AsteroidDestroyer
     /* Keeps track of if this ship is currently turning left */
     private boolean turningLeft;
     
-    /* Keeps trak of if this ship is currently turning right */
+    /* Keeps track of if this ship is currently turning right */
     private boolean turningRight;
     
-    /* Number of bullets onscreen that were fired by this particular ship */
+    /* Number of bullets on-screen that were fired by this particular ship */
     private int numBullets;
     
     /* The score of the player who controls this ship */

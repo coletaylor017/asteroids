@@ -55,7 +55,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** The game display */
     private Display display;
 
-    /* "classic" if the game is in enhanced mode, otherwise "enhanced" */
+    /** "classic" if the game is in enhanced mode, otherwise "enhanced" */
     private String gameMode;
 
     /* Specifies if a two player game is taking place */
@@ -84,6 +84,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Sound for alien-ship being destroyed */
     private Clip bangAlienShip;
+    
+    /** Sound for big saucer */
+    private Clip bigSaucer;
+    
+    /** Sound for small saucer */
+    private Clip smallSaucer;
 
     /**
      * Constructs a controller to coordinate the game and screen
@@ -98,6 +104,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         bangSmall = createClip("/sounds/bangSmall.wav");
         bangShip = createClip("/sounds/bangShip.wav");
         bangAlienShip = createClip("/sounds/bangAlienShip.wav");
+        bigSaucer = createClip("/sounds/saucerBig.wav");
+        smallSaucer = createClip("/sounds/saucerSmall.wav");
+        
 
         shipList = new ArrayList<>();
 
@@ -349,7 +358,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place asteroids
         placeAsteroids();
 
+        
         // TODO: Make additional asteroid for each level
+        for (int i = level; i > 1; i--)
+        {
+            addParticipant(new Asteroid(0, 2, RANDOM.nextDouble(), EDGE_OFFSET, 3, this));
+        }
+        
 
         // Place the ship(s)
         placeShips();
@@ -447,7 +462,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     }
 
-    //TODO: implemented for score and sound 
+    // TODO: implemented for score and sound
     public void alienShipDestroyed (int size)
     {
         if (bangAlienShip.isRunning())
@@ -461,7 +476,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             score += ALIENSHIP_SCORE[size];
         }
-        //Display new score
+        // Display new score
         display.setScore(score);
     }
 
@@ -600,7 +615,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
             fire.setFramePosition(0);
-            fire.loop(3);
+            fire.loop(8);
             ship.setShooting(true);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
@@ -639,7 +654,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // s key will not fire player 1's ship in two-player mode
             if (!twoPlayerGame)
             {
-                fire.loop(5);
+                fire.loop(8);
 
                 ship.setShooting(true);
             }
@@ -653,6 +668,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
+                fire.loop(8);
                 ship.setShooting(true);
             }
         }
