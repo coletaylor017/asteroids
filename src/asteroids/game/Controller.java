@@ -1,6 +1,7 @@
 package asteroids.game;
 
 import static asteroids.game.Constants.*;
+import static asteroids.network.NetworkConstants.*;
 import java.awt.event.*;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         
         if (gameMode.equals("online-multiplayer"))
         {
-            client.send(new GameUpdate(user, "CONNECTIONESTABLISHED"));
+            client.send(new GameUpdate(user, CONNECTIONESTABLISHED));
         }
 
         // For now, enhanced mode will equal two player
@@ -297,9 +298,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (gameMode.equals("online-multiplayer"))
         {
             // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
-            client.send(new GameUpdate(user, "GETPLAYERS"));
+            client.send(new GameUpdate(user, GETPLAYERS));
             
-            client.send(new GameUpdate(user, "NEWPLAYER"));
+            client.send(new GameUpdate(user, NEWPLAYER));
         }
         
         // Clear the screen
@@ -336,7 +337,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Restarts the current level
      */
-    private void restartLevel ()
+    public void restartLevel ()
     {
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
@@ -364,7 +365,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Goes to the next level yo
      */
-    private void nextLevel ()
+    public void nextLevel ()
     {
         // otherwise ship can start off moving in the next scene
         for (Ship s : shipList)
@@ -408,7 +409,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         if (gameMode.equals("online-multiplayer"))
         {
-            client.send(new GameUpdate(user, "SHIPDIE"));
+            client.send(new GameUpdate(user, SHIPDIE));
         }
 
         // remove the ship from shipList
@@ -510,10 +511,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                     {
                         if (s.getSpeed() > 0.000000000001)
                         {
-                            client.send(new GameUpdate(user, "SHIPMOVE", s.getX(), s.getY(), s.getRotation()));
+                            client.send(new GameUpdate(user, SHIPMOVE, s.getX(), s.getY(), s.getRotation()));
                         }
                         if (s.shooting()) {
-                            client.send(new GameUpdate(user, "SHIPFIRE"));
+                            client.send(new GameUpdate(user, SHIPFIRE));
                         }
                     }
                     s.applyFriction(SHIP_FRICTION);
@@ -602,7 +603,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
             ship.setAccelerating(true);
-            // client.send(new GameUpdate("SHIPMOVE", ship.getX(), ship.getY()));
         }
 
         // TODO: SHIP 2

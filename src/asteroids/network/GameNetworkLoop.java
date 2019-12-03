@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import static asteroids.network.NetworkConstants.*;
 
 public class GameNetworkLoop extends Thread
 {
@@ -74,7 +75,7 @@ public class GameNetworkLoop extends Thread
                             System.out.println("New game update: " + update.getOperationCode());
 
                             // if the client is requesting a list of already-active players
-                            if (update.getOperationCode().equals("GETPLAYERS"))
+                            if (update.getOperationCode().equals(GETPLAYERS))
                             {
                                 // send the current list
                                 serverOut.writeObject(server.getPlayerList());

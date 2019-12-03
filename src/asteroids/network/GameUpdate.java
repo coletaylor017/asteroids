@@ -11,14 +11,12 @@ import java.io.Serializable;
  * 'SHIPMOVE' code, an x and a y are sent along with it. For the BULLETSPAWN
  * code, an x and y are also sent. For SHIPDIE, there are no properties needed.
  * Valid codes are (thus far):
- * -SHIPSPAWN (x, y)
  * -SHIPMOVE (x, y, rotation)
  * -SHIPDIE
  * -SHIPFIRE
  * -BULLETMOVE (x, y, rotation)
  * -BULLETDIE
  * -ASTEROIDSPAWN (x, y)
- * -ASTEROIDMOVE (x, y)
  * -ASTEROIDDIE
  * -And a few more you can see down below
  * 
@@ -45,39 +43,41 @@ public class GameUpdate implements Serializable
     /* Some operations have an associated rotation value */
     private double rotation;
     
+    /* Some operations even have an associated speed! */
+    private double speed;
+    
     /*
      * Constructs a new GameUpdate with only a code and no additional parameters.
      * Appropriate to use for the following codes:
      * -SHIPDIE
-     * -BULLETDIE
      * -ASTEROIDDIE
-     * -STOPSERVER
      * -NEXTLEVEL
      * -RESTARTLEVEL
+     * -SHIPSPAWN
      */
     public GameUpdate (Player p, String operationCode)
     {
-        this(p, operationCode, 0, 0);
+        originPlayer = p; // TODO: change to an ID for faster messages?
+        this.operationCode = operationCode;
     }
     
     /*
      * Constructs a new GameUpdate with a code and two parameters: x and y.
      * Appropriate to use for the following codes:
-     * -SHIPSPAWN
-     * -BULLETSPAWN
      * -ASTEROIDSPAWN
-     * -ASTEROIDMOVE
      */
     public GameUpdate(Player p, String operationCode, double x, double y)
     {
-        this(p, operationCode, x, y, 0);
+        originPlayer = p; // TODO: change to an ID for faster messages?
+        this.operationCode = operationCode;
+        this.x = x;
+        this.y = y;
     }
     
     /*
      * Constructs a new GameUpdate with a code and three parameters: x, y, and rotation.
      * Appropriate to use for the following codes:
      * -SHIPMOVE
-     * -BULLETMOVE
      */
     public GameUpdate(Player p, String operationCode, double x, double y, double rotation)
     {
@@ -86,6 +86,21 @@ public class GameUpdate implements Serializable
         this.x = x;
         this.y = y;
         this.rotation = rotation;
+    }
+    
+    /*
+     * Constructs a new GameUpdate with a code and four parameters: x, y, rotation, and speed.
+     * Appropriate to use for the following codes:
+     * -ASTEROIDSPAWN
+     */
+    public GameUpdate(Player p, String operationCode, double x, double y, double rotation, double speed)
+    {
+        originPlayer = p; // TODO: change to an ID for faster messages?
+        this.operationCode = operationCode;
+        this.x = x;
+        this.y = y;
+        this.rotation = rotation;
+        this.speed = speed;
     }
     
     public String getOperationCode ()
@@ -111,5 +126,10 @@ public class GameUpdate implements Serializable
     public double getRotation ()
     {
         return rotation;
+    }
+    
+    public double getSpeed ()
+    {
+        return speed;
     }
 }

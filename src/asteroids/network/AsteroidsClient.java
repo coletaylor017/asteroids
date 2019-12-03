@@ -2,10 +2,10 @@ package asteroids.network;
 
 import java.net.Socket;
 import java.util.ArrayList;
-import static asteroids.game.Constants.SIZE;
 import java.io.*;
 import asteroids.game.*;
 import asteroids.participants.Ship;
+import static asteroids.network.NetworkConstants.*;
 
 public class AsteroidsClient
 {
@@ -108,14 +108,17 @@ public class AsteroidsClient
                     if (objectIn instanceof GameUpdate) // if the object is a game state update
                     {
                         GameUpdate update = (GameUpdate) objectIn;
+                        String opCode = update.getOperationCode();
                         System.out.println("New update from the server. Update code: " + update.getOperationCode());
-                        if (update.getOperationCode().equals("NEWPLAYER"))
+                        
+                        // TODO: organize loosely by frequency to avoid unnecessary checking
+                        if (opCode.equals(NEWPLAYER))
                         {
                             // Add a new player with the correct ID
                             controller.addPlayer(update.getPlayer());
                             System.out.println("Added new player via NEWPLAYER call");
                         }
-                        else if (update.getOperationCode().equals("SHIPMOVE"))
+                        else if (opCode.equals(SHIPMOVE))
                         {
                             Ship s = update.getPlayer().getShip();
 
@@ -123,17 +126,39 @@ public class AsteroidsClient
                             s.setPosition(update.getX(), update.getY());
                             s.setRotation(update.getRotation());
                         }
-                        else if (update.getOperationCode().equals("SHIPFIRE"))
+                        else if (opCode.equals(SHIPFIRE))
                         {
                             // Ask that the ship fire a bullet!
                             update.getPlayer().getShip().attack();
                         }
+                        else if (opCode.equals(SHIPDIE))
+                        {
+                            // Kill ship and remove it from list but leave playerlist alone
+                        }
+                        else if (opCode.equals(ASTEROIDSPAWN))
+                        {
+                            // Spawn a new asteroid 
+                        }
+                        else if (opCode.equals(ASTEROIDDIE))
+                        {
+                            // kill asteroid
+                        }
+                        else if (opCode.equals(RESTARTLEVEL))
+                        {
+                            controller.restartLevel();
+                        }
+                        else if (opCode.equals(NEXTLEVEL))
+                        {
+                            controller.nextLevel();
+                        }
                     }
-                    else if (objectIn instanceof ArrayList<?>) // In this case, assume server is returning a list of active players
+                    else if (objectIn instanceof ArrayList<?>) // In this case, assume server is returning a list of
+                                                               // active players
                     {
                         for (Player p : (ArrayList<Player>) objectIn)
                         {
-                            if (p.getID() != controller.getUser().getID()) // Don't add player if it's the controller's own user. Only add other players.
+                            if (p.getID() != controller.getUser().getID()) // Don't add player if it's the controller's
+                                                                           // own user. Only add other players.
                             {
                                 controller.addPlayer(p);
                                 System.out.println("Added new player via player arrarylist");
