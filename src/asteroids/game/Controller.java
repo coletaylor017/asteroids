@@ -123,7 +123,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         bigSaucer = createClip("/sounds/saucerBig.wav");
         smallSaucer = createClip("/sounds/saucerSmall.wav");
         beat1 = createClip("/sounds/beat1.wav");
-        beat2 = createClip("/sounds.beat2.wav");
+        beat2 = createClip("/sounds/beat2.wav");
 
         shipList = new ArrayList<>();
 
@@ -299,8 +299,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void initialScreen ()
     {
+        soundSwitch.stop();
+        soundSwitch.setDelay(INITIAL_BEAT);
         playSound = true;
         longestBeat = INITIAL_BEAT;
+        soundSwitch.start();
         // Clear the screen
         clear();
 
@@ -389,7 +392,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Display new level
         display.setLevel(level);
 
-        // TODO: Make additional asteroid for each level randomizing position
+        // TODO: Make additional asteroid for each level.
+        // each time randomizing position
         for (int i = level; i > 1; i--)
         {
 
@@ -431,6 +435,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
+        playSound = false;
         if (bangShip.isRunning())
         {
             bangShip.stop();
@@ -547,13 +552,32 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 {
                     longestBeat = FASTEST_BEAT;
                 }
-                soundSwitch.setDelay(longestBeat);
-                if (playSound = true)
+               soundSwitch.setDelay(longestBeat);
+                if (playSound == true)
                 {
-                    //beat1.start();
-                    //beat2.start();
+                    beat1.setFramePosition(0);
+                    beat1.start();
+                   
                 }
-                //
+                else 
+                {
+                    beat2.setFramePosition(0);
+
+                    beat2.start();
+                }
+                
+                
+                if (playSound == true)
+                {
+                    //beat1.stop();
+                }
+                else
+                {
+                    //beat2.stop();
+                }
+
+                playSound = !playSound;
+                
             }
         }
         if (e.getSource() instanceof JButton)
@@ -622,8 +646,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (countAsteroids() == 0)
             {
                 nextLevel();
-                //if lives=0 stop timer
-                soundSwitch.stop();
             }
             else if (shipList.size() == 0) // if both players have died
             {
