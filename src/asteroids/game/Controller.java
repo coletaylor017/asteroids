@@ -32,8 +32,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** When this timer goes off, it is time to refresh the animation */
     private Timer refreshTimer;
 
-    /** indicates how many lives are left */
-    // private String remainingLives = "Remaining Lives: ";
 
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
@@ -61,6 +59,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /* Specifies if a two player game is taking place */
     private final boolean twoPlayerGame;
+    
+    /* Specifies whether beats should play */
+    private boolean playSound;
 
     /* An way to iterate through all ships */
     private ArrayList<Ship> shipList;
@@ -91,18 +92,26 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** Sound for small saucer */
     private Clip smallSaucer;
-    
+
     /** Sound 1 */
     private Clip beat1;
-    
+
     /** Sound 2 */
     private Clip beat2;
+
+    /** */
+    private int longestBeat;
+
+    /** timer for beats */
+    private Timer soundSwitch;
 
     /**
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
     {
+        soundSwitch = new Timer(INITIAL_BEAT, this);
+        longestBeat = INITIAL_BEAT;
         // create instance variables of sounds
         fire = createClip("/sounds/fire.wav");
         thrust = createClip("/sounds/thrust.wav");
@@ -148,6 +157,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+        soundSwitch.start();
     }
 
     private Clip createClip (String string)
@@ -222,6 +232,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void finalScreen ()
     {
+        playSound = false;
         display.setLegend(GAME_OVER);
         display.removeKeyListener(this);
     }
@@ -288,20 +299,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void initialScreen ()
     {
+        playSound = true;
+        longestBeat = INITIAL_BEAT;
         // Clear the screen
         clear();
 
         // Place asteroids
         placeAsteroids();
-        //TODO: alternate beats for intro, they slowly alternate faster and faster
-        int longestBeat = INITIAL_BEAT;
-        while(longestBeat > FASTEST_BEAT)
-        {
-            longestBeat= longestBeat - BEAT_DELTA;
-            beat1.loop(4);
-            beat2.loop(4);
-        }
-            
+        // TODO: alternate beats for intro, they slowly alternate faster and faster
 
         // Place the ship, or ships if it's a two player game
         placeShips();
@@ -333,6 +338,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
+        playSound = true;
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
         {
@@ -361,7 +367,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void nextLevel ()
     {
-        
+        playSound = true;
+
         // otherwise ship can start off moving in the next scene
         for (Ship s : shipList)
         {
@@ -377,6 +384,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place asteroids
         placeAsteroids();
 
+        level++;
+
+        // Display new level
+        display.setLevel(level);
+
         // TODO: Make additional asteroid for each level randomizing position
         for (int i = level; i > 1; i--)
         {
@@ -391,22 +403,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                     break;
                 case 2:
                     addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+                    break;
                 case 3:
                     addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+                    break;
 
             }
         }
-        
-        //TODO: Place alienShip
-        
+
+        // TODO: Place alienShip
 
         // Place the ship(s)
         placeShips();
-
-        level++;
-
-        // Display new level
-        display.setLevel(level);
 
     }
 
@@ -530,7 +538,24 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // The start button has been pressed. Stop whatever we're doing
         // and bring up the initial screen
-
+        if (soundSwitch == e.getSource())
+        {
+            if (ship != null)
+            {
+                longestBeat -= BEAT_DELTA;
+                if (longestBeat < FASTEST_BEAT)
+                {
+                    longestBeat = FASTEST_BEAT;
+                }
+                soundSwitch.setDelay(longestBeat);
+                if (playSound = true)
+                {
+                    //beat1.start();
+                    //beat2.start();
+                }
+                //
+            }
+        }
         if (e.getSource() instanceof JButton)
         {
             initialScreen();
@@ -597,6 +622,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (countAsteroids() == 0)
             {
                 nextLevel();
+                //if lives=0 stop timer
+                soundSwitch.stop();
             }
             else if (shipList.size() == 0) // if both players have died
             {
