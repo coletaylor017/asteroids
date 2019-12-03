@@ -46,7 +46,7 @@ public class Asteroids
             s.requestFocusInWindow();
             
             // A new thread is required for the server because the ServerDisplay needs to continuously run and listen to events on the current thread.
-            new Thread(new ServerStarter(as)).start();
+//            new Thread(new ServerStarter(as)).start();
         }
         else if (choice == 3)
         {
@@ -56,19 +56,19 @@ public class Asteroids
 
     }
     
-    static private class ServerStarter implements Runnable
-    {
-        AsteroidsServer serve;
-        
-        public ServerStarter (AsteroidsServer a)
-        {
-            serve = a;
-        }
-        @Override
-        public void run ()
-        {
-            // Now, start the server. The line below blocks further execution, so don't put any code after it.
-            serve.start();
-        }
-    }
+//    static private class ServerStarter implements Runnable
+//    {
+//        AsteroidsServer serve;
+//        
+//        public ServerStarter (AsteroidsServer a)
+//        {
+//            serve = a;
+//        }
+//        @Override
+//        public void run ()
+//        {
+//            // Now, start the server. The line below blocks further execution, so don't put any code after it.
+////            serve.start();
+//        }
+//    }
 }

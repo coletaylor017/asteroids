@@ -14,7 +14,7 @@ import java.io.Serializable;
  * -SHIPSPAWN (x, y)
  * -SHIPMOVE (x, y, rotation)
  * -SHIPDIE
- * -BULLETSPAWN (x, y)
+ * -SHIPFIRE
  * -BULLETMOVE (x, y, rotation)
  * -BULLETDIE
  * -ASTEROIDSPAWN (x, y)
@@ -26,8 +26,7 @@ import java.io.Serializable;
 public class GameUpdate implements Serializable
 {
     /**
-     * This was inserted by Eclipse, I'm not 100% sure what it is but
-     * it's necessary to make a serializable object apparently.
+     * Necessary to create a serializable object
      */
     private static final long serialVersionUID = 1735716747784848307L;
 

@@ -95,6 +95,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         
         // set game mode to "classic", "enhanced", or "online-multiplayer"
         gameMode = version;
+        
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate(user, "CONNECTIONESTABLISHED"));
+        }
 
         // For now, enhanced mode will equal two player
         twoPlayerGame = gameMode.equals("enhanced");
@@ -112,6 +117,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+    }
+    
+    /*
+     * Returns user.
+     */
+    public Player getUser ()
+    {
+        return user;
     }
 
     /*
@@ -225,11 +238,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 Participant.expire(s);
             }
             
+            shipList.clear();
+            
             // Place the user's ship
             ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
             addParticipant(ship);
             shipList.add(ship);
             ship.setColor(Color.RED);
+            user.setShip(ship);
             
             // Place new ships for all other players
             for (Player p : playerList)
@@ -237,6 +253,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, p, this);
                 addParticipant(s);
                 shipList.add(s);
+                p.setShip(s);
             }
         }
     }
@@ -246,15 +263,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
-        // Place four asteroids near the corners of the screen.
-        // TOP LEFT
-        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        // TOP RIGHT
-        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-        // BOTTOM LEFT
-        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-        // BOTTOM RIGHT
-        addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+//        // Place four asteroids near the corners of the screen.
+//        // TOP LEFT
+//        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+//        // TOP RIGHT
+//        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+//        // BOTTOM LEFT
+//        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+//        // BOTTOM RIGHT
+//        addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -279,6 +296,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // if in online multiplayer mode, let the server know a user has been added
         if (gameMode.equals("online-multiplayer"))
         {
+            // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
+            client.send(new GameUpdate(user, "GETPLAYERS"));
+            
             client.send(new GameUpdate(user, "NEWPLAYER"));
         }
         

@@ -1,6 +1,7 @@
 package asteroids.network;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import static asteroids.game.Constants.SIZE;
 import java.io.*;
 import asteroids.game.*;
@@ -52,7 +53,8 @@ public class AsteroidsClient
         }
         catch (Exception e)
         {
-            System.out.println("NEW EXCEPTION ON CLIENT SIDE (constructor): " + e);
+            System.out.println("NEW EXCEPTION ON CLIENT SIDE (constructor): ");
+            e.printStackTrace();
         }
     }
 
@@ -94,6 +96,7 @@ public class AsteroidsClient
             ois = s;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void run ()
         {
@@ -101,25 +104,41 @@ public class AsteroidsClient
             {
                 while (true)
                 {
-                    GameUpdate update = (GameUpdate) clientIn.readObject();
-                    System.out.println("New update from the server. Update code: " + update.getOperationCode());
-                    if (update.getOperationCode().equals("NEWPLAYER"))
+                    Object objectIn = clientIn.readObject();
+                    if (objectIn instanceof GameUpdate) // if the object is a game state update
                     {
-                        // Add a new player with the correct ID
-                        controller.addPlayer(update.getPlayer());
+                        GameUpdate update = (GameUpdate) objectIn;
+                        System.out.println("New update from the server. Update code: " + update.getOperationCode());
+                        if (update.getOperationCode().equals("NEWPLAYER"))
+                        {
+                            // Add a new player with the correct ID
+                            controller.addPlayer(update.getPlayer());
+                            System.out.println("Added new player via NEWPLAYER call");
+                        }
+                        else if (update.getOperationCode().equals("SHIPMOVE"))
+                        {
+                            Ship s = update.getPlayer().getShip();
+
+                            // Orient the ship
+                            s.setPosition(update.getX(), update.getY());
+                            s.setRotation(update.getRotation());
+                        }
+                        else if (update.getOperationCode().equals("SHIPFIRE"))
+                        {
+                            // Ask that the ship fire a bullet!
+                            update.getPlayer().getShip().attack();
+                        }
                     }
-                    else if (update.getOperationCode().equals("SHIPMOVE"))
+                    else if (objectIn instanceof ArrayList<?>) // In this case, assume server is returning a list of active players
                     {
-                        Ship s = update.getPlayer().getShip();
-                        
-                        // Orient the ship
-                        s.setPosition(update.getX(), update.getY());
-                        s.setRotation(update.getRotation());
-                    }
-                    else if (update.getOperationCode().equals("SHIPFIRE"))
-                    {
-                        // Ask that the ship fire a bullet!
-                        update.getPlayer().getShip().attack();
+                        for (Player p : (ArrayList<Player>) objectIn)
+                        {
+                            if (p.getID() != controller.getUser().getID()) // Don't add player if it's the controller's own user. Only add other players.
+                            {
+                                controller.addPlayer(p);
+                                System.out.println("Added new player via player arrarylist");
+                            }
+                        }
                     }
                 }
             }

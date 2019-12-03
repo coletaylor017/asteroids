@@ -2,6 +2,7 @@ package asteroids.network;
 
 import java.io.Serializable;
 import asteroids.participants.Ship;
+import asteroids.game.Constants;
 
 /*
  * Defines a player in an online game. A player has a ship which they own,
@@ -10,12 +11,12 @@ import asteroids.participants.Ship;
 public class Player implements Serializable
 {
     /**
-     * 
+     * Necessary to create a serializable object
      */
     private static final long serialVersionUID = 1L;
 
     /* ID that will be sent along with this player's actions to the server */
-    private int id;
+    private long id;
     
     /* Ship that this player owns */
     private Ship playerShip;
@@ -31,7 +32,12 @@ public class Player implements Serializable
      */
     public Player ()
     {
-        id = 0;
+        // Generate a random ID
+        int randomInt = Constants.RANDOM.nextInt(1000*1000);
+        
+        // Combine with current epoch to guarantee a unique ID for every player
+        id = Long.parseLong((System.currentTimeMillis() + "") + randomInt);
+        
         score = 0;
         lives = 3;
     }
@@ -39,7 +45,7 @@ public class Player implements Serializable
     /*
      * Returns the player's ID.
      */
-    public int getID ()
+    public long getID ()
     {
         return id;
     }
