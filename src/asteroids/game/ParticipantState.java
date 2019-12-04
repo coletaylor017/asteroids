@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import asteroids.participants.Ship;
 
 /**
  * Keeps track of the Participants, their motions, and their collisions.
@@ -58,6 +59,12 @@ public class ParticipantState implements Iterable<Participant>
         {
             if (!p.isExpired())
             {
+//                // if the participant is a Ship, use its override move method
+//                if (p instanceof Ship)
+//                {
+//                    Ship s = (Ship) p;
+//                    s.move();
+//                }
                 p.move();
             }
         }

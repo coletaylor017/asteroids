@@ -1,13 +1,13 @@
 package asteroids.participants;
 
 import static asteroids.game.Constants.*;
-import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.*;
 import asteroids.destroyers.*;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
+import asteroids.network.Player;
 
 /**
  * Represents ships
@@ -43,19 +43,21 @@ public class Ship extends Participant implements AsteroidDestroyer
 
     /** Game controller */
     private Controller controller;
+    
+    /* The player who owns this ship */
+    private Player owner;
 
     /**
      * Constructs a ship at the specified coordinates that is pointed in the given direction.
      */
-    public Ship (int x, int y, double direction, Controller controller)
+    public Ship (int x, int y, double direction, Player player, Controller controller)
     {
         this.controller = controller;
         setPosition(x, y);
         setRotation(direction);
 
         numBullets = 0;
-        score = 0;
-        lives = 0;
+        owner = player;
 
         Path2D.Double shipWFlame = new Path2D.Double();
         shipWFlame.moveTo(21, 0);
@@ -101,7 +103,15 @@ public class Ship extends Participant implements AsteroidDestroyer
     /* set this player's lives */
     public void setLives (int newLives)
     {
-        score = newLives;
+        lives = newLives;
+    }
+    
+    /*
+     * Returns the owner of this ship.
+     */
+    public Player getOwner ()
+    {
+        return owner;
     }
 
     /**
@@ -132,16 +142,6 @@ public class Ship extends Participant implements AsteroidDestroyer
             return wFlame;
         }
         return outline;
-    }
-
-    /**
-     * Customizes the base move method by imposing friction
-     */
-    @Override
-    public void move ()
-    {
-        applyFriction(SHIP_FRICTION);
-        super.move();
     }
 
     /**
@@ -232,7 +232,8 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (numBullets <= BULLET_LIMIT)
         {
-            Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this);
+            Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this, controller);
+            bullet.setGhostStatus(this.isGhost()); // set ghost status to match ship
             bullet.setColor(this.getColor()); // so that players can identify their own bullets
             controller.addParticipant(bullet);
             numBullets++;

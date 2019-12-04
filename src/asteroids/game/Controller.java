@@ -1,6 +1,7 @@
 package asteroids.game;
 
 import static asteroids.game.Constants.*;
+import static asteroids.network.NetworkConstants.*;
 import java.awt.event.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,6 +14,9 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import asteroids.network.AsteroidsClient;
+import asteroids.network.GameUpdate;
+import asteroids.network.Player;
 import asteroids.participants.*;
 
 /**
@@ -40,11 +44,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private long transitionTime;
 
     /** Number of lives left */
-    // TODO: Implement in Ship instead of Controller so each player can have their own number of lives
     private int lives;
 
     /** Indicates the players current score */
-    // TODO: Implement in Ship instead of Controller so each player can have their own score
     private int score;
 
     /** Indicates the current level */
@@ -56,14 +58,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** "classic" if the game is in enhanced mode, otherwise "enhanced" */
     private String gameMode;
 
-    /* Specifies if a two player game is taking place */
+    /* Specifies if a two player game is taking place on one machine. False for LAN games */
     private final boolean twoPlayerGame;
 
     /* Specifies whether beats should play */
     private boolean playSound;
-
-    /* An way to iterate through all ships */
-    private ArrayList<Ship> shipList;
 
     /** Shooting sound */
     private Clip fire;
@@ -104,10 +103,33 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** timer for beats */
     private Timer soundSwitch;
 
-    /**
+    /* An way to iterate through all ships, INCLUDING this controller's user's ship */
+    private ArrayList<Ship> shipList;
+
+    /* The client that handle communication to and from the server */
+    private AsteroidsClient client;
+
+    /* A list to keep track of all remote players currently participating in an online game. */
+    private ArrayList<Player> playerList;
+
+    /* The player who uses this controller as their local representation of an online game */
+    Player user;
+
+    /* If this controller is the primary, it spawns asteroids for all the others. */
+    boolean isPrimary;
+
+    /*
      * Constructs a controller to coordinate the game and screen
      */
     public Controller (String version)
+    {
+        this(version, null);
+    }
+
+    /**
+     * Constructs a controller made to work with an AsteroidClient instance
+     */
+    public Controller (String version, AsteroidsClient aClient)
     {
         soundSwitch = new Timer(INITIAL_BEAT, this);
         longestBeat = INITIAL_BEAT;
@@ -123,25 +145,32 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         smallSaucer = createClip("/sounds/saucerSmall.wav");
         beat1 = createClip("/sounds/beat1.wav");
         beat2 = createClip("/sounds/beat2.wav");
+        
+        isPrimary = false;
+        
+        // initialize user
+        user = new Player();
+        System.out.println("Controller: new user id: " + user.getID());
+        
+        // initialize pstate
+        pstate = new ParticipantState();
+
+        // initialize client object
+        client = aClient;
 
         shipList = new ArrayList<>();
-
-        // if enhanced version requested, set enhanced to true
+        playerList = new ArrayList<>();
+        
+        // set game mode to "classic", "enhanced", or "online-multiplayer"
         gameMode = version;
-
-        // TODO: make input on startup screen to pick 1 or two players
-        // For now, enhanced mode will always be two player
-        if (gameMode == "enhanced")
+        
+        if (gameMode.equals("online-multiplayer"))
         {
-            twoPlayerGame = true;
-        }
-        else
-        {
-            twoPlayerGame = false;
+            client.send(new GameUpdate(user, CONNECTIONESTABLISHED));
         }
 
-        // Initialize the ParticipantState
-        pstate = new ParticipantState();
+        // For now, enhanced mode will equal two player
+        twoPlayerGame = gameMode.equals("enhanced");
 
         // Set up the refresh timer.
         refreshTimer = new Timer(FRAME_INTERVAL, this);
@@ -154,9 +183,24 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Bring up the splash screen and start the refresh timer
         splashScreen();
+        
+        // In an online game, only place asteroids if this is the primary controller
+        if (!gameMode.equals("online-multiplayer") || (gameMode.equals("online-multiplayer") && isPrimary))
+        {
+            placeAsteroids();
+        }
         display.setVisible(true);
         refreshTimer.start();
         soundSwitch.start();
+        
+        // if in online multiplayer mode, let the server know a user has been added
+        if (gameMode.equals("online-multiplayer"))
+        {
+            // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
+            client.send(new GameUpdate(user, GETPLAYERS));
+            
+            client.send(new GameUpdate(user, NEWPLAYER));
+        }
     }
 
     private Clip createClip (String string)
@@ -187,6 +231,47 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
     }
 
+    public void setPrimary (boolean p)
+    {
+        isPrimary = p;
+    }
+
+    public boolean isPrimary ()
+    {
+        return isPrimary;
+    }
+
+    /*
+     * Returns user.
+     */
+    public Player getUser ()
+    {
+        return user;
+    }
+
+    /*
+     * Adds a new player to the game and give them a ship. This method is called from the AsteroidsClient when the
+     * server informs it that a new player has joined the game.
+     */
+    public void addPlayer (Player plr)
+    {
+        playerList.add(plr);
+        Ship newShip = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, plr, this);
+        newShip.setGhostStatus(true);
+        shipList.add(newShip);
+        addParticipant(newShip);
+        plr.setShip(newShip);
+    }
+
+    /*
+     * Removes the specified player and their ship from the game.
+     */
+    public void removePlayer (Player plr)
+    {
+        playerList.remove(plr);
+        shipList.remove(plr.getShip());
+    }
+
     /*
      * Returns a string representing the current game mode. Right now, can either be "classic" or "enhanced" but could
      * expand to more game modes in the future.
@@ -194,6 +279,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public String getGameMode ()
     {
         return gameMode;
+    }
+
+    /* Get the Client instance associated with this controller */
+    public AsteroidsClient getClient ()
+    {
+        return client;
     }
 
     /**
@@ -237,28 +328,65 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     }
 
     /**
-     * Place all ships in the center of the screen. Remove any existing ships first.
+     * Place all ships in the center of the screen.
      */
     private void placeShips ()
     {
-        // Place a new ship
-        Participant.expire(ship);
-        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
-        addParticipant(ship);
-        shipList.add(ship);
         display.setLegend("");
 
-        // if two player mode, place another ship
-        if (twoPlayerGame)
+        if (!gameMode.equals("online-multiplayer"))
         {
             ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
 
             Participant.expire(ship2);
-            ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
+            ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
             ship2.setColor(Color.CYAN);
             addParticipant(ship2);
             shipList.add(ship2);
             display.setLegend("");
+            // Place a new ship.
+            Participant.expire(ship);
+            ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+            addParticipant(ship);
+            shipList.add(ship);
+            
+            // if two player mode, place another ship
+            if (gameMode.equals("enhanced"))
+            {
+                ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
+                Participant.expire(ship2);
+                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
+                ship2.setColor(Color.CYAN);
+                addParticipant(ship2);
+                shipList.add(ship2);
+            }
+        }
+        else if (gameMode.equals("online-multiplayer"))
+        {
+            // if in an online multiplayer game, expire all ships
+            for (Ship s : shipList)
+            {
+                Participant.expire(s);
+            }
+            
+            shipList.clear();
+            
+            // Place the user's ship
+            ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+            addParticipant(ship);
+            shipList.add(ship);
+            ship.setColor(Color.RED);
+            user.setShip(ship);
+            
+            // Place new ships for all other players
+            for (Player p : playerList)
+            {
+                Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, p, this);
+                s.setGhostStatus(true);
+                addParticipant(s);
+                shipList.add(s);
+                p.setShip(s);
+            }
         }
     }
 
@@ -269,7 +397,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Place four asteroids near the corners of the screen.
         // TOP LEFT
-
         addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
         // TOP RIGHT
         addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
@@ -296,7 +423,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Sets things up and begins a new game.
      */
-    private void initialScreen ()
+    public void initialScreen ()
     {
         soundSwitch.stop();
         soundSwitch.setDelay(INITIAL_BEAT);
@@ -310,15 +437,18 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         placeAsteroids();
         // TODO: alternate beats for intro, they slowly alternate faster and faster
 
-        // Place the ship, or ships if it's a two player game
-        placeShips();
-
-        // Reset statistics
-
         // set lives, level, score
         lives = 3;
         level = 1;
         score = 0;
+        
+        
+        // Clear the screen
+        clear();
+
+        // Place the ship, or ships if it's a two player game
+        placeShips();
+
 
         // Display Lives
         display.setLives(lives);
@@ -338,7 +468,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Restarts the current level
      */
-    private void restartLevel ()
+    public void restartLevel ()
     {
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
@@ -352,8 +482,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
-        // Place asteroids
-        placeAsteroids();
+        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
+        if (gameMode != "online-multiplayer")
+        {
+            // Place asteroids
+            placeAsteroids();
+        }
 
         // TODO: Make additional asteroid for each level
 
@@ -366,7 +500,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Goes to the next level yo
      */
-    private void nextLevel ()
+    public void nextLevel ()
     {
         longestBeat = INITIAL_BEAT;
         soundSwitch.start();
@@ -385,8 +519,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
-        // Place asteroids
-        placeAsteroids();
+        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
+        if (gameMode != "online-multiplayer")
+        {
+            // Place asteroids
+            placeAsteroids();
+        }
 
         level++;
 
@@ -444,6 +582,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         bangShip.setFramePosition(1);
         bangShip.start();
+
+        if (gameMode.equals("online-multiplayer"))
+        {
+            client.send(new GameUpdate(user, SHIPDIE));
+        }
 
         // remove the ship from shipList
         shipList.remove(s);
@@ -578,7 +721,20 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getSource() instanceof JButton)
         {
-            initialScreen();
+            if (e.getActionCommand().equals(START_LABEL))
+            {
+                initialScreen();
+                client.send(new GameUpdate(user, NEWGAME));
+                placeAsteroids();
+            }
+            else if (e.getActionCommand().equals("Kill client"))
+            {
+                /*
+                 * terminate the client program. I think this should also throw an exception, thus ending the
+                 * GameNetworkLoop thread handling this socket's connection.
+                 */
+                client.close();
+            }
         }
 
         // Time to refresh the screen and deal with keyboard input
@@ -604,8 +760,20 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 {
                     s.attack();
                 }
-                if (ship != null)
+                if (s != null)
                 {
+                    // if ship is moving, send its latest location to the server
+                    if (gameMode.equals("online-multiplayer"))
+                    {
+                        if (s.getSpeed() > 0.000000000001)
+                        {
+                            client.send(new GameUpdate(user, SHIPMOVE, s.getX(), s.getY(), s.getRotation()));
+                        }
+                        if (s.shooting())
+                        {
+                            client.send(new GameUpdate(user, SHIPFIRE));
+                        }
+                    }
                     s.applyFriction(SHIP_FRICTION);
                 }
             }

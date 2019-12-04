@@ -15,11 +15,6 @@ import java.awt.geom.*;
  */
 public abstract class Participant
 {
-    public class Mine
-    {
-
-    }
-
     /** Speed in pixels per second in the horizontal (x) and vertical (y) directions */
     private double speedX, speedY;
 
@@ -41,6 +36,9 @@ public abstract class Participant
     // True if the Participant is inert (does not interact with any other Participants)
     private boolean isInert;
     
+    /* True if the participant is simply a rendering controlled remotely by another online user */
+    private boolean ghost;
+    
     /* Participants can have a color, the default is white */
     private Color color;
 
@@ -59,6 +57,19 @@ public abstract class Participant
         border = null;
         expired = false;
         color = Color.WHITE;
+        ghost = false;
+    }
+
+    /* Returns true if this participant is a ghost */
+    public boolean isGhost ()
+    {
+        return ghost;
+    }
+    
+    /* Returns true if this participant is a ghost */
+    public void setGhostStatus (boolean status)
+    {
+        ghost = status;
     }
 
     /* Returns the color of this Participant */

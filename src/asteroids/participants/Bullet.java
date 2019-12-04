@@ -4,8 +4,10 @@ import static asteroids.game.Constants.BULLET_DURATION;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import asteroids.destroyers.*;
+import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
+import asteroids.network.GameUpdate;
 
 public class Bullet extends Participant implements AsteroidDestroyer
 {
@@ -15,11 +17,14 @@ public class Bullet extends Participant implements AsteroidDestroyer
     /** The Ship that fired this bullet **/
     private Ship owner;
     
+    /* Controller for this bullet */
+    private Controller controller;
+    
     /*
      * Constructs a bullet at initial point (x, y), facing indicated direction,
      * with indicated initial speed. Specify game controller when constructing.
      */
-    public Bullet (double x, double y, double direction, double initSpeed, Ship owner)
+    public Bullet (double x, double y, double direction, double initSpeed, Ship owner, Controller controller)
     {
         this.owner = owner;
         setPosition(x, y);
@@ -69,5 +74,15 @@ public class Bullet extends Participant implements AsteroidDestroyer
             owner.bulletDestroyed();
         }
     }
-
+    
+    /**
+     * Customizes the base move method by sending move data to the server
+     */
+    @Override
+    public void move ()
+    {
+        // yeah, changes need to be made so the server can identify which bullet is moving
+//        controller.getClient().send(new GameUpdate("BULLETMOVE", this.getX(), this.getY(), this.getRotation()));
+        super.move();
+    }
 }
