@@ -116,6 +116,38 @@ public class GameUpdate implements Serializable
         this.size = size;
     }
     
+    /*
+     * Turns this game update into a code represented by a String, making it much
+     * faster to send over an internet connection than the object it starts out as.
+     * 
+     * The string is comprised of the following chunks, separated by the tilde (`)
+     * character:
+     * -a 1-digit type indicator, so this string is only as long as it needs to be.
+     *  0 means this gameUpdate only has two fields, i.e. it was constructed using
+     *  the first constructor above. 1 means the second constructor, 2 the third, 
+     *  and 3 the fourth.
+     *  
+     * The string also consists of the following, in the following order:
+     * 
+     * For types 0, 1, 2, and 3:
+     * -a 17-digit player ID
+     * -a 1-letter operation code
+     * For types 1, 2, and 3:
+     * -double for X
+     * -double for Y
+     * For types 2 and 3:
+     * -double for rotation
+     * For type 3:
+     * -A double for speed
+     * -A double for direction
+     * -An int for size
+     * -An int for variety
+     */
+    public String encode ()
+    {
+        return "";
+    }
+    
     public String getOperationCode ()
     {
         return operationCode;
