@@ -245,8 +245,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         Participant.expire(ship);
         ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
         addParticipant(ship);
+        
+        
+        
         shipList.add(ship);
-        display.setLegend("");
+        //display.setLegend("");
 
         // if two player mode, place another ship
         if (twoPlayerGame)
@@ -582,6 +585,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+         // It may be time to make a game transition
+            performTransition();
+         // Move the participants to their new locations
+            pstate.moveParticipants();
             for (Ship s : shipList)
             {
                 if (s.turningLeft() && s != null)
@@ -608,11 +615,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
             }
 
-            // It may be time to make a game transition
-            performTransition();
+//            // It may be time to make a game transition
+//            performTransition();
 
-            // Move the participants to their new locations
-            pstate.moveParticipants();
+//            // Move the participants to their new locations
+//            pstate.moveParticipants();
 
             // Refresh screen
             display.refresh();
