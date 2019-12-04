@@ -42,8 +42,6 @@ public abstract class Participant
     /* Participants can have a color, the default is white */
     private Color color;
 
-   
-    
     /**
      * Constructs an active Participant with no velocity, rotation, or border.
      */

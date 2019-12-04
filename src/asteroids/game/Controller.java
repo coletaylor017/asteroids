@@ -313,6 +313,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen, reset the level, and display the legend
         clear();
         display.setLegend("Asteroids");
+        AlienShip alien = new AlienShip(100, 100, 0, this);
+        addParticipant(alien);
         placeAsteroids();
     }
 
@@ -450,10 +452,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         lives = 3;
         level = 1;
         score = 0;
-        
-        
-        // Clear the screen
-        clear();
 
         // Place the ship, or ships if it's a two player game
         placeShips();
