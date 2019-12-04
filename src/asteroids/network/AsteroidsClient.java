@@ -139,6 +139,7 @@ public class AsteroidsClient
                         else if (opCode.equals(ASTEROIDSPAWN))
                         {
                             Asteroid a = new Asteroid(
+                                update.getID(),
                                 update.getSize(),
                                 update.getOutline(),
                                 update.getX(),
@@ -148,10 +149,27 @@ public class AsteroidsClient
                                 update.getDirection(),
                                 controller
                             );
+                            
+                            controller.addParticipant(a);
                         }
                         else if (opCode.equals(ASTEROIDDIE))
                         {
-                            // kill asteroid
+                            // Find the right asteroid
+                            long targetID = update.getID();
+                            System.out.println(targetID);
+                            for (Participant p : controller)
+                            {
+                                if (p instanceof Asteroid)
+                                {
+                                    Asteroid a = (Asteroid) p;
+                                    System.out.println(a.getID());
+                                    if (a.getID() == targetID)
+                                    {
+                                        Participant.expire(p);
+                                        controller.asteroidDestroyed(update.getSize());
+                                    }
+                                }
+                            }
                         }
                         else if (opCode.equals(RESTARTLEVEL))
                         {
@@ -169,18 +187,26 @@ public class AsteroidsClient
                     else if (objectIn instanceof ArrayList<?>) // In this case, assume server is returning a list of
                                                                // active players
                     {
+                        // cast to proper object type
+                        ArrayList<Player> players = (ArrayList<Player>) objectIn;
                         System.out.println("Printing player array list");
-                        for (Player p : (ArrayList<Player>) objectIn)
+                        for (Player p : players)
                         {
                             System.out.println(p.getID());
                             if (p.getID() != controller.getUser().getID()) // Don't add player if it's the controller's
                                                                            // own user. Only add other players.
                             {
                                 controller.addPlayer(p);
-                                System.out.println("Added new player via player arrarylist");
+                                System.out.println("Client: Added new player (above) via player arraylist");
                             }
                         }
                         System.out.println("Done");
+                        
+                        // If this is the first person to join, set their controller as the primary
+                        if (players.size() == 1)
+                        {
+                            controller.setPrimary(true);
+                        }
                     }
                 }
             }

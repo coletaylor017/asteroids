@@ -53,6 +53,8 @@ public class GameUpdate implements Serializable
     
     private Shape outline;
     
+    private long id;
+    
     /*
      * Constructs a new GameUpdate with only a code and no additional parameters.
      * Appropriate to use for the following codes:
@@ -100,10 +102,11 @@ public class GameUpdate implements Serializable
      * Appropriate to use for the following codes:
      * -ASTEROIDSPAWN
      */
-    public GameUpdate(Player p, String operationCode, int size, Shape outline, double x, double y, double rotation, double speed, double direction)
+    public GameUpdate(Player p, String operationCode, long id, int size, Shape outline, double x, double y, double rotation, double speed, double direction)
     {
         originPlayer = p; // TODO: change to an ID for faster messages?
         this.operationCode = operationCode;
+        this.id = id;
         this.x = x;
         this.y = y;
         this.rotation = rotation;
@@ -121,6 +124,11 @@ public class GameUpdate implements Serializable
     public Player getPlayer ()
     {
         return originPlayer;
+    }
+    
+    public long getID ()
+    {
+        return id;
     }
     
     public double getX ()

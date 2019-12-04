@@ -68,6 +68,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     
     /* The player who uses this controller as their local representation of an online game */
     Player user;
+    
+    /* If this controller is the primary, it spawns asteroids for all the others. */
+    boolean isPrimary;
 
     /*
      * Constructs a controller to coordinate the game and screen
@@ -82,6 +85,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public Controller (String version, AsteroidsClient aClient)
     {
+        isPrimary = false;
+        
         // initialize user
         user = new Player();
         System.out.println("Controller: new user id: " + user.getID());
@@ -117,6 +122,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Bring up the splash screen and start the refresh timer
         splashScreen();
+        
+        // In an online game, only place asteroids if this is the primary controller
+        if (!gameMode.equals("online-multiplayer") || (gameMode.equals("online-multiplayer") && isPrimary))
+        {
+            placeAsteroids();
+        }
         display.setVisible(true);
         refreshTimer.start();
         
@@ -128,6 +139,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             
             client.send(new GameUpdate(user, NEWPLAYER));
         }
+    }
+    
+    public void setPrimary (boolean p)
+    {
+        isPrimary = p;
+    }
+    
+    public boolean isPrimary ()
+    {
+        return isPrimary;
     }
     
     /*
@@ -276,26 +297,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
-        /*
-         *  If asteroids have already been spawned by an online peer, don't spawn them
-         *  Network latency could screw with this, i.e. if a player starts a game
-         *  while their peer's initial asteroid spawns are sending
-         */
 
-        System.out.println("Level: " + level);
-        System.out.println("Asteroid count: " + countAsteroids());
-        if (countAsteroids() < level + 3)
-        {
             // Place four asteroids near the corners of the screen.
             // TOP LEFT
             addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-            // TOP RIGHT
-            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-            // BOTTOM LEFT
-            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-            // BOTTOM RIGHT
-            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-        }
+//            // TOP RIGHT
+//            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+//            // BOTTOM LEFT
+//            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+//            // BOTTOM RIGHT
+//            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
@@ -325,13 +336,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         
         // Clear the screen
         clear();
-
-        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
-//        if (gameMode != "online-multiplayer")
-//        {
-            // Place asteroids
-            placeAsteroids();
-//        }
 
         // Place the ship, or ships if it's a two player game
         placeShips();
@@ -495,12 +499,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (e.getSource() instanceof JButton)
         {
-            if (e.getActionCommand().contentEquals(START_LABEL))
+            if (e.getActionCommand().equals(START_LABEL))
             {
                 initialScreen();
                 client.send(new GameUpdate(user, NEWGAME));
+                placeAsteroids();
             }
-            else if (e.getActionCommand().contentEquals("Kill client"))
+            else if (e.getActionCommand().equals("Kill client"))
             {
                 /*
                  * terminate the client program. I think this should also throw an exception, thus ending the

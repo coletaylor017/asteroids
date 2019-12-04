@@ -221,7 +221,7 @@ public class Ship extends Participant implements AsteroidDestroyer
         if (numBullets <= BULLET_LIMIT)
         {
             Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this, controller);
-            bullet.setGhostStatus(this.isGhost());
+            bullet.setGhostStatus(this.isGhost()); // set ghost status to match ship
             bullet.setColor(this.getColor()); // so that players can identify their own bullets
             controller.addParticipant(bullet);
             numBullets++;
