@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 /**
  * A panel to manage a currently running AsteroidsServer.
@@ -15,6 +17,12 @@ public class ServerDisplay extends JFrame
     
     /* The currently running server. */
     private AsteroidsServer server;
+    
+    /* The local machine's IP */
+    private String ip;
+    
+    /* The port the server is listening on */
+    private int port;
 
     /**
      * Lays out the game and creates the controller
@@ -24,23 +32,40 @@ public class ServerDisplay extends JFrame
         // Set server
         server = s;
         
+        // Attempt to find local IP
+        try(final DatagramSocket socket = new DatagramSocket()){
+          socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+          ip = socket.getLocalAddress().getHostAddress();
+        }
+        catch (Exception e)
+        {
+            ip = "Error finding local IP";
+            e.printStackTrace();
+        }
+        
+        // set port
+        port = 2020;
+        
         // Title at the top
         setTitle("Asteroids Server Management");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // This panel contains buttons and labels
-        JPanel controls = new JPanel();
-
-        // The button that starts the game
+        // Display current IP and port
+        JLabel ipLabel = new JLabel("IP: " + ip);
+        JLabel portLabel = new JLabel("Port: " + port);
+        
+        // The button that kills the server
         JButton killServer = new JButton("Kill server");
         killServer.setActionCommand("kill-server");
-        controls.add(killServer);
 
         // Organize everything
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(controls, "Center");
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
+        mainPanel.add(ipLabel);
+        mainPanel.add(portLabel);
+        mainPanel.add(killServer);
+        
         setContentPane(mainPanel);
         pack();
 

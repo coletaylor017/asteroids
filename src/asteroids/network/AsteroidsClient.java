@@ -10,9 +10,6 @@ import static asteroids.network.NetworkConstants.*;
 
 public class AsteroidsClient
 {
-    /* port to try to connect to */
-    private int port;
-
     /* The local representation of the game */
     private static Controller controller;
 
@@ -30,14 +27,12 @@ public class AsteroidsClient
      * important game updates from controller to said server. The client also interprets info from the server and
      * invokes methods on controller to update the game state according to those updates.
      */
-    public AsteroidsClient (int serverPort)
+    public AsteroidsClient (String serverIP, int serverPort)
     {
-
-        port = serverPort;
         try
         {
             // try to create connection to server at correct port. If unsuccessful, an exception is thrown.
-            socket = new Socket("localhost", port);
+            socket = new Socket(serverIP, serverPort);
 
             // initialize the output stream
             clientOut = new ObjectOutputStream(socket.getOutputStream());

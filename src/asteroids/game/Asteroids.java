@@ -1,9 +1,18 @@
 package asteroids.game;
 
+import static asteroids.game.Constants.START_LABEL;
+import static asteroids.game.Constants.TITLE;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import asteroids.network.AsteroidsClient;
 import asteroids.network.AsteroidsServer;
+import asteroids.network.IPPicker;
 import asteroids.network.ServerDisplay;
 
 /**
@@ -44,31 +53,12 @@ public class Asteroids
             ServerDisplay s = new ServerDisplay(as);
             s.setVisible(true);
             s.requestFocusInWindow();
-            
-            // A new thread is required for the server because the ServerDisplay needs to continuously run and listen to events on the current thread.
-//            new Thread(new ServerStarter(as)).start();
         }
         else if (choice == 3)
         {
-            // The client below creates a new controller
-            new AsteroidsClient(2020);
+            IPPicker picker = new IPPicker();
+            picker.setVisible(true);
+            picker.requestFocusInWindow();
         }
-
     }
-    
-//    static private class ServerStarter implements Runnable
-//    {
-//        AsteroidsServer serve;
-//        
-//        public ServerStarter (AsteroidsServer a)
-//        {
-//            serve = a;
-//        }
-//        @Override
-//        public void run ()
-//        {
-//            // Now, start the server. The line below blocks further execution, so don't put any code after it.
-////            serve.start();
-//        }
-//    }
 }
