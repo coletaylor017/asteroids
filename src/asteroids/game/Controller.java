@@ -301,12 +301,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // Place four asteroids near the corners of the screen.
             // TOP LEFT
             addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-//            // TOP RIGHT
-//            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-//            // BOTTOM LEFT
-//            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-//            // BOTTOM RIGHT
-//            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+            // TOP RIGHT
+            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+            // BOTTOM LEFT
+            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+            // BOTTOM RIGHT
+            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
     }
 
     /**
