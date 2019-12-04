@@ -245,11 +245,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         Participant.expire(ship);
         ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, this);
         addParticipant(ship);
-        
-        
-        
+
         shipList.add(ship);
-        //display.setLegend("");
+        // display.setLegend("");
 
         // if two player mode, place another ship
         if (twoPlayerGame)
@@ -352,10 +350,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // Clear the screen
-//        clear();
+        // clear();
 
-//        // Place asteroids
-//        placeAsteroids();
+        // // Place asteroids
+        // placeAsteroids();
 
         // TODO: Make additional asteroid for each level
 
@@ -418,6 +416,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // TODO: Place alienShip
+        // if (bigSaucer.isRunning())
+        // {
+        // bigSaucer.stop();
+        // }
+        // bigSaucer.setFramePosition(0);
+        // bigSaucer.loop(10);
 
         // Place the ship(s)
         placeShips();
@@ -451,6 +455,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Null out the ship
         s = null;
+
+        this.ship = null;
 
         // Decrement lives
         lives--;
@@ -585,9 +591,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
-         // It may be time to make a game transition
+            // It may be time to make a game transition
             performTransition();
-         // Move the participants to their new locations
+            // Move the participants to their new locations
             pstate.moveParticipants();
             for (Ship s : shipList)
             {
@@ -615,11 +621,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
             }
 
-//            // It may be time to make a game transition
-//            performTransition();
+            // // It may be time to make a game transition
+            // performTransition();
 
-//            // Move the participants to their new locations
-//            pstate.moveParticipants();
+            // // Move the participants to their new locations
+            // pstate.moveParticipants();
 
             // Refresh screen
             display.refresh();
