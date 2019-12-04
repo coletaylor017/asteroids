@@ -1,5 +1,6 @@
 package asteroids.network;
 
+import java.awt.Shape;
 import java.io.Serializable;
 
 /*
@@ -46,6 +47,12 @@ public class GameUpdate implements Serializable
     /* Some operations even have an associated speed! */
     private double speed;
     
+    private double direction;
+    
+    private int size;
+    
+    private Shape outline;
+    
     /*
      * Constructs a new GameUpdate with only a code and no additional parameters.
      * Appropriate to use for the following codes:
@@ -89,11 +96,11 @@ public class GameUpdate implements Serializable
     }
     
     /*
-     * Constructs a new GameUpdate with a code and four parameters: x, y, rotation, and speed.
+     * Constructs a new GameUpdate with a code and seven parameters.
      * Appropriate to use for the following codes:
      * -ASTEROIDSPAWN
      */
-    public GameUpdate(Player p, String operationCode, double x, double y, double rotation, double speed)
+    public GameUpdate(Player p, String operationCode, int size, Shape outline, double x, double y, double rotation, double speed, double direction)
     {
         originPlayer = p; // TODO: change to an ID for faster messages?
         this.operationCode = operationCode;
@@ -101,6 +108,9 @@ public class GameUpdate implements Serializable
         this.y = y;
         this.rotation = rotation;
         this.speed = speed;
+        this.outline = outline;
+        this.direction = direction;
+        this.size = size;
     }
     
     public String getOperationCode ()
@@ -131,5 +141,20 @@ public class GameUpdate implements Serializable
     public double getSpeed ()
     {
         return speed;
+    }
+    
+    public int getSize ()
+    {
+        return size;
+    }
+    
+    public double getDirection ()
+    {
+        return direction;
+    }
+    
+    public Shape getOutline ()
+    {
+        return outline;
     }
 }

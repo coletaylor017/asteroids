@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.io.*;
 import asteroids.game.*;
 import asteroids.participants.Ship;
+import asteroids.participants.Asteroid;
 import static asteroids.network.NetworkConstants.*;
 
 public class AsteroidsClient
@@ -137,7 +138,16 @@ public class AsteroidsClient
                         }
                         else if (opCode.equals(ASTEROIDSPAWN))
                         {
-                            // Spawn a new asteroid 
+                            Asteroid a = new Asteroid(
+                                update.getSize(),
+                                update.getOutline(),
+                                update.getX(),
+                                update.getY(),
+                                update.getRotation(),
+                                update.getSpeed(),
+                                update.getDirection(),
+                                controller
+                            );
                         }
                         else if (opCode.equals(ASTEROIDDIE))
                         {
@@ -151,12 +161,18 @@ public class AsteroidsClient
                         {
                             controller.nextLevel();
                         }
+                        else if (opCode.equals(NEWGAME))
+                        {
+                            controller.initialScreen();
+                        }
                     }
                     else if (objectIn instanceof ArrayList<?>) // In this case, assume server is returning a list of
                                                                // active players
                     {
+                        System.out.println("Printing player array list");
                         for (Player p : (ArrayList<Player>) objectIn)
                         {
+                            System.out.println(p.getID());
                             if (p.getID() != controller.getUser().getID()) // Don't add player if it's the controller's
                                                                            // own user. Only add other players.
                             {
@@ -164,6 +180,7 @@ public class AsteroidsClient
                                 System.out.println("Added new player via player arrarylist");
                             }
                         }
+                        System.out.println("Done");
                     }
                 }
             }

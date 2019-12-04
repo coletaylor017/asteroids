@@ -14,6 +14,7 @@ public class NetworkConstants
     public final static String ASTEROIDSPAWN = "AS";
     public final static String ASTEROIDDIE = "AD";
     public final static String NEXTLEVEL = "LN";
+    public final static String NEWGAME = "GN";
     public final static String RESTARTLEVEL = "LR";
     public final static String CONNECTIONESTABLISHED = "CE";
     public final static String GETPLAYERS = "PG";

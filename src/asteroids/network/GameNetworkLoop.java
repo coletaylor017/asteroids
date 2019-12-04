@@ -51,12 +51,6 @@ public class GameNetworkLoop extends Thread
             // Add this connection to the server's list of active commections.
             server.addToSocketList(this);
 
-            // Add new players to the local game for every already-existing player.
-/*            for (int i = 0; i < server.getPlayerList().size(); i++)
-            {
-                serverOut.writeObject(new GameUpdate(server.getPlayerList().get(i), "NEWPLAYER"));
-            }*/
-
             // get the first initialization broadcast from the client
             GameUpdate initialUpdate = (GameUpdate) serverIn.readObject();
 

@@ -1,6 +1,7 @@
 package asteroids.participants;
 
 import static asteroids.game.Constants.*;
+import static asteroids.network.NetworkConstants.*;
 import java.awt.Shape;
 import java.awt.geom.*;
 import java.util.Random;
@@ -8,6 +9,7 @@ import asteroids.destroyers.AsteroidDestroyer;
 import asteroids.destroyers.ShipDestroyer;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
+import asteroids.network.GameUpdate;
 
 /**
  * Represents asteroids
@@ -49,6 +51,30 @@ public class Asteroid extends Participant implements ShipDestroyer
         setVelocity(speed, RANDOM.nextDouble() * 2 * Math.PI);
         setRotation(2 * Math.PI * RANDOM.nextDouble());
         createAsteroidOutline(variety, size);
+
+        // If online, send this spawn to the server
+        if (controller.getGameMode().equals("online-multiplayer"))
+        {
+            controller.getClient().send(new GameUpdate(controller.getUser(), ASTEROIDSPAWN, this.size, this.outline,
+                    this.getX(), this.getY(), this.getRotation(), this.getSpeed(), this.getDirection()));
+        }
+    }
+
+    /*
+     * A second constructor for explicitly declaring direction and rotation. This constructor is used for asteroids who
+     * are spawned by someone else's controller.
+     */
+    public Asteroid (int size, Shape outline, double x, double y, double rotation, double speed, double direction,
+            Controller controller)
+    {
+        this.outline = outline;
+
+        // Create the asteroid
+        this.controller = controller;
+        this.size = size;
+        setPosition(x, y);
+        setVelocity(speed, direction);
+        setRotation(rotation);
     }
 
     @Override
@@ -143,24 +169,20 @@ public class Asteroid extends Participant implements ShipDestroyer
     @Override
     public void collidedWith (Participant p)
     {
-        // code below doesn't bother running if in one player mode
-        if (controller.getGameMode() == "enhanced" && p instanceof Bullet)
-        {
-            Bullet b = (Bullet) p;
-            int previousScore = b.getOwner().getScore();
-            b.getOwner().setScore(previousScore + ASTEROID_SCORE[size]);
-        }
-        if (p instanceof AsteroidDestroyer)
+        // Only run collision code as long as the collidee isn't an outside player on multiplayer
+        if (!p.isGhost() && p instanceof AsteroidDestroyer)
         {
             // spawn two new asteroids only if this is not a small asteroid
             if (this.size != 0)
             {
                 Random r = new Random();
-                controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
-                controller.addParticipant(new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+                controller.addParticipant(
+                        new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+                controller.addParticipant(
+                        new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
             }
-            
-            //spawn dust
+
+            // spawn dust
             int dustCount = RANDOM.nextInt(4) + 4;
             for (int i = 0; i < dustCount; i++)
             {
@@ -172,7 +194,6 @@ public class Asteroid extends Participant implements ShipDestroyer
 
             // Inform the controller
             controller.asteroidDestroyed(size);
-            
         }
     }
 }

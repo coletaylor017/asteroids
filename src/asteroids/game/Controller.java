@@ -84,6 +84,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // initialize user
         user = new Player();
+        System.out.println("Controller: new user id: " + user.getID());
         
         // initialize pstate
         pstate = new ParticipantState();
@@ -118,6 +119,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         splashScreen();
         display.setVisible(true);
         refreshTimer.start();
+        
+        // if in online multiplayer mode, let the server know a user has been added
+        if (gameMode.equals("online-multiplayer"))
+        {
+            // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
+            client.send(new GameUpdate(user, GETPLAYERS));
+            
+            client.send(new GameUpdate(user, NEWPLAYER));
+        }
     }
     
     /*
@@ -137,6 +147,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         playerList.add(plr);
         Ship newShip = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, plr, this);
+        newShip.setGhostStatus(true);
         shipList.add(newShip);
         addParticipant(newShip);
         plr.setShip(newShip);
@@ -252,6 +263,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             for (Player p : playerList)
             {
                 Ship s = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, p, this);
+                s.setGhostStatus(true);
                 addParticipant(s);
                 shipList.add(s);
                 p.setShip(s);
@@ -264,15 +276,26 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
-//        // Place four asteroids near the corners of the screen.
-//        // TOP LEFT
-//        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-//        // TOP RIGHT
-//        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-//        // BOTTOM LEFT
-//        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-//        // BOTTOM RIGHT
-//        addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        /*
+         *  If asteroids have already been spawned by an online peer, don't spawn them
+         *  Network latency could screw with this, i.e. if a player starts a game
+         *  while their peer's initial asteroid spawns are sending
+         */
+
+        System.out.println("Level: " + level);
+        System.out.println("Asteroid count: " + countAsteroids());
+        if (countAsteroids() < level + 3)
+        {
+            // Place four asteroids near the corners of the screen.
+            // TOP LEFT
+            addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+            // TOP RIGHT
+            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+            // BOTTOM LEFT
+            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+            // BOTTOM RIGHT
+            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        }
     }
 
     /**
@@ -292,32 +315,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /**
      * Sets things up and begins a new game.
      */
-    private void initialScreen ()
+    public void initialScreen ()
     {
-        // if in online multiplayer mode, let the server know a user has been added
-        if (gameMode.equals("online-multiplayer"))
-        {
-            // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
-            client.send(new GameUpdate(user, GETPLAYERS));
-            
-            client.send(new GameUpdate(user, NEWPLAYER));
-        }
-        
-        // Clear the screen
-        clear();
-
-        // Place asteroids
-        placeAsteroids();
-
-        // Place the ship, or ships if it's a two player game
-        placeShips();
-
-        // Reset statistics
-
         // set lives, level, score
         lives = 3;
         level = 1;
         score = 0;
+        
+        
+        // Clear the screen
+        clear();
+
+        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
+//        if (gameMode != "online-multiplayer")
+//        {
+            // Place asteroids
+            placeAsteroids();
+//        }
+
+        // Place the ship, or ships if it's a two player game
+        placeShips();
+
 
         // Display Lives
         display.setLives(lives);
@@ -351,8 +369,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
-        // Place asteroids
-        placeAsteroids();
+        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
+        if (gameMode != "online-multiplayer")
+        {
+            // Place asteroids
+            placeAsteroids();
+        }
 
         // TODO: Make additional asteroid for each level
 
@@ -379,8 +401,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
-        // Place asteroids
-        placeAsteroids();
+        // in an online game, asteroid spawning is handled by the client to keep it uniform between players
+        if (gameMode != "online-multiplayer")
+        {
+            // Place asteroids
+            placeAsteroids();
+        }
 
         // TODO: Make additional asteroid for each level
 
@@ -472,6 +498,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (e.getActionCommand().contentEquals(START_LABEL))
             {
                 initialScreen();
+                client.send(new GameUpdate(user, NEWGAME));
             }
             else if (e.getActionCommand().contentEquals("Kill client"))
             {

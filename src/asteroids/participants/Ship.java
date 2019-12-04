@@ -39,12 +39,6 @@ public class Ship extends Participant implements AsteroidDestroyer
     
     /* Number of bullets onscreen that were fired by this particular ship */
     private int numBullets;
-    
-    /* The score of the player who controls this ship */
-    private int score;
-    
-    /* Lives left of the player who controls this ship */
-    private int lives;
 
     /** Game controller */
     private Controller controller;
@@ -62,8 +56,6 @@ public class Ship extends Participant implements AsteroidDestroyer
         setRotation(direction);
         
         numBullets = 0;
-        score = 0;
-        lives = 0;
         owner = player;
 
         Path2D.Double shipWFlame = new Path2D.Double();
@@ -97,30 +89,6 @@ public class Ship extends Participant implements AsteroidDestroyer
     public Player getOwner ()
     {
         return owner;
-    }
-    
-    /* Get score of this ship */
-    public int getScore()
-    {
-        return score;
-    }
-    
-    /* Get lives of this ship */
-    public int getLives()
-    {
-        return lives;
-    }
-    
-    /* set this player's score */
-    public void setScore(int newScore)
-    {
-        score = newScore;
-    }
-    
-    /* set this player's lives */
-    public void setLives(int newLives)
-    {
-        score = newLives;
     }
 
     /**
@@ -253,6 +221,7 @@ public class Ship extends Participant implements AsteroidDestroyer
         if (numBullets <= BULLET_LIMIT)
         {
             Bullet bullet = new Bullet(this.getXNose(), this.getYNose(), this.getRotation(), BULLET_SPEED, this, controller);
+            bullet.setGhostStatus(this.isGhost());
             bullet.setColor(this.getColor()); // so that players can identify their own bullets
             controller.addParticipant(bullet);
             numBullets++;

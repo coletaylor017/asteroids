@@ -114,8 +114,8 @@ public class Screen extends JPanel
             for (Ship s : controller.getShipList()) {
                 // color of stat will correspond to color of ship
                 g.setColor(s.getColor());
-                g.drawString("LIVES: " + s.getLives(), 15, vertOffset);
-                g.drawString("SCORE: " + s.getScore(), 115, vertOffset);
+                g.drawString("LIVES: " + s.getOwner().getLives(), 15, vertOffset);
+                g.drawString("SCORE: " + s.getOwner().getScore(), 115, vertOffset);
                 vertOffset += 25;
             }
         }

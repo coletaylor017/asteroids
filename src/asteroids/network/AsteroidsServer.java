@@ -70,6 +70,7 @@ public class AsteroidsServer
     public void addToPlayerList (Player player)
     {
         playerList.add(player);
+        System.out.println("AsteroisServer added player ID '" + player.getID() + "' to the list.");
     }
     
     /*
