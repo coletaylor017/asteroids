@@ -336,19 +336,22 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         if (!gameMode.equals("online-multiplayer"))
         {
-            ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
-
-            Participant.expire(ship2);
-            ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
-            ship2.setColor(Color.CYAN);
-            addParticipant(ship2);
-            shipList.add(ship2);
-            display.setLegend("");
             // Place a new ship.
             Participant.expire(ship);
             ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
             addParticipant(ship);
             shipList.add(ship);
+
+            if (gameMode.equals("enhanced"))
+            {
+                ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
+
+                Participant.expire(ship2);
+                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
+                ship2.setColor(Color.CYAN);
+                addParticipant(ship2);
+                shipList.add(ship2);
+            }
             
             // if two player mode, place another ship
             if (gameMode.equals("enhanced"))
@@ -724,7 +727,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             if (e.getActionCommand().equals(START_LABEL))
             {
                 initialScreen();
-                client.send(new GameUpdate(user, NEWGAME));
+                if (gameMode.equals("online-multiplayer"))
+                {
+                    client.send(new GameUpdate(user, NEWGAME));
+                }
                 placeAsteroids();
             }
             else if (e.getActionCommand().equals("Kill client"))

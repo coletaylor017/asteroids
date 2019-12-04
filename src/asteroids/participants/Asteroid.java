@@ -200,19 +200,23 @@ public class Asteroid extends Participant implements ShipDestroyer
         // Only run collision code as long as the collidee isn't an outside player on multiplayer
         if (!p.isGhost() && p instanceof AsteroidDestroyer)
         {
-            // Let other online players know
-            controller.getClient().send(new GameUpdate(
-                controller.getUser(),
-                ASTEROIDDIE,
-                this.id,
-                this.size,
-                this.getOutline(),
-                this.getX(),
-                this.getY(),
-                this.getRotation(),
-                this.getSpeed(),
-                this.getDirection()
-            ));
+            if (controller.getGameMode().equals("online-multiplayer"))
+            {
+                // Let other online players know
+                controller.getClient().send(new GameUpdate(
+                    controller.getUser(),
+                    ASTEROIDDIE,
+                    this.id,
+                    this.size,
+                    this.getOutline(),
+                    this.getX(),
+                    this.getY(),
+                    this.getRotation(),
+                    this.getSpeed(),
+                    this.getDirection()
+                ));
+            }
+
             // spawn two new asteroids only if this is not a small asteroid
             if (this.size != 0)
             {
