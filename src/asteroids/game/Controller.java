@@ -308,7 +308,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
-        // TODO: alternate beats for intro, they slowly alternate faster and faster
 
         // Place the ship, or ships if it's a two player game
         placeShips();
@@ -350,17 +349,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // Clear the screen
-        clear();
+//        clear();
 
-        // Place asteroids
-        placeAsteroids();
+//        // Place asteroids
+//        placeAsteroids();
 
         // TODO: Make additional asteroid for each level
 
         // Place the ship(s)
         placeShips();
 
-        // display.setLives(lives);
     }
 
     /**
@@ -637,6 +635,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 playSound = false;
                 nextLevel();
+            }
+            if (ship == null && lives > 0)
+            {
+                placeShips();
             }
             else if (shipList.size() == 0) // if both players have died
             {
