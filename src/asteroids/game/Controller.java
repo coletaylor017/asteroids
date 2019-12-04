@@ -32,7 +32,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** When this timer goes off, it is time to refresh the animation */
     private Timer refreshTimer;
 
-
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
      * in the future to give the user time to see what has happened before doing something like going to a new level or
@@ -59,7 +58,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /* Specifies if a two player game is taking place */
     private final boolean twoPlayerGame;
-    
+
     /* Specifies whether beats should play */
     private boolean playSound;
 
@@ -552,32 +551,20 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 {
                     longestBeat = FASTEST_BEAT;
                 }
-               soundSwitch.setDelay(longestBeat);
+                soundSwitch.setDelay(longestBeat);
                 if (playSound == true)
                 {
                     beat1.setFramePosition(0);
                     beat1.start();
-                   
+
                 }
-                else 
+                else
                 {
                     beat2.setFramePosition(0);
 
                     beat2.start();
                 }
-                
-                
-                if (playSound == true)
-                {
-                    //beat1.stop();
-                }
-                else
-                {
-                    //beat2.stop();
-                }
-
                 playSound = !playSound;
-                
             }
         }
         if (e.getSource() instanceof JButton)
@@ -645,10 +632,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
             if (countAsteroids() == 0)
             {
+                playSound = false;
                 nextLevel();
             }
             else if (shipList.size() == 0) // if both players have died
             {
+                playSound = false;
                 restartLevel();
             }
 
