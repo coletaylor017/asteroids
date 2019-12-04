@@ -197,6 +197,7 @@ public class Asteroid extends Participant implements ShipDestroyer
     @Override
     public void collidedWith (Participant p)
     {
+        // TODO: Add multiplayer score increase
         // Only run collision code as long as the collidee isn't an outside player on multiplayer
         if (!p.isGhost() && p instanceof AsteroidDestroyer)
         {

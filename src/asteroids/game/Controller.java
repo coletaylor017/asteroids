@@ -621,7 +621,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         soundSwitch.restart();
 
     }
-
+    
     /**
      * An asteroid has been destroyed
      */
