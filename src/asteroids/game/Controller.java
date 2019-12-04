@@ -98,7 +98,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /** Sound 2 */
     private Clip beat2;
 
-    /** */
+    /** Determines tempo of beats */
     private int longestBeat;
 
     /** timer for beats */
@@ -222,7 +222,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen, reset the level, and display the legend
         clear();
         display.setLegend("Asteroids");
-
         placeAsteroids();
     }
 
@@ -231,6 +230,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void finalScreen ()
     {
+        soundSwitch.stop();
         playSound = false;
         display.setLegend(GAME_OVER);
         display.removeKeyListener(this);
@@ -340,7 +340,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void restartLevel ()
     {
-        playSound = true;
         // otherwise ship can start off moving or shooting in the next scene
         for (Ship s : shipList)
         {
@@ -369,6 +368,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void nextLevel ()
     {
+        longestBeat = INITIAL_BEAT;
+        soundSwitch.start();
+
         playSound = true;
 
         // otherwise ship can start off moving in the next scene
@@ -434,6 +436,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
+        soundSwitch.stop();
         playSound = false;
         if (bangShip.isRunning())
         {
@@ -456,6 +459,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
+        soundSwitch.restart();
 
     }
 
@@ -467,8 +471,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // If all the asteroids are gone, schedule a transition
         if (countAsteroids() == 0)
         {
+            soundSwitch.stop();
             scheduleTransition(END_DELAY);
         }
+        // See if large asteroid has been destroyed
         if (size == 2)
         {
             if (bangLarge.isRunning())
@@ -478,6 +484,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             bangLarge.setFramePosition(0);
             bangLarge.start();
         }
+        // See if medium asteroid has been destroyed
+
         if (size == 1)
         {
             if (bangMedium.isRunning())
@@ -487,6 +495,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             bangMedium.setFramePosition(0);
             bangMedium.start();
         }
+        // Small asteroid has been destroyed
         else
         {
             if (bangSmall.isRunning())
@@ -588,18 +597,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 if (s.accelerating() && s != null)
                 {
                     s.accelerate();
-                    // TODO: change so that thrust is played until button is released
-
                     thrust.setFramePosition(0);
-                    thrust.loop(3);
+                    thrust.loop(10);
                 }
                 if (s.shooting() && s != null)
                 {
                     s.attack();
-                    // TODO: change so that thrust is played until button is released
-
-                    // fire.setFramePosition(0);
-                    // fire.start();
                 }
                 if (ship != null)
                 {
@@ -637,7 +640,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             }
             else if (shipList.size() == 0) // if both players have died
             {
-                playSound = false;
                 restartLevel();
             }
 
@@ -687,7 +689,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
         {
             fire.setFramePosition(0);
-            fire.loop(8);
+            fire.loop(100);
             ship.setShooting(true);
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
@@ -726,7 +728,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // s key will not fire player 1's ship in two-player mode
             if (!twoPlayerGame)
             {
-                fire.loop(8);
+                fire.loop(100);
 
                 ship.setShooting(true);
             }
@@ -740,7 +742,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
-                fire.loop(8);
+                fire.setFramePosition(0);
+                fire.loop(100);
                 ship.setShooting(true);
             }
         }
