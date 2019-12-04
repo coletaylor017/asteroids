@@ -333,6 +333,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private void placeShips ()
     {
         display.setLegend("");
+        // Place a new ship
+        Participant.expire(ship);
+        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
+        addParticipant(ship);
+
+        shipList.add(ship);
+        // display.setLegend("");
 
         if (!gameMode.equals("online-multiplayer"))
         {
@@ -438,7 +445,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Place asteroids
         placeAsteroids();
-        // TODO: alternate beats for intro, they slowly alternate faster and faster
 
         // set lives, level, score
         lives = 3;
@@ -483,7 +489,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // Clear the screen
-        clear();
+        // clear();
 
         // in an online game, asteroid spawning is handled by the client to keep it uniform between players
         if (gameMode != "online-multiplayer")
@@ -497,7 +503,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place the ship(s)
         placeShips();
 
-        // display.setLives(lives);
     }
 
     /**
@@ -558,6 +563,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // TODO: Place alienShip
+        // if (bigSaucer.isRunning())
+        // {
+        // bigSaucer.stop();
+        // }
+        // bigSaucer.setFramePosition(0);
+        // bigSaucer.loop(10);
 
         // Place the ship(s)
         placeShips();
@@ -596,6 +607,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Null out the ship
         s = null;
+
+        this.ship = null;
 
         // Decrement lives
         lives--;
@@ -746,6 +759,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Time to refresh the screen and deal with keyboard input
         else if (e.getSource() == refreshTimer)
         {
+            // It may be time to make a game transition
+            performTransition();
+            // Move the participants to their new locations
+            pstate.moveParticipants();
             for (Ship s : shipList)
             {
                 if (s.turningLeft() && s != null)
@@ -784,11 +801,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
             }
 
-            // It may be time to make a game transition
-            performTransition();
+            // // It may be time to make a game transition
+            // performTransition();
 
-            // Move the participants to their new locations
-            pstate.moveParticipants();
+            // // Move the participants to their new locations
+            // pstate.moveParticipants();
 
             // Refresh screen
             display.refresh();
@@ -811,6 +828,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 playSound = false;
                 nextLevel();
+            }
+            if (ship == null && lives > 0)
+            {
+                placeShips();
             }
             else if (shipList.size() == 0) // if both players have died
             {
