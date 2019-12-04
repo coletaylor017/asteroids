@@ -145,13 +145,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         smallSaucer = createClip("/sounds/saucerSmall.wav");
         beat1 = createClip("/sounds/beat1.wav");
         beat2 = createClip("/sounds/beat2.wav");
-        
+
         isPrimary = false;
-        
+
         // initialize user
         user = new Player();
         System.out.println("Controller: new user id: " + user.getID());
-        
+
         // initialize pstate
         pstate = new ParticipantState();
 
@@ -160,10 +160,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         shipList = new ArrayList<>();
         playerList = new ArrayList<>();
-        
+
         // set game mode to "classic", "enhanced", or "online-multiplayer"
         gameMode = version;
-        
+
         if (gameMode.equals("online-multiplayer"))
         {
             client.send(new GameUpdate(user, CONNECTIONESTABLISHED));
@@ -183,7 +183,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Bring up the splash screen and start the refresh timer
         splashScreen();
-        
+
         // In an online game, only place asteroids if this is the primary controller
         if (!gameMode.equals("online-multiplayer") || (gameMode.equals("online-multiplayer") && isPrimary))
         {
@@ -192,13 +192,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.setVisible(true);
         refreshTimer.start();
         soundSwitch.start();
-        
+
         // if in online multiplayer mode, let the server know a user has been added
         if (gameMode.equals("online-multiplayer"))
         {
-            // Have the client request a current list of active players. The client will automatically call addPlayer() for each one.
+            // Have the client request a current list of active players. The client will automatically call addPlayer()
+            // for each one.
             client.send(new GameUpdate(user, GETPLAYERS));
-            
+
             client.send(new GameUpdate(user, NEWPLAYER));
         }
     }
@@ -359,7 +360,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 addParticipant(ship2);
                 shipList.add(ship2);
             }
-            
+
             // if two player mode, place another ship
             if (gameMode.equals("enhanced"))
             {
@@ -378,16 +379,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             {
                 Participant.expire(s);
             }
-            
+
             shipList.clear();
-            
+
             // Place the user's ship
             ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
             addParticipant(ship);
             shipList.add(ship);
             ship.setColor(Color.RED);
             user.setShip(ship);
-            
+
             // Place new ships for all other players
             for (Player p : playerList)
             {
@@ -450,14 +451,12 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         lives = 3;
         level = 1;
         score = 0;
-        
-        
+
         // Clear the screen
         clear();
 
         // Place the ship, or ships if it's a two player game
         placeShips();
-
 
         // Display Lives
         display.setLives(lives);
@@ -563,12 +562,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // TODO: Place alienShip
-        // if (bigSaucer.isRunning())
-        // {
-        // bigSaucer.stop();
-        // }
-        // bigSaucer.setFramePosition(0);
-        // bigSaucer.loop(10);
+        //addParticipant(new AlienShip)
+        
+//        if (type == 1)
+//        {
+//            if (bigSaucer.isRunning())
+//            {
+//                bigSaucer.stop();
+//            }
+//            bigSaucer.setFramePosition(0);
+//            bigSaucer.loop(4);
+//        }
+//        else
+//        { //type2
+//            if (smallSaucer.isRunning())
+//            {
+//                smallSaucer.stop();
+//            }
+//            smallSaucer.setFramePosition(0);
+//            smallSaucer.loop(4);
+//        }
+         
 
         // Place the ship(s)
         placeShips();
@@ -588,6 +602,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void shipDestroyed (Ship s)
     {
+        fire.stop();
+        thrust.stop();
         soundSwitch.stop();
         playSound = false;
         if (bangShip.isRunning())
@@ -621,7 +637,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         soundSwitch.restart();
 
     }
-    
+
     /**
      * An asteroid has been destroyed
      */
@@ -692,6 +708,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         // Display new score
         display.setScore(score);
+       
+        
     }
 
     /**
@@ -708,6 +726,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void actionPerformed (ActionEvent e)
     {
+        
         // The start button has been pressed. Stop whatever we're doing
         // and bring up the initial screen
         if (soundSwitch == e.getSource())
@@ -776,8 +795,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 if (s.accelerating() && s != null)
                 {
                     s.accelerate();
-                    thrust.setFramePosition(0);
-                    thrust.loop(10);
                 }
                 if (s.shooting() && s != null)
                 {
@@ -889,8 +906,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
         {
-            thrust.start();
-
+            thrust.setFramePosition(0);
+            thrust.loop(10);
             ship.setAccelerating(true);
         }
 
@@ -923,6 +940,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // s key will not fire player 1's ship in two-player mode
             if (!twoPlayerGame)
             {
+                fire.setFramePosition(0);
                 fire.loop(100);
 
                 ship.setShooting(true);
@@ -937,8 +955,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
-                fire.setFramePosition(0);
-                fire.loop(100);
                 ship.setShooting(true);
             }
         }
@@ -947,12 +963,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             if (!twoPlayerGame)
             {
-                thrust.start();
+                thrust.setFramePosition(0);
+                thrust.loop(10);
                 ship.setAccelerating(true);
             }
             else
             {
-                thrust.start();
+                thrust.setFramePosition(0);
+                thrust.loop(10);
                 ship2.setAccelerating(true);
             }
         }
@@ -1057,6 +1075,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             fire.stop();
             ship.setShooting(false);
         }
+       
     }
 
 }
