@@ -1,8 +1,6 @@
 package asteroids.participants;
 
-import static asteroids.game.Constants.ALIENSHIP_SCALE;
-import static asteroids.game.Constants.BULLET_SPEED;
-import static asteroids.game.Constants.RANDOM;
+import static asteroids.game.Constants.*;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
@@ -22,6 +20,9 @@ public class AlienShip extends Participant implements ShipDestroyer
 
     /* The size of this ship, 0 for small, 1 for medium */
     private int size;
+    
+    /* Indicates is this alien ship is moving or not */
+    boolean moving;
 
     /*
      * Constructs a new alien ship for the given controller.
@@ -30,11 +31,16 @@ public class AlienShip extends Participant implements ShipDestroyer
     {
         this.controller = controller;
         this.size = size;
-        setPosition(x, y);
         setRotation(0);
+        setVelocity(2, 0);
+        moving = false;
+        
+        // appear randomly on either one edge or the other
+        setPosition(SIZE * RANDOM.nextInt(2), SIZE * RANDOM.nextDouble());
         
         // When this timer goes off, alien ship attacks
-        new ParticipantCountdownTimer(this, 2000);
+        new ParticipantCountdownTimer(this, new String("attack"), 2000);
+        new ParticipantCountdownTimer(this, new String("turn"), 1000);
 
         // build outline
         Path2D.Double p = new Path2D.Double();
@@ -97,23 +103,35 @@ public class AlienShip extends Participant implements ShipDestroyer
     @Override
     public void countdownComplete (Object obj)
     {
-        if (size == 1)
+        // Check what the timer is telling us to do
+        String instruction = (String) obj;
+        if (instruction.equals("attack"))
         {
-            // attack in a random direction
-            attack(2 * Math.PI * RANDOM.nextDouble());
+            if (size == 1)
+            {
+                // attack in a random direction
+                attack(2 * Math.PI * RANDOM.nextDouble());
+            }
+            else if (size == 0)
+            {
+                // attack in general direction of ship
+                double deltaX = controller.getShip().getX() - this.getX();
+                double deltaY = controller.getShip().getY() - this.getY();
+                double direction = Math.atan2(deltaY, deltaX);
+                // offset +/- 5 degrees. 5 degrees = pi/36 radians = 0.087266 radians
+                double offset = (0.087266) - (RANDOM.nextDouble() * 0.087266);
+                attack(direction + offset);
+            }
+            
+            // Restart the timer
+            new ParticipantCountdownTimer(this, new String("attack"), 2000);
         }
-        else if (size == 0)
+        else if (instruction.equals("turn"))
         {
-            // attack in general direction of ship
-            double deltaX = controller.getShip().getX() - this.getX();
-            double deltaY = controller.getShip().getY() - this.getY();
-            double direction = Math.atan2(deltaY, deltaX);
-            // offset +/- 5 degrees. 5 degrees = pi/36 radians = 0.087266 radians
-            double offset = (0.087266) - (RANDOM.nextDouble() * 0.087266);
-            attack(direction + offset);
+            setDirection((RANDOM.nextInt(3) - 1) * -1);
+            
+            // Restart the timer
+            new ParticipantCountdownTimer(this, new String("turn"), 1000);
         }
-        
-        // Restart the timer
-        new ParticipantCountdownTimer(this, 2000);
     }
 }
