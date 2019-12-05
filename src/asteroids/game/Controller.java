@@ -121,7 +121,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* If this controller is the primary, it spawns asteroids for all the others. */
     boolean isPrimary;
 
-    
+    /* Specifies if alien should spawn */
+    private boolean isAlienActive;
 
     /*
      * Constructs a controller to coordinate the game and screen
@@ -516,6 +517,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void nextLevel ()
     {
+        isAlienActive = true;
         longestBeat = INITIAL_BEAT;
         soundSwitch.start();
 
@@ -688,6 +690,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     // TODO: implemented for score and sound
     public void alienShipDestroyed (int size)
     {
+        isAlienActive = false;
 
         if (bangAlienShip.isRunning())
         {
@@ -816,7 +819,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         else if (e.getSource() == alienShipTimer)
         {
             // Time to spawn a new alien ship!
-            if (level == 2)
+            if (level == 2 && isAlienActive == true)
             {
                 // Spawn a new medium alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
