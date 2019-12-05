@@ -109,7 +109,7 @@ public class Constants
     /**
      * Scaling factors used for alien ships of size 0 and 1.
      */
-    public final static double[] ALIENSHIP_SCALE = { 0.5, 1.0 };
+    public final static double[] ALIENSHIP_SCALE = { 0.8, 1.8 };
     
     /**
      * Score earned for alien ships of size 0 and 1.

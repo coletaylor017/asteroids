@@ -35,6 +35,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /** When this timer goes off, it is time to refresh the animation */
     private Timer refreshTimer;
+    
+    /* When this timer goes off, an alien ship appears */
+    private Timer alienShipTimer;
 
     /**
      * The time at which a transition to a new stage of the game should be made. A transition is scheduled a few seconds
@@ -184,11 +187,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Bring up the splash screen and start the refresh timer
         splashScreen();
         
-        // In an online game, only place asteroids if this is the primary controller
-        if (!gameMode.equals("online-multiplayer") || (gameMode.equals("online-multiplayer") && isPrimary))
-        {
-            placeAsteroids();
-        }
         display.setVisible(true);
         refreshTimer.start();
         soundSwitch.start();
@@ -247,6 +245,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public Player getUser ()
     {
         return user;
+    }
+    
+    /*
+     * Returns the main ship.
+     */
+    public Ship getShip ()
+    {
+        return ship;
     }
 
     /*
@@ -313,8 +319,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen, reset the level, and display the legend
         clear();
         display.setLegend("Asteroids");
-        AlienShip alien = new AlienShip(100, 100, 0, this);
-        addParticipant(alien);
         placeAsteroids();
     }
 
@@ -407,15 +411,19 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     private void placeAsteroids ()
     {
-        // Place four asteroids near the corners of the screen.
-        // TOP LEFT
-        addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
-        // TOP RIGHT
-        addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
-        // BOTTOM LEFT
-        addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
-        // BOTTOM RIGHT
-        addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        // If not online, just place asteroids. If online, check that this controller is set up as the primary
+        if (!gameMode.equals("online-multiplayer") || (gameMode.equals("online-multiplayer") && isPrimary))
+        {
+            // Place four asteroids near the corners of the screen.
+            // TOP LEFT
+            addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+            // TOP RIGHT
+//            addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+//            // BOTTOM LEFT
+//            addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+//            // BOTTOM RIGHT
+//            addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+        }
     }
 
     /**
@@ -536,6 +544,13 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
         // Display new level
         display.setLevel(level);
+        
+        if (level > 1)
+        {
+            // Set the alien ship timer to a random time 5-10 seconds
+            alienShipTimer = new Timer(RANDOM.nextInt(5000) + 5000, this);
+            alienShipTimer.start();
+        }
 
         // TODO: Make additional asteroid for each level.
         // each time randomizing position
@@ -690,6 +705,10 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
         // Display new score
         display.setScore(score);
+        
+        // Reset and start the alien ship timer
+        alienShipTimer = new Timer(RANDOM.nextInt(5000) + 5000, this);
+        alienShipTimer.start();
     }
 
     /**
@@ -706,8 +725,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void actionPerformed (ActionEvent e)
     {
-        // The start button has been pressed. Stop whatever we're doing
-        // and bring up the initial screen
         if (soundSwitch == e.getSource())
         {
             if (ship != null)
@@ -733,7 +750,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 playSound = !playSound;
             }
         }
-        if (e.getSource() instanceof JButton)
+        else if (e.getSource() instanceof JButton)
         {
             if (e.getActionCommand().equals(START_LABEL))
             {
@@ -742,7 +759,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 {
                     client.send(new GameUpdate(user, NEWGAME));
                 }
-                placeAsteroids();
             }
             else if (e.getActionCommand().equals("Kill client"))
             {
@@ -799,14 +815,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 }
             }
 
-            // // It may be time to make a game transition
-            // performTransition();
-
-            // // Move the participants to their new locations
-            // pstate.moveParticipants();
-
             // Refresh screen
             display.refresh();
+        }
+        else if (e.getSource() == alienShipTimer)
+        {
+            // Time to spawn a new alien ship!
+            if (level == 2)
+            {
+                // Spawn a new medium alien ship on edge of screen
+                AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
+                addParticipant(alien);
+            }
+            else if (level >= 3)
+            {
+                // Spawn a small alien ship on edge of screen
+                AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 0, this);
+                addParticipant(alien);
+            }
+            
+            // Stop the alien ship timer. It will be restarted when the alien dies
+            alienShipTimer.stop();
         }
 
     }

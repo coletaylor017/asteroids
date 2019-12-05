@@ -9,14 +9,11 @@ import asteroids.game.Participant;
 import asteroids.game.ParticipantCountdownTimer;
 import asteroids.network.GameUpdate;
 
-public class Bullet extends Participant implements AsteroidDestroyer
+public class AlienBullet extends Participant implements ShipDestroyer, AsteroidDestroyer
 {
     /** Shape of bullet to detect collisions **/
     private Shape outline;
 
-    /** The Ship that fired this bullet **/
-    private Ship owner;
-    
     /* Controller for this bullet */
     private Controller controller;
     
@@ -24,9 +21,8 @@ public class Bullet extends Participant implements AsteroidDestroyer
      * Constructs a bullet at initial point (x, y), facing indicated direction,
      * with indicated initial speed. Specify game controller when constructing.
      */
-    public Bullet (double x, double y, double direction, double initSpeed, Ship owner, Controller controller)
+    public AlienBullet (double x, double y, double direction, double initSpeed, Controller controller)
     {
-        this.owner = owner;
         setPosition(x, y);
         setVelocity(initSpeed, direction);
         
@@ -35,12 +31,6 @@ public class Bullet extends Participant implements AsteroidDestroyer
         
         // To make the bullet expire after the correct duration
         new ParticipantCountdownTimer(this, BULLET_DURATION);
-    }
-    
-    /* Returns the ship that this bullet eminated from */
-    public Ship getOwner()
-    {
-        return owner;
     }
 
     @Override
@@ -55,7 +45,6 @@ public class Bullet extends Participant implements AsteroidDestroyer
     @Override
     public void countdownComplete (Object payload)
     {
-        owner.bulletDestroyed();
         Participant.expire(this);
     }
 
@@ -69,9 +58,6 @@ public class Bullet extends Participant implements AsteroidDestroyer
         {
             // delete bullet
             Participant.expire(this);
-            
-            // inform controller
-            owner.bulletDestroyed();
         }
     }
 }
