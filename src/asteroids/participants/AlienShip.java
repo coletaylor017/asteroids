@@ -63,7 +63,6 @@ public class AlienShip extends Participant implements ShipDestroyer
         // scale to match size
         double scale = ALIENSHIP_SCALE[size];
         p.transform(AffineTransform.getScaleInstance(scale, scale));
-
         outline = p;
     }
     

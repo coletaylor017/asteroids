@@ -544,7 +544,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public void nextLevel ()
     {
-        isAlienActive = true;
         longestBeat = INITIAL_BEAT;
         soundSwitch.start();
 
@@ -717,8 +716,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     // TODO: implemented for score and sound
     public void alienShipDestroyed (int size)
     {
-        isAlienActive = false;
-
         if (bangAlienShip.isRunning())
         {
             bangAlienShip.stop();
@@ -848,7 +845,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         else if (e.getSource() == alienShipTimer)
         {
             // Time to spawn a new alien ship!
-            if (level == 2 && isAlienActive == true)
+            if (level == 2)
             {
                 // Spawn a new medium alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
