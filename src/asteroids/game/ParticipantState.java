@@ -36,7 +36,10 @@ public class ParticipantState implements Iterable<Participant>
         pendingAdds.clear();
         for (Participant p : participants)
         {
-            Participant.expire(p);
+            if (!p.isInert()) // skip the ships that are used to displat lives
+            {
+                Participant.expire(p);
+            }
         }
         participants.clear();
     }

@@ -21,7 +21,7 @@ public class Screen extends JPanel
     private String score = "SCORE: ";
 
     /** String for level label */
-    private String level = "LEVEL: "; 
+    private String level = "LEVEL: ";
 
     /** String for lives label */
     private String remainingLives = "LIVES: ";
@@ -72,43 +72,37 @@ public class Screen extends JPanel
         {
             p.draw(g);
         }
-        
+
         g.setColor(Color.WHITE);
 
         // Draw the legend across the middle of the panel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
-        
+
         if (controller.getGameMode().equals("classic"))
         {
             // Create font size to display score label
-            Font scoreFont = new Font("Times New Roman", Font.BOLD, 10);
+            Font scoreFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
             g.setFont(scoreFont);
-            g.drawString(score, LABEL_HORIZONTAL_OFFSET, LABEL_VERTICAL_OFFSET);
+            g.drawString(score, LABEL_HORIZONTAL_OFFSET + 20 - g.getFontMetrics().stringWidth(score) / 2, LABEL_VERTICAL_OFFSET);
 
             // Create font size to display level label
-            Font levelFont = new Font("Times New Roman", Font.BOLD, 10);
+            Font levelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
             g.setFont(levelFont);
-            g.drawString(level, SIZE / 2, LABEL_VERTICAL_OFFSET);
-
-            //Create font size to display lives label
-            Font livesFont = new Font("Times New Roman", Font.BOLD, 10);
-            g.setFont(livesFont);
-            g.drawString(remainingLives, SIZE-LABEL_HORIZONTAL_OFFSET, LABEL_VERTICAL_OFFSET);
-            
+            g.drawString(level, SIZE - LABEL_HORIZONTAL_OFFSET, LABEL_VERTICAL_OFFSET);
         }
         else // for two or more players, display stats in a list format
         {
             Font font = new Font("Times New Roman", Font.BOLD, 20);
             g.setFont(font);
-            
             g.drawString(level, SIZE - g.getFontMetrics().stringWidth(level) - 5, 25);
-            
+
             // vert offset makes sure the stats display one below another, not on top of each other
             int vertOffset = 25;
-            
+
             // repeat for each player
-            for (Ship s : controller.getShipList()) {
+            for (Ship s : controller.getShipList())
+            {
                 // color of stat will correspond to color of ship
                 g.setColor(s.getColor());
                 g.drawString("LIVES: " + s.getOwner().getLives(), 15, vertOffset);
@@ -119,22 +113,22 @@ public class Screen extends JPanel
     }
 
     /** Set lives */
-    public void setLives (int s)
+    public void setLives (String s)
     {
-        this.remainingLives = "LIVES: " + s;
+        this.remainingLives = s;
     }
 
     /** Set Score */
-    public void setScoreLabel (int s)
+    public void setScoreLabel (String s)
     {
 
-        this.score = "SCORE: " + s;
+        this.score = s;
 
     }
 
     /** Set Level */
-    public void setLevelLabel (int s)
+    public void setLevelLabel (String s)
     {
-        this.level = "LEVEL: " + s;
+        this.level = s;
     }
 }

@@ -144,7 +144,7 @@ public class Constants
     /**
      * Offset of score/level from top side.
      */
-    public final static int LABEL_VERTICAL_OFFSET = 30;
+    public final static int LABEL_VERTICAL_OFFSET = 45;
     
     /**
      * Height of ship

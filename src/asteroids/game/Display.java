@@ -78,20 +78,20 @@ public class Display extends JFrame
     }
 
     /** Sets the lives label */
-    public void setLives (int s)
+    public void setLives (String s)
     {
         screen.setLives(s);
 
     }
 
     /** Sets the Score label */
-    public void setScore (int s)
+    public void setScore (String s)
     {
         screen.setScoreLabel(s);
     }
 
     /** Sets the Level Label */
-    public void setLevel (int s)
+    public void setLevel (String s)
     {
         screen.setLevelLabel(s);
     }

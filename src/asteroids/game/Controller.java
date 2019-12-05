@@ -123,6 +123,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /* Specifies if alien should spawn */
     private boolean isAlienActive;
+    
+    /* The ships that display the number of lvies left */
+    private Ship[] livesShips;
 
     /*
      * Constructs a controller to coordinate the game and screen
@@ -203,6 +206,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
             client.send(new GameUpdate(user, NEWPLAYER));
         }
+        
+        livesShips = new Ship[3];
     }
 
     private Clip createClip (String string)
@@ -257,6 +262,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public Ship getShip ()
     {
         return ship;
+    }
+
+    /*
+     * Returns lives
+     */
+    public int getLives ()
+    {
+        return lives;
     }
 
     /*
@@ -322,6 +335,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     {
         // Clear the screen, reset the level, and display the legend
         clear();
+        display.setScore("");
+        display.setLevel("");
         display.setLegend("Asteroids");
         placeAsteroids();
     }
@@ -420,13 +435,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             // Place four asteroids near the corners of the screen.
             // TOP LEFT
-            addParticipant(new Asteroid(0, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
+            addParticipant(new Asteroid(0, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET),
+                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
             // TOP RIGHT
-            addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
+            addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET),
+                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
             // BOTTOM LEFT
-            addParticipant(new Asteroid(1, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
+            addParticipant(new Asteroid(1, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET),
+                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
             // BOTTOM RIGHT
-            addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
+            addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET),
+                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
         }
     }
 
@@ -468,12 +487,20 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Place the ship, or ships if it's a two player game
         placeShips();
 
-        // Display Lives
-        display.setLives(lives);
+        // Add the ships for displaying lives
+        for (int i = 0; i < 3; i++)
+        {
+            Ship s = new Ship(40 + 30*i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
+            s.setInert(true);
+            addParticipant(s);
+            livesShips[i] = s;
+        }
+        
+
         // Display Level
-        display.setLevel(level);
+        display.setLevel(level + "");
         // Display Score
-        display.setScore(score);
+        display.setScore(score + "");
 
         // Start listening to events (but don't listen twice)
         display.removeKeyListener(this);
@@ -545,7 +572,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         level++;
 
         // Display new level
-        display.setLevel(level);
+        display.setLevel(level + "");
 
         if (level > 1)
         {
@@ -625,7 +652,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         lives--;
 
         // Display lives
-        display.setLives(lives);
+        Participant.expire(livesShips[lives]);
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
@@ -683,7 +710,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         // Display new score
-        display.setScore(score);
+        display.setScore(score + "");
 
     }
 
@@ -704,7 +731,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             score += ALIENSHIP_SCORE[size];
         }
         // Display new score
-        display.setScore(score);
+        display.setScore(score + "");
 
         // Reset and start the alien ship timer
         alienShipTimer = new Timer(RANDOM.nextInt(5000) + 5000, this);
@@ -812,6 +839,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                     s.applyFriction(SHIP_FRICTION);
                 }
             }
+
+            // erase ships that are just there to display lives
 
             // Refresh screen
             display.refresh();
