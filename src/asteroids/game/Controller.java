@@ -821,27 +821,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 // Spawn a new medium alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
                 addParticipant(alien);
-                // if (bigSaucer.isRunning())
-                // {
-                // bigSaucer.stop();
-                // }
-                // bigSaucer.setFramePosition(0);
-                // bigSaucer.loop(4);
+                 if (bigSaucer.isRunning())
+                 {
+                 bigSaucer.stop();
+                 }
+                 bigSaucer.setFramePosition(0);
+                 bigSaucer.loop(4);
             }
-        }
+        
         else if (level >= 3)
         {
             // Spawn a small alien ship on edge of screen
             AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 0, this);
             addParticipant(alien);
-            // if (smallSaucer.isRunning())
-            // {
-            // smallSaucer.stop();
-            // }
-            // smallSaucer.setFramePosition(0);
-            // smallSaucer.loop(4);
-            // }
-
+             if (smallSaucer.isRunning())
+             {
+             smallSaucer.stop();
+             }
+             smallSaucer.setFramePosition(0);
+             smallSaucer.loop(4);
+        }   
+        
             // Stop the alien ship timer. It will be restarted when the alien dies
             alienShipTimer.stop();
         }
