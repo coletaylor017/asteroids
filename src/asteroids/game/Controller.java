@@ -121,6 +121,8 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* If this controller is the primary, it spawns asteroids for all the others. */
     boolean isPrimary;
 
+    
+
     /*
      * Constructs a controller to coordinate the game and screen
      */
@@ -504,8 +506,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             placeAsteroids();
         }
 
-        // TODO: Make additional asteroid for each level
-
         // Place the ship(s)
         placeShips();
 
@@ -821,27 +821,27 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 // Spawn a new medium alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
                 addParticipant(alien);
-                 if (bigSaucer.isRunning())
-                 {
-                 bigSaucer.stop();
-                 }
-                 bigSaucer.setFramePosition(0);
-                 bigSaucer.loop(4);
+                if (bigSaucer.isRunning())
+                {
+                    bigSaucer.stop();
+                }
+                bigSaucer.setFramePosition(0);
+                bigSaucer.loop(4);
             }
-        
-        else if (level >= 3)
-        {
-            // Spawn a small alien ship on edge of screen
-            AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 0, this);
-            addParticipant(alien);
-             if (smallSaucer.isRunning())
-             {
-             smallSaucer.stop();
-             }
-             smallSaucer.setFramePosition(0);
-             smallSaucer.loop(4);
-        }   
-        
+
+            else if (level >= 3)
+            {
+                // Spawn a small alien ship on edge of screen
+                AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 0, this);
+                addParticipant(alien);
+                if (smallSaucer.isRunning())
+                {
+                    smallSaucer.stop();
+                }
+                smallSaucer.setFramePosition(0);
+                smallSaucer.loop(4);
+            }
+
             // Stop the alien ship timer. It will be restarted when the alien dies
             alienShipTimer.stop();
         }
@@ -858,7 +858,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // Clear the transition time
             transitionTime = Long.MAX_VALUE;
 
-            if (countAsteroids() == 0)
+            if (countAsteroids() == 0 && countAlienShip() == 0)
             {
                 playSound = false;
                 nextLevel();
@@ -890,6 +890,19 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         for (Participant p : this)
         {
             if (p instanceof Asteroid)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int countAlienShip ()
+    {
+        int count = 0;
+        for (Participant p : this)
+        {
+            if (p instanceof AlienShip)
             {
                 count++;
             }
