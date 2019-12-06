@@ -374,17 +374,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             addParticipant(ship);
             shipList.add(ship);
 
-            if (gameMode.equals("enhanced"))
-            {
-                ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
-
-                Participant.expire(ship2);
-                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
-                ship2.setColor(Color.CYAN);
-                addParticipant(ship2);
-                shipList.add(ship2);
-            }
-
             // if two player mode, place another ship
             if (gameMode.equals("enhanced"))
             {
@@ -436,16 +425,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             // Place four asteroids near the corners of the screen.
             // TOP LEFT
             addParticipant(new Asteroid(0, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET),
-                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
+                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), this));
             // TOP RIGHT
             addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET),
-                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), 3, this));
+                    (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET), this));
             // BOTTOM LEFT
             addParticipant(new Asteroid(1, 2, (EDGE_OFFSET / 2) + RANDOM.nextInt(EDGE_OFFSET),
-                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
+                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), this));
             // BOTTOM RIGHT
             addParticipant(new Asteroid(1, 2, SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET),
-                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), 3, this));
+                    SIZE - (EDGE_OFFSET / 2) - RANDOM.nextInt(EDGE_OFFSET), this));
         }
     }
 
@@ -488,7 +477,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         placeShips();
 
         // Add the ships for displaying lives
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < lives; i++)
         {
             Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
             s.setInert(true);
@@ -560,6 +549,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Clear the screen
         clear();
 
+        // Add the ships for displaying lives
+        for (int i = 0; i < lives; i++)
+        {
+            Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
+            s.setInert(true);
+            addParticipant(s);
+            livesShips[i] = s;
+        }
+
         // in an online game, asteroid spawning is handled by the client to keep it uniform between players
         if (gameMode != "online-multiplayer")
         {
@@ -587,16 +585,16 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
             switch (new Random().nextInt(4))
             {
                 case 0:
-                    addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, 3, this));
+                    addParticipant(new Asteroid(0, 2, EDGE_OFFSET, EDGE_OFFSET, this));
                     break;
                 case 1:
-                    addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, 3, this));
+                    addParticipant(new Asteroid(1, 2, (SIZE - EDGE_OFFSET), EDGE_OFFSET, this));
                     break;
                 case 2:
-                    addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+                    addParticipant(new Asteroid(1, 2, EDGE_OFFSET, SIZE - EDGE_OFFSET, this));
                     break;
                 case 3:
-                    addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, 3, this));
+                    addParticipant(new Asteroid(1, 2, SIZE - EDGE_OFFSET, SIZE - EDGE_OFFSET, this));
                     break;
 
             }
@@ -715,6 +713,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     // TODO: implemented for score and sound
     public void alienShipDestroyed (int size)
     {
+
         if (bangAlienShip.isRunning())
         {
             bangAlienShip.stop();
@@ -729,9 +728,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Display new score
         display.setScore(score + "");
 
-        // Reset and start the alien ship timer
-        alienShipTimer = new Timer(RANDOM.nextInt(5000) + 5000, this);
-        alienShipTimer.start();
+        if (countAsteroids() == 0)
+        {
+            soundSwitch.stop();
+            scheduleTransition(END_DELAY);
+        }
+        else
+        {
+            // Reset and start the alien ship timer
+            alienShipTimer = new Timer(RANDOM.nextInt(5000) + 5000, this);
+            alienShipTimer.start();
+        }
     }
 
     /**

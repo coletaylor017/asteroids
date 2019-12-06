@@ -36,7 +36,7 @@ public class Asteroid extends Participant implements ShipDestroyer
      * positions it at the provided coordinates with a random rotation. Its velocity has the given speed but is in a
      * random direction.
      */
-    public Asteroid (int variety, int size, double x, double y, int speed, Controller controller)
+    public Asteroid (int variety, int size, double x, double y, Controller controller)
     {
         // Generate a random ID
         int randomInt = Constants.RANDOM.nextInt(1000 * 1000);
@@ -54,19 +54,20 @@ public class Asteroid extends Participant implements ShipDestroyer
             throw new IllegalArgumentException();
         }
 
-        // Create the asteroid set speed for different varieties
-        // if (variety == 2)
-        // {
-        // speed = MAXIMUM_LARGE_ASTEROID_SPEED;
-        // }
-        // if (variety == 1)
-        // {
-        // speed = MAXIMUM_MEDIUM_ASTEROID_SPEED;
-        // }
-        // else
-        // {
-        // speed = MAXIMUM_SMALL_ASTEROID_SPEED;
-        // }
+        int speed;
+        // set speed for different varieties
+        if (variety == 2)
+        {
+            speed = RANDOM.nextInt(MAXIMUM_LARGE_ASTEROID_SPEED - 1) + 1;
+        }
+        if (variety == 1)
+        {
+            speed = RANDOM.nextInt(MAXIMUM_MEDIUM_ASTEROID_SPEED - MAXIMUM_LARGE_ASTEROID_SPEED + 1) + MAXIMUM_LARGE_ASTEROID_SPEED;
+        }
+        else
+        {
+            speed = RANDOM.nextInt(MAXIMUM_SMALL_ASTEROID_SPEED - MAXIMUM_LARGE_ASTEROID_SPEED + 1) + MAXIMUM_LARGE_ASTEROID_SPEED;
+        }
         this.controller = controller;
         this.size = size;
         setPosition(x, y);
@@ -212,11 +213,10 @@ public class Asteroid extends Participant implements ShipDestroyer
             // spawn two new asteroids only if this is not a small asteroid
             if (this.size != 0)
             {
-                Random r = new Random();
                 controller.addParticipant(
-                        new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+                        new Asteroid(RANDOM.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), controller));
                 controller.addParticipant(
-                        new Asteroid(r.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), 3, controller));
+                        new Asteroid(RANDOM.nextInt(4), this.getSize() - 1, this.getX(), this.getY(), controller));
             }
 
             // spawn dust

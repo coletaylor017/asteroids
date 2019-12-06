@@ -32,7 +32,14 @@ public class AlienShip extends Participant implements ShipDestroyer
         this.controller = controller;
         this.size = size;
         setRotation(0);
-        setVelocity(2, 0);
+        if (size == 0)
+        {
+            setVelocity(3, 0);
+        }
+        else if (size == 1)
+        {
+            setVelocity(2, 0);
+        }
         moving = false;
 
         // appear randomly on either one edge or the other
