@@ -163,7 +163,8 @@ public class AlienShip extends Participant implements ShipDestroyer
             {
                 // attack in a random direction
                 attack(2 * Math.PI * RANDOM.nextDouble());
-                alienShot.loop(1);
+                alienShot.setFramePosition(0);
+                alienShot.start();
             }
             else if (size == 0)
             {
@@ -174,7 +175,8 @@ public class AlienShip extends Participant implements ShipDestroyer
                 // offset +/- 5 degrees. 5 degrees = pi/36 radians = 0.087266 radians
                 double offset = (0.087266) - (RANDOM.nextDouble() * 0.087266);
                 attack(direction + offset);
-                alienShot.loop(1);
+                alienShot.setFramePosition(0);
+                alienShot.start();
             }
 
             // Restart the timer
