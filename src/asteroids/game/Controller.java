@@ -121,9 +121,6 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     /* If this controller is the primary, it spawns asteroids for all the others. */
     boolean isPrimary;
 
-    /* Specifies if alien should spawn */
-    private boolean isAlienActive;
-
     /* The ships that display the number of lvies left */
     private Ship[] livesShips;
 
