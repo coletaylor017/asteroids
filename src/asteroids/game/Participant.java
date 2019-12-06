@@ -35,10 +35,10 @@ public abstract class Participant
 
     // True if the Participant is inert (does not interact with any other Participants)
     private boolean isInert;
-    
+
     /* True if the participant is simply a rendering controlled remotely by another online user */
     private boolean ghost;
-    
+
     /* Participants can have a color, the default is white */
     private Color color;
 
@@ -63,7 +63,7 @@ public abstract class Participant
     {
         return ghost;
     }
-    
+
     /* Returns true if this participant is a ghost */
     public void setGhostStatus (boolean status)
     {
@@ -71,13 +71,13 @@ public abstract class Participant
     }
 
     /* Returns the color of this Participant */
-    public Color getColor()
+    public Color getColor ()
     {
         return color;
     }
-    
+
     /* Sets the color of this Participant */
-    public void setColor(Color newColor)
+    public void setColor (Color newColor)
     {
         color = newColor;
     }
@@ -369,6 +369,5 @@ public abstract class Participant
         g.setColor(color);
         g.draw(border);
     }
-    
-    
- }
+
+}

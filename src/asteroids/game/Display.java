@@ -4,14 +4,13 @@ import javax.swing.*;
 import static asteroids.game.Constants.*;
 import java.awt.*;
 
-
 /**
  * Defines the top-level appearance of an Asteroids game.
  */
 @SuppressWarnings("serial")
 public class Display extends JFrame
 {
-    
+
     /** The area where the action takes place */
     private Screen screen;
 
@@ -40,7 +39,7 @@ public class Display extends JFrame
         // The button that starts the game
         JButton startGame = new JButton(START_LABEL);
         controls.add(startGame);
-        
+
         if (controller.getGameMode().equals("online-multiplayer"))
         {
             JButton killClient = new JButton("Kill client");
@@ -58,7 +57,7 @@ public class Display extends JFrame
 
         // Connect the controller to the start button
         startGame.addActionListener(controller);
-        
+
     }
 
     /**

@@ -16,19 +16,19 @@ public class AlienBullet extends Participant implements ShipDestroyer, AsteroidD
 
     /* Controller for this bullet */
     private Controller controller;
-    
+
     /*
-     * Constructs a bullet at initial point (x, y), facing indicated direction,
-     * with indicated initial speed. Specify game controller when constructing.
+     * Constructs a bullet at initial point (x, y), facing indicated direction, with indicated initial speed. Specify
+     * game controller when constructing.
      */
     public AlienBullet (double x, double y, double direction, double initSpeed, Controller controller)
     {
         setPosition(x, y);
         setVelocity(initSpeed, direction);
-        
+
         Ellipse2D.Double el = new Ellipse2D.Double(0, 0, 1, 1);
         outline = el;
-        
+
         // To make the bullet expire after the correct duration
         new ParticipantCountdownTimer(this, BULLET_DURATION);
     }
@@ -38,7 +38,7 @@ public class AlienBullet extends Participant implements ShipDestroyer, AsteroidD
     {
         return outline;
     }
-    
+
     /*
      * When time has elapsed, delete bullet
      */

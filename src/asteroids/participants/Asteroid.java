@@ -25,7 +25,7 @@ public class Asteroid extends Participant implements ShipDestroyer
 
     /** The game controller */
     private Controller controller;
-    
+
     /* A unique id for this asteroid */
     private long id;
 
@@ -39,11 +39,11 @@ public class Asteroid extends Participant implements ShipDestroyer
     public Asteroid (int variety, int size, double x, double y, int speed, Controller controller)
     {
         // Generate a random ID
-        int randomInt = Constants.RANDOM.nextInt(1000*1000);
-        
+        int randomInt = Constants.RANDOM.nextInt(1000 * 1000);
+
         // Combine with current epoch to guarantee a unique ID for every player
         id = Long.parseLong((System.currentTimeMillis() + "") + randomInt);
-        
+
         // Make sure size and variety are valid
         if (size < 0 || size > 2)
         {
@@ -55,18 +55,18 @@ public class Asteroid extends Participant implements ShipDestroyer
         }
 
         // Create the asteroid set speed for different varieties
-//        if (variety == 2)
-//        {
-//            speed = MAXIMUM_LARGE_ASTEROID_SPEED;
-//        }
-//        if (variety == 1)
-//        {
-//            speed = MAXIMUM_MEDIUM_ASTEROID_SPEED;
-//        }
-//        else 
-//        {
-//            speed = MAXIMUM_SMALL_ASTEROID_SPEED;
-//        }
+        // if (variety == 2)
+        // {
+        // speed = MAXIMUM_LARGE_ASTEROID_SPEED;
+        // }
+        // if (variety == 1)
+        // {
+        // speed = MAXIMUM_MEDIUM_ASTEROID_SPEED;
+        // }
+        // else
+        // {
+        // speed = MAXIMUM_SMALL_ASTEROID_SPEED;
+        // }
         this.controller = controller;
         this.size = size;
         setPosition(x, y);
@@ -77,8 +77,8 @@ public class Asteroid extends Participant implements ShipDestroyer
         // If online, send this spawn to the server
         if (controller.getGameMode().equals("online-multiplayer"))
         {
-            controller.getClient().send(new GameUpdate(controller.getUser(), ASTEROIDSPAWN, this.id, this.size, this.outline,
-                    this.getX(), this.getY(), this.getRotation(), this.getSpeed(), this.getDirection()));
+            controller.getClient().send(new GameUpdate(controller.getUser(), ASTEROIDSPAWN, this.id, this.size,
+                    this.outline, this.getX(), this.getY(), this.getRotation(), this.getSpeed(), this.getDirection()));
         }
     }
 
@@ -86,8 +86,8 @@ public class Asteroid extends Participant implements ShipDestroyer
      * A second constructor for explicitly declaring direction and rotation. This constructor is used for asteroids who
      * are spawned by someone else's controller.
      */
-    public Asteroid (long id, int size, Shape outline, double x, double y, double rotation, double speed, double direction,
-            Controller controller)
+    public Asteroid (long id, int size, Shape outline, double x, double y, double rotation, double speed,
+            double direction, Controller controller)
     {
         this.id = id;
         this.outline = outline;
@@ -99,7 +99,7 @@ public class Asteroid extends Participant implements ShipDestroyer
         setVelocity(speed, direction);
         setRotation(rotation);
     }
-    
+
     public long getID ()
     {
         return id;
@@ -204,18 +204,9 @@ public class Asteroid extends Participant implements ShipDestroyer
             if (controller.getGameMode().equals("online-multiplayer"))
             {
                 // Let other online players know
-                controller.getClient().send(new GameUpdate(
-                    controller.getUser(),
-                    ASTEROIDDIE,
-                    this.id,
-                    this.size,
-                    this.getOutline(),
-                    this.getX(),
-                    this.getY(),
-                    this.getRotation(),
-                    this.getSpeed(),
-                    this.getDirection()
-                ));
+                controller.getClient()
+                        .send(new GameUpdate(controller.getUser(), ASTEROIDDIE, this.id, this.size, this.getOutline(),
+                                this.getX(), this.getY(), this.getRotation(), this.getSpeed(), this.getDirection()));
             }
 
             // spawn two new asteroids only if this is not a small asteroid

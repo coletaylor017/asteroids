@@ -123,7 +123,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
     /* Specifies if alien should spawn */
     private boolean isAlienActive;
-    
+
     /* The ships that display the number of lvies left */
     private Ship[] livesShips;
 
@@ -206,7 +206,7 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
 
             client.send(new GameUpdate(user, NEWPLAYER));
         }
-        
+
         livesShips = new Ship[3];
     }
 
@@ -490,12 +490,11 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         // Add the ships for displaying lives
         for (int i = 0; i < 3; i++)
         {
-            Ship s = new Ship(40 + 30*i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
+            Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
             s.setInert(true);
             addParticipant(s);
             livesShips[i] = s;
         }
-        
 
         // Display Level
         display.setLevel(level + "");

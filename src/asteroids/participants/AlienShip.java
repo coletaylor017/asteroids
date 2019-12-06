@@ -20,7 +20,7 @@ public class AlienShip extends Participant implements ShipDestroyer
 
     /* The size of this ship, 0 for small, 1 for medium */
     private int size;
-    
+
     /* Indicates is this alien ship is moving or not */
     boolean moving;
 
@@ -34,10 +34,10 @@ public class AlienShip extends Participant implements ShipDestroyer
         setRotation(0);
         setVelocity(2, 0);
         moving = false;
-        
+
         // appear randomly on either one edge or the other
         setPosition(SIZE * RANDOM.nextInt(2), SIZE * RANDOM.nextDouble());
-        
+
         // When this timer goes off, alien ship attacks
         new ParticipantCountdownTimer(this, new String("attack"), 2000);
         new ParticipantCountdownTimer(this, new String("turn"), 1000);
@@ -59,13 +59,13 @@ public class AlienShip extends Participant implements ShipDestroyer
         p.lineTo(-14, 0);
         p.lineTo(14, 0);
         p.closePath();
-        
+
         // scale to match size
         double scale = ALIENSHIP_SCALE[size];
         p.transform(AffineTransform.getScaleInstance(scale, scale));
         outline = p;
     }
-    
+
     /*
      * Fire a bullet in the specified direction.
      */
@@ -121,14 +121,14 @@ public class AlienShip extends Participant implements ShipDestroyer
                 double offset = (0.087266) - (RANDOM.nextDouble() * 0.087266);
                 attack(direction + offset);
             }
-            
+
             // Restart the timer
             new ParticipantCountdownTimer(this, new String("attack"), 2000);
         }
         else if (instruction.equals("turn"))
         {
             setDirection((RANDOM.nextInt(3) - 1) * -1);
-            
+
             // Restart the timer
             new ParticipantCountdownTimer(this, new String("turn"), 1000);
         }
