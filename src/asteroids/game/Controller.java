@@ -1,5 +1,9 @@
 package asteroids.game;
 
+/**
+ * @author Cole Taylor and Cameron Steensma
+ */
+
 import static asteroids.game.Constants.*;
 import static asteroids.network.NetworkConstants.*;
 import java.awt.event.*;
@@ -933,25 +937,17 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 // Spawn a new medium alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 1, this);
                 addParticipant(alien);
-                if (bigSaucer.isRunning())
-                {
-                    bigSaucer.stop();
-                }
                 bigSaucer.setFramePosition(0);
-                bigSaucer.loop(4);
+                bigSaucer.loop(8);
             }
 
             else if (level >= 3)
             {
                 // Spawn a small alien ship on edge of screen
                 AlienShip alien = new AlienShip(SIZE / 2, SIZE - 50, 0, this);
-                addParticipant(alien);
-                if (smallSaucer.isRunning())
-                {
-                    smallSaucer.stop();
-                }
+                addParticipant(alien);              
                 smallSaucer.setFramePosition(0);
-                smallSaucer.loop(4);
+                smallSaucer.loop(8);
             }
 
             // Stop the alien ship timer. It will be restarted when the alien dies
