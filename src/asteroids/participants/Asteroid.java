@@ -55,12 +55,12 @@ public class Asteroid extends Participant implements ShipDestroyer
         }
 
         int speed;
-        // set speed for different varieties
-        if (variety == 2)
+        // set speed for different sizes
+        if (size == 2)
         {
             speed = RANDOM.nextInt(MAXIMUM_LARGE_ASTEROID_SPEED - 1) + 1;
         }
-        if (variety == 1)
+        if (size == 1)
         {
             speed = RANDOM.nextInt(MAXIMUM_MEDIUM_ASTEROID_SPEED - MAXIMUM_LARGE_ASTEROID_SPEED + 1) + MAXIMUM_LARGE_ASTEROID_SPEED;
         }
