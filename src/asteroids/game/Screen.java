@@ -3,6 +3,7 @@ package asteroids.game;
 import static asteroids.game.Constants.*;
 import java.awt.*;
 import javax.swing.*;
+import asteroids.network.Player;
 import asteroids.participants.Ship;
 
 /**
@@ -78,6 +79,11 @@ public class Screen extends JPanel
         // Draw the legend across the middle of the panel
         int size = g.getFontMetrics().stringWidth(legend);
         g.drawString(legend, (SIZE - size) / 2, SIZE / 2);
+        
+        // Create font size to display level label
+        Font levelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+        g.setFont(levelFont);
+        g.drawString(level, SIZE - LABEL_HORIZONTAL_OFFSET, LABEL_VERTICAL_OFFSET);
 
         if (controller.getGameMode().equals("classic"))
         {
@@ -85,13 +91,8 @@ public class Screen extends JPanel
             Font scoreFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
             g.setFont(scoreFont);
             g.drawString(score, LABEL_HORIZONTAL_OFFSET + 20 - g.getFontMetrics().stringWidth(score) / 2, LABEL_VERTICAL_OFFSET);
-
-            // Create font size to display level label
-            Font levelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
-            g.setFont(levelFont);
-            g.drawString(level, SIZE - LABEL_HORIZONTAL_OFFSET, LABEL_VERTICAL_OFFSET);
         }
-        else // for two or more players, display stats in a list format
+        else if (controller.getLevel() > 0) // for two or more players, display stats in a list format
         {
             Font font = new Font("Times New Roman", Font.BOLD, 20);
             g.setFont(font);
@@ -101,12 +102,12 @@ public class Screen extends JPanel
             int vertOffset = 25;
 
             // repeat for each player
-            for (Ship s : controller.getShipList())
+            for (Player p : controller.getPlayerList())
             {
                 // color of stat will correspond to color of ship
-                g.setColor(s.getColor());
-                g.drawString("LIVES: " + s.getOwner().getLives(), 15, vertOffset);
-                g.drawString("SCORE: " + s.getOwner().getScore(), 115, vertOffset);
+                g.setColor(p.getShip().getColor());
+                g.drawString("LIVES: " + p.getLives(), 15, vertOffset);
+                g.drawString("SCORE: " + p.getScore(), 115, vertOffset);
                 vertOffset += 25;
             }
         }

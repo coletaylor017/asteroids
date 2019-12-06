@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import asteroids.network.AsteroidsClient;
 import asteroids.network.AsteroidsServer;
-//import asteroids.network.IPPicker;
+import asteroids.network.IPPicker;
 import asteroids.network.ServerDisplay;
 
 /**
@@ -56,9 +56,9 @@ public class Asteroids
         }
         else if (choice == 3)
         {
-//            IPPicker picker = new IPPicker();
-//            picker.setVisible(true);
-//            picker.requestFocusInWindow();
+            IPPicker picker = new IPPicker();
+            picker.setVisible(true);
+            picker.requestFocusInWindow();
         }
     }
 }

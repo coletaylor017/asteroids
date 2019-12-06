@@ -11,6 +11,7 @@ import asteroids.game.Constants;
 import asteroids.game.Controller;
 import asteroids.game.Participant;
 import asteroids.network.GameUpdate;
+import asteroids.network.Player;
 
 /**
  * Represents asteroids
@@ -198,7 +199,6 @@ public class Asteroid extends Participant implements ShipDestroyer
     @Override
     public void collidedWith (Participant p)
     {
-        // TODO: Add multiplayer score increase
         // Only run collision code as long as the collidee isn't an outside player on multiplayer
         if (!p.isGhost() && p instanceof AsteroidDestroyer)
         {
@@ -208,6 +208,14 @@ public class Asteroid extends Participant implements ShipDestroyer
                 controller.getClient()
                         .send(new GameUpdate(controller.getUser(), ASTEROIDDIE, this.id, this.size, this.getOutline(),
                                 this.getX(), this.getY(), this.getRotation(), this.getSpeed(), this.getDirection()));
+            }
+            
+            if (!controller.getGameMode().equals("classic") && p instanceof Bullet)
+            {
+                // increase player's score
+                Bullet b = (Bullet) p;
+                Player theOne = b.getOwner().getOwner();
+                theOne.setScore(theOne.getScore() + ASTEROID_SCORE[size]);
             }
 
             // spawn two new asteroids only if this is not a small asteroid

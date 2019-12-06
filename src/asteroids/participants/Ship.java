@@ -256,6 +256,11 @@ public class Ship extends Participant implements AsteroidDestroyer
     {
         if (p instanceof ShipDestroyer)
         {
+            if (!controller.getGameMode().equals("classic"))
+            {
+                owner.setLives(owner.getLives() - 1);
+            }
+            
             // spawn debris particles
             int[] debrisLengths = { 7, 15, 30, 30 };
             int i = 0;

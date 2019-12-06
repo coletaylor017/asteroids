@@ -116,12 +116,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     private ArrayList<Player> playerList;
 
     /* The player who uses this controller as their local representation of an online game */
-    Player user;
+    private Player user;
+
+    /* Player 2 for a two player game */
+    private Player player2;
 
     /* If this controller is the primary, it spawns asteroids for all the others. */
     boolean isPrimary;
 
-    /* The ships that display the number of lvies left */
+    /* The ships that display the number of lives left */
     private Ship[] livesShips;
 
     /*
@@ -137,6 +140,9 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
      */
     public Controller (String version, AsteroidsClient aClient)
     {
+        // set game mode to "classic", "enhanced", or "online-multiplayer"
+        gameMode = version;
+
         soundSwitch = new Timer(INITIAL_BEAT, this);
         longestBeat = INITIAL_BEAT;
         // create instance variables of sounds
@@ -158,17 +164,23 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         user = new Player();
         System.out.println("Controller: new user id: " + user.getID());
 
+        shipList = new ArrayList<>();
+        playerList = new ArrayList<>();
+
+        player2 = new Player();
+
+        // if two-player, add the players
+        if (gameMode.equals("enhanced"))
+        {
+            playerList.add(user);
+            playerList.add(player2);
+        }
+
         // initialize pstate
         pstate = new ParticipantState();
 
         // initialize client object
         client = aClient;
-
-        shipList = new ArrayList<>();
-        playerList = new ArrayList<>();
-
-        // set game mode to "classic", "enhanced", or "online-multiplayer"
-        gameMode = version;
 
         if (gameMode.equals("online-multiplayer"))
         {
@@ -205,6 +217,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         }
 
         livesShips = new Ship[3];
+    }
+
+    /*
+     * Returns the list of players.
+     */
+    public ArrayList<Player> getPlayerList ()
+    {
+        return playerList;
     }
 
     private Clip createClip (String string)
@@ -267,6 +287,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     public int getLives ()
     {
         return lives;
+    }
+
+    /*
+     * Return level
+     */
+    public int getLevel ()
+    {
+        return level;
     }
 
     /*
@@ -349,37 +377,66 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         display.removeKeyListener(this);
     }
 
+    /*
+     * Place only the first ship
+     */
+    private void placeShip1 ()
+    {
+        Participant.expire(ship);
+        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+        addParticipant(ship);
+        shipList.add(ship);
+        user.setShip(ship);
+        ship.setColor(Color.RED); // in a 2 player game, ships need separate colors to be told apart
+        ship.setAccelerating(false);
+        ship.setTurningLeft(false);
+        ship.setTurningRight(true);
+        ship.setShooting(false);
+    }
+    
+    /*
+     * Place only the second ship
+     */
+    private void placeShip2 ()
+    {
+        Participant.expire(ship2);
+        ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, player2, this);
+        ship2.setColor(Color.CYAN);
+        addParticipant(ship2);
+        shipList.add(ship2);
+        player2.setShip(ship2);
+        ship2.setAccelerating(false);
+        ship2.setTurningLeft(false);
+        ship2.setTurningRight(true);
+        ship2.setShooting(false);
+    }
+    
     /**
      * Place all ships in the center of the screen.
      */
     private void placeShips ()
     {
         display.setLegend("");
-        // Place a new ship
-        Participant.expire(ship);
-        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
-        addParticipant(ship);
 
+        // Place the main ship
+        Participant.expire(ship);
+        ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
+        addParticipant(ship);
         shipList.add(ship);
-        // display.setLegend("");
 
         if (!gameMode.equals("online-multiplayer"))
         {
-            // Place a new ship.
-            Participant.expire(ship);
-            ship = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, user, this);
-            addParticipant(ship);
-            shipList.add(ship);
-
+            user.setShip(ship);
             // if two player mode, place another ship
             if (gameMode.equals("enhanced"))
             {
-                ship.setColor(Color.GREEN); // in a 2 player game, ships need separate colors to be told apart
+                ship.setColor(Color.RED); // in a 2 player game, ships need separate colors to be told apart
                 Participant.expire(ship2);
-                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, null, this);
+                ship2 = new Ship(SIZE / 2, SIZE / 2, -Math.PI / 2, player2, this);
                 ship2.setColor(Color.CYAN);
                 addParticipant(ship2);
                 shipList.add(ship2);
+                player2.setShip(ship2);
             }
         }
         else if (gameMode.equals("online-multiplayer"))
@@ -474,12 +531,15 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         placeShips();
 
         // Add the ships for displaying lives
-        for (int i = 0; i < lives; i++)
+        if (gameMode.equals("classic"))
         {
-            Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
-            s.setInert(true);
-            addParticipant(s);
-            livesShips[i] = s;
+            for (int i = 0; i < lives; i++)
+            {
+                Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
+                s.setInert(true);
+                addParticipant(s);
+                livesShips[i] = s;
+            }
         }
 
         // Display Level
@@ -547,12 +607,14 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         clear();
 
         // Add the ships for displaying lives
-        for (int i = 0; i < lives; i++)
         {
-            Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
-            s.setInert(true);
-            addParticipant(s);
-            livesShips[i] = s;
+            for (int i = 0; i < lives; i++)
+            {
+                Ship s = new Ship(40 + 30 * i, LABEL_VERTICAL_OFFSET + 30, -Math.PI / 2, null, this);
+                s.setInert(true);
+                addParticipant(s);
+                livesShips[i] = s;
+            }
         }
 
         // in an online game, asteroid spawning is handled by the client to keep it uniform between players
@@ -632,20 +694,38 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
         {
             client.send(new GameUpdate(user, SHIPDIE));
         }
+        
+        if (gameMode.equals("enhanced"))
+        {
+            if (s.equals(ship) && user.getLives() > 0)
+            {
+                placeShip1();
+            }
+            if (s.equals(ship2) && player2.getLives() > 0)
+            {
+                placeShip2();
+            }
+        }
 
         // remove the ship from shipList
         shipList.remove(s);
 
         // Null out the ship
         s = null;
-
-        this.ship = null;
-
-        // Decrement lives
-        lives--;
-
-        // Display lives
-        Participant.expire(livesShips[lives]);
+        
+        if (gameMode.equals("classic"))
+        {
+            ship = null;
+            
+            if (lives > 0)
+            {
+                // Decrement lives
+                lives--;
+                
+                // Display lives
+                Participant.expire(livesShips[lives]);
+            }
+        }
 
         // Since the ship was destroyed, schedule a transition
         scheduleTransition(END_DELAY);
@@ -895,20 +975,38 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
                 playSound = false;
                 nextLevel();
             }
-            if (ship == null && lives > 0)
+            if (gameMode.equals("classic"))
             {
-                placeShips();
+                if (ship == null && lives > 0)
+                {
+                    placeShips();
+                }
             }
-            else if (shipList.size() == 0) // if both players have died
+
+            else if (gameMode.equals("online-multiplayer") && shipList.size() == 0) // if both players have died?
             {
                 restartLevel();
             }
 
             // If there are no lives left, the game is over. Show the final
             // screen.
-            if (lives <= 0)
+            if (gameMode.equals("classic"))
             {
-                finalScreen();
+                if (lives <= 0)
+                {
+                    finalScreen();
+                }
+            }
+            else
+            {
+                // test and see if either peep is dead
+                for (Player p : playerList)
+                {
+                    if (p.getLives() == 0)
+                    {
+                        finalScreen();
+                    }
+                }
             }
         }
     }
@@ -948,95 +1046,96 @@ public class Controller implements KeyListener, ActionListener, Iterable<Partici
     @Override
     public void keyPressed (KeyEvent e)
     {
-
-        // TODO: SHIP 1
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && ship != null)
+        if ((ship != null && !gameMode.equals("enhanced"))
+                || (gameMode.equals("enhanced") && ship != null && ship2 != null))
         {
-            ship.setTurningRight(true);
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && ship != null)
-        {
-            ship.setTurningLeft(true);
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_DOWN && ship != null)
-        {
-            fire.setFramePosition(0);
-            fire.loop(100);
-            ship.setShooting(true);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_UP && ship != null)
-        {
-            thrust.setFramePosition(0);
-            thrust.loop(10);
-            ship.setAccelerating(true);
-        }
-
-        // TODO: SHIP 2
-        if (e.getKeyCode() == KeyEvent.VK_D && ship != null)
-        {
-            if (!twoPlayerGame)
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT)
             {
                 ship.setTurningRight(true);
             }
-            else
-            {
-                ship2.setTurningRight(true);
-            }
-        }
 
-        if (e.getKeyCode() == KeyEvent.VK_A && ship != null)
-        {
-            if (!twoPlayerGame)
+            if (e.getKeyCode() == KeyEvent.VK_LEFT)
             {
                 ship.setTurningLeft(true);
             }
-            else
-            {
-                ship2.setTurningLeft(true);
-            }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_S && ship != null)
-        {
-            // s key will not fire player 1's ship in two-player mode
-            if (!twoPlayerGame)
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
             {
                 fire.setFramePosition(0);
                 fire.loop(100);
-
                 ship.setShooting(true);
             }
-            else
-            {
-                fire.start();
-                ship2.setShooting(true);
-            }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && ship != null)
-        {
-            if (!twoPlayerGame)
-            {
-                ship.setShooting(true);
-            }
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_W && ship != null)
-        {
-            if (!twoPlayerGame)
+            if (e.getKeyCode() == KeyEvent.VK_UP)
             {
                 thrust.setFramePosition(0);
                 thrust.loop(10);
                 ship.setAccelerating(true);
             }
-            else
+
+            // TODO: SHIP 2
+            if (e.getKeyCode() == KeyEvent.VK_D)
             {
-                thrust.setFramePosition(0);
-                thrust.loop(10);
-                ship2.setAccelerating(true);
+                if (!twoPlayerGame)
+                {
+                    ship.setTurningRight(true);
+                }
+                else
+                {
+                    ship2.setTurningRight(true);
+                }
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_A)
+            {
+                if (!twoPlayerGame)
+                {
+                    ship.setTurningLeft(true);
+                }
+                else
+                {
+                    ship2.setTurningLeft(true);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_S)
+            {
+                // s key will not fire player 1's ship in two-player mode
+                if (!twoPlayerGame)
+                {
+                    fire.setFramePosition(0);
+                    fire.loop(100);
+
+                    ship.setShooting(true);
+                }
+                else
+                {
+                    fire.start();
+                    ship2.setShooting(true);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_SPACE)
+            {
+                if (!twoPlayerGame)
+                {
+                    ship.setShooting(true);
+                }
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_W)
+            {
+                if (!twoPlayerGame)
+                {
+                    thrust.setFramePosition(0);
+                    thrust.loop(10);
+                    ship.setAccelerating(true);
+                }
+                else
+                {
+                    thrust.setFramePosition(0);
+                    thrust.loop(10);
+                    ship2.setAccelerating(true);
+                }
             }
         }
-
     }
 
     @Override
