@@ -1,5 +1,9 @@
 package asteroids.game;
 
+/**
+ * @author Cole Taylor and Cameron Steensma
+ */
+
 import static asteroids.game.Constants.*;
 import static asteroids.network.NetworkConstants.*;
 import java.awt.event.*;
